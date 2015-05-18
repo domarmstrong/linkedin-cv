@@ -2,19 +2,29 @@
 
 import koaRouter from 'koa-router';
 import queryString from 'query-string';
-import { linkedIn } from './auth';
+import linkedIn from './linkedIn';
 import Q from 'q';
+import React from 'react';
+import { CV } from '../views/cv.jsx';
+import { HTML } from '../views/html.jsx';
+import debug from 'debug';
 
+const d = debug('linkedIn-cv:server');
 const router = koaRouter();
 
 router.get('/', function *(next) {
-    Q.try(() => {
-        return linkedIn.getProfile(this);
-    }).then(auth => {
-        console.log('got auth', auth);
+    this.body = yield Q.try(() => {
+        return linkedIn.getProfile();
+    }).then(profile => {
+        return React.renderToString(<HTML><CV { ...profile } /></HTML>);
     }).catch(err => {
-        console.log('err', err.stack);
+        console.error('Err', err.stack);
+        next();
     });
+});
+
+router.get('/admin', function *(next) {
+
 });
 
 /**

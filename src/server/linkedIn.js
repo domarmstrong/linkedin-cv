@@ -12,7 +12,7 @@ const d = debug('linkedIn-cv:auth');
 /**
  * Manage authentication with linkedIn oauth see https://developer.linkedin.com/docs/oauth2
  */
-export var linkedIn = {
+export default {
     URN: uuid.v4(), // Unique value used to test for CSRF attacks
     authRequestUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
     tokenRequestUrl: 'https://www.linkedin.com/uas/oauth2/accessToken',
@@ -165,9 +165,6 @@ export var linkedIn = {
         // Update the cached auth data
         this.auth = access;
         let authCollection = this.db.collection('auth');
-        let where = {
-            username: this.username
-        };
         let update = {
             $set: {
                 username: this.username,
@@ -175,10 +172,8 @@ export var linkedIn = {
                 expires_in: auth.expires_in,
             },
         };
-        let opts = {
-            upsert: true,
-            multi: false,
-        };
+        let where = { username: this.username };
+        let opts = { upsert: true, multi: false, };
         return authCollection.update(where, update, opts);
     },
 
@@ -203,11 +198,29 @@ export var linkedIn = {
      * Get users profile
      * @return (Promise)
      */
-    getProfile (req) {
-        return this.apiGet(req, 'https://api.linkedin.com/v1/people/~').then(person => {
-            let user = JSON.parse(person);
-            return this.apiGet(req, 'https://api.linkedin.com/v1/people/' + user.id);
+    updateProfile (req) {
+        let fields = [
+            'id',
+            'first-name',
+            'last-name',
+            'summary',
+            'positions',
+            'skills',
+            'picture-url'
+        ];
+        return this.apiGet(req, `https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(response => {
+            let person = JSON.parse(response);
+            let update = { $set: person };
+            let where = { id: person.id, };
+            let opts = { upsert: true, multi: false, };
+            return this.db.collection('people')
+                .update(where, update, opts)
+                .then(() => person);
         });
-    }
+    },
+
+    getProfile () {
+        return this.db.collection('people').findOne();
+    },
 };
 
