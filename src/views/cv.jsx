@@ -104,9 +104,9 @@ class Skill extends React.Component {
     render () {
         let { props } = this;
         return (
-            <section key={ props.id } className="skill">
+            <div key={ props.id } className="skill">
                 { JSON.stringify(props) }
-            </section>
+            </div>
         );
     }
 }
@@ -143,7 +143,7 @@ class Position extends React.Component {
     render () {
         let { id, title, company, startDate, endDate, summary } = this.props;
         return (
-            <section key={ id } className="position">
+            <div key={ id } className="position">
                 <h1>{ title }</h1>
                 <h2>{ company.name }</h2>
                 <div className="dates">
@@ -158,7 +158,7 @@ class Position extends React.Component {
                 <p>{ summary }</p>
 
                 { JSON.stringify(this.props) }
-            </section>
+            </div>
         );
     }
 }
@@ -167,9 +167,9 @@ class Education extends React.Component {
     render () {
         let { props } = this;
         return (
-            <section key={ props.id } className="education">
+            <div key={ props.id } className="education">
                 { JSON.stringify(props) }
-            </section>
+            </div>
         );
     }
 }
