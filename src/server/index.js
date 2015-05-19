@@ -6,7 +6,7 @@ import debug from 'debug';
 import path from 'path';
 import http from 'http';
 
-function _static(relative_path) {
+function serveStatic(relative_path) {
     return koa_static(path.join(process.cwd(), relative_path));
 }
 
@@ -31,6 +31,7 @@ app.config = {
     },
 };
 
+serveStatic('public');
 require('./routes')(app);
 
 app.on('error', function (err) {

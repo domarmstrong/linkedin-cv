@@ -24,7 +24,12 @@ router.get('/', function *(next) {
 });
 
 router.get('/admin', function *(next) {
-
+    this.body = yield linkedIn.updateProfile(this).then(record => {
+        return JSON.stringify(record);
+    }).catch(err => {
+        console.error('Err', err.stack);
+        next();
+    });
 });
 
 /**

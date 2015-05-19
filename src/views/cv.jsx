@@ -12,7 +12,7 @@ export class CV extends React.Component {
         return (
             <div className='cv'>
                 <div className="name">{ this.props.firstName } { this.props.lastName }</div>
-                <img src={ this.props.pictureUrl } />
+                <img src={ this.props.imagePath } />
                 <div className="summary">{ this.props.summary }</div>
 
                 { this.props.skills.map(skill => {

@@ -5,7 +5,9 @@ import request from 'request-promise';
 import queryString from 'query-string';
 import uuid from 'node-uuid';
 import debug from 'debug';
+import Qfs from 'q-io/fs';
 import Q from 'q';
+import path from 'path';
 
 const d = debug('linkedIn-cv:auth');
 
@@ -166,15 +168,11 @@ export default {
         this.auth = access;
         let authCollection = this.db.collection('auth');
         let update = {
-            $set: {
-                username: this.username,
-                access_token: auth.access_token,
-                expires_in: auth.expires_in,
-            },
+            username: this.username,
+            access_token: auth.access_token,
+            expires_in: auth.expires_in,
         };
-        let where = { username: this.username };
-        let opts = { upsert: true, multi: false, };
-        return authCollection.update(where, update, opts);
+        return authCollection.update({ username: this.username }, update, { upsert: true });
     },
 
     apiGet (req, url) {
@@ -188,7 +186,9 @@ export default {
                 }
             };
         }).then(options => {
-            return request.get(url, options).catch(err => {
+            return request.get(url, options).then(response => {
+                return JSON.parse(response);
+            }).catch(err => {
                 console.error('Auth error: ', err);
             });
         });
@@ -204,18 +204,39 @@ export default {
             'first-name',
             'last-name',
             'summary',
+            'specialties',
             'positions',
             'skills',
-            'picture-url'
+            'picture-urls::(original)'
         ];
-        return this.apiGet(req, `https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(response => {
-            let person = JSON.parse(response);
-            let update = { $set: person };
-            let where = { id: person.id, };
-            let opts = { upsert: true, multi: false, };
+        let person;
+        return this.apiGet(req, `https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(_person => {
+            person = _person;
+        }).then(() => {
+            let pictureUrl = person.pictureUrls.values[0];
+            if (! pictureUrl) throw new Error('pictureUrl not received');
+            return this.saveProfileImage(person.id, pictureUrl);
+        }).then(imagePath => {
+            let record = {
+                id: person.id,
+                firstName: person.firstName,
+                lastName: person.lastName,
+                summary: person.summary,
+                specialties: person.specialties,
+                skills: person.skills || [],
+                positions: person.positions || [],
+                imagePath: imagePath,
+            };
             return this.db.collection('people')
-                .update(where, update, opts)
-                .then(() => person);
+                .update({ id: person.id }, record, { upsert: true })
+                .then(() => record);
+        });
+    },
+
+    saveProfileImage (id, url) {
+        return request.get(url).then(image => {
+            let filePath = `/public/profilePics/${ id }.png`;
+            return Qfs.write(path.join(process.cwd(), filePath), image).then(() => filePath);
         });
     },
 
