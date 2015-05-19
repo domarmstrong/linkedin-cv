@@ -205,10 +205,15 @@ export default {
             'id',
             'first-name',
             'last-name',
+            'location',
+            'industry',
+            'headline',
             'summary',
             'specialties',
             'positions',
             'skills',
+            'educations',
+            'public-profile-url',
             'picture-urls::(original)'
         ];
         let person;
@@ -223,10 +228,15 @@ export default {
                 id: person.id,
                 firstName: person.firstName,
                 lastName: person.lastName,
+                location: person.location.name,
+                industry: person.industry,
+                headline: person.headline,
                 summary: person.summary,
                 specialties: person.specialties,
-                skills: person.skills || [],
-                positions: person.positions || [],
+                skills: person.skills ? person.skills.values : [],
+                positions: person.positions ? person.positions.values : [],
+                educations: person.educations ? person.educations.values : [],
+                publicProfileUrl: person.publicProfileUrl,
                 imagePath: imagePath,
             };
             return this.db.collection('people')

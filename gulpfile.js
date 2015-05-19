@@ -64,6 +64,8 @@ gulp.task('run', function () {
     supervisor('./test', {
         harmony: true,
         args: [],
+        watch: [ './src' ],
+        extensions: [ '.jsx', '.js' ],
         ignore: [ './build' ]
     });
 });
