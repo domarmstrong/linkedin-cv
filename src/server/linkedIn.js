@@ -2,10 +2,12 @@
 
 import mongodb from 'promised-mongo';
 import request from 'request-promise';
+import requestOrig from 'request';
 import queryString from 'query-string';
 import uuid from 'node-uuid';
 import debug from 'debug';
 import Qfs from 'q-io/fs';
+import fs from 'fs';
 import Q from 'q';
 import path from 'path';
 
@@ -234,10 +236,11 @@ export default {
     },
 
     saveProfileImage (id, url) {
-        return request.get(url).then(image => {
-            let filePath = `/public/profilePics/${ id }.png`;
-            return Qfs.write(path.join(process.cwd(), filePath), image).then(() => filePath);
-        });
+        let filePath = `/public/profilePics/${ id }.jpg`;
+        let fullPath = path.join(process.cwd(), filePath);
+        return request(url, { encoding: 'binary' }).then(function(image) {
+            return Qfs.write(fullPath, new Buffer(image, 'binary'));
+        }).then(() => filePath);
     },
 
     getProfile () {

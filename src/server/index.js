@@ -1,14 +1,11 @@
 "use strict";
 
 import koa from 'koa';
-import koa_static from 'koa-static';
+import serve from 'koa-static';
+import mount from 'koa-mount';
 import debug from 'debug';
 import path from 'path';
 import http from 'http';
-
-function serveStatic(relative_path) {
-    return koa_static(path.join(process.cwd(), relative_path));
-}
 
 const d = debug('linkedIn-cv:server');
 const app = koa();
@@ -31,7 +28,9 @@ app.config = {
     },
 };
 
-serveStatic('public');
+// static. NOTE: in production use NGINX to serve /public so this route is never reached
+app.use(mount('/public', serve(path.join(process.cwd(), 'public'))));
+// router
 require('./routes')(app);
 
 app.on('error', function (err) {
