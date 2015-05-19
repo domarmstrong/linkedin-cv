@@ -28,8 +28,9 @@ app.config = {
     },
 };
 
-// static. NOTE: in production use NGINX to serve /public so this route is never reached
+// static. NOTE: in production use NGINX to serve /public so these route is never reached
 app.use(mount('/public', serve(path.join(process.cwd(), 'public'))));
+app.use(mount('/public', serve(path.join(process.cwd(), 'build'))));
 // router
 require('./routes')(app);
 

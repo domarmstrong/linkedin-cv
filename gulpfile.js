@@ -57,6 +57,12 @@ gulp.task('less', function () {
         .pipe(gulp.dest('./build'));
 });
 
+gulp.task('watch-run', ['watch', 'run']);
+
+gulp.task('watch', ['less'], function () {
+    gulp.watch('./src/less/*', ['less']);
+});
+
 gulp.task('run', function () {
     var supervisor = require('gulp-supervisor');
 

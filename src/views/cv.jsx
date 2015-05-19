@@ -5,7 +5,17 @@
 
 import React from 'react';
 
-const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+/**
+ * Take a string that is broken by \n chars and return an array of <p> elements.
+ * multiple \n characters are ignored
+ * @param str
+ * @return {Array} <p> elements
+ */
+function formatParas(str) {
+    return str.split('\n')
+        .filter(para => !!para)
+        .map((para, i) => <p key={ i }>{ para }</p>);
+}
 
 export class CV extends React.Component {
     render () {
@@ -14,14 +24,19 @@ export class CV extends React.Component {
 
         return (
             <div className="cv">
-                <div className="wrapper">
-                    <section className="about">
-                        <h1 className="name">{ props.firstName } { props.lastName }</h1>
-                        <div className="headline">{ props.headline }</div>
+                <section className="about">
+                    <div className="profile-pic">
+                        <img className="profile-img" src={ props.imagePath } />
+                    </div>
+
+                    <div className="details">
+                        <header>
+                            <h1 className="name">{ props.firstName } { props.lastName }</h1>
+                            <h2 className="headline">{ props.headline }</h2>
+                        </header>
+
                         <div className="location">{ props.location }</div>
                         <div className="industry">{ props.industry }</div>
-
-                        <img className="profile-image" src={ props.imagePath } />
 
                         <div className="contact">
                             <div className="entry">
@@ -33,56 +48,56 @@ export class CV extends React.Component {
                                 <span className="value">{ props.phone }</span>
                             </div>
                         </div>
+                    </div>
 
-                        <a href={ props.publicProfileUrl } target="_blank">LinkedIn</a>
+                    <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn</a>
+                </section>
+
+                <section className="background">
+                    <legend>Background</legend>
+
+                    <section>
+                        <h2>Summary</h2>
+                        { formatParas(props.summary) }
+
+                        { props.specialties && (
+                            formatParas(props.specialties)
+                        )}
                     </section>
 
-                    <section className="background">
-                        <h2>Background</h2>
-
+                    { props.positions.length > 0 && (
                         <section>
-                            <h3>Summary</h3>
-                            <p className="summary">{ props.summary }</p>
+                            <hr/>
 
-                            { props.specialties && (
-                                <p>Specialities:  { props.specialties }</p>
-                            )}
+                            <h2>Experience</h2>
+                            { props.positions.map(position => {
+                                return <Position { ...position } />;
+                            }) }
                         </section>
+                    )}
 
-                        { props.positions.length > 0 && (
-                            <section>
-                                <hr/>
+                    { props.skills.length > 0 && (
+                        <section>
+                            <hr/>
 
-                                <h3>Experience</h3>
-                                { props.positions.map(position => {
-                                    return <Position { ...position } />;
-                                }) }
-                            </section>
-                        )}
+                            <h2>Skills</h2>
+                            { props.skills.map(skill => {
+                                return <Skill key={ skill.id } { ...skill } />;
+                            }) }
+                        </section>
+                    )}
 
-                        { props.skills.length > 0 && (
-                            <section>
-                                <hr/>
+                    { props.educations.length > 0 && (
+                        <section>
+                            <hr/>
 
-                                <h3>Skills</h3>
-                                { props.skills.map(skill => {
-                                    return <Skill key={ skill.id } { ...skill } />;
-                                }) }
-                            </section>
-                        )}
-
-                        { props.educations.length > 0 && (
-                            <section>
-                                <hr/>
-
-                                <h3>Education</h3>
-                                { props.educations.map(education => {
-                                    return <Education key={ education.id } { ...education } />
-                                }) }
-                            </section>
-                        )}
-                    </section>
-                </div>
+                            <h2>Education</h2>
+                            { props.educations.map(education => {
+                                return <Education key={ education.id } { ...education } />
+                            }) }
+                        </section>
+                    )}
+                </section>
             </div>
         )
     }
@@ -141,23 +156,25 @@ class Position extends React.Component {
     }
 
     render () {
+        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
         let { id, title, company, startDate, endDate, summary } = this.props;
         return (
             <div key={ id } className="position">
-                <h1>{ title }</h1>
-                <h2>{ company.name }</h2>
+                <header>
+                    <h1>{ title }</h1>
+                    <h2>{ company.name }</h2>
+                </header>
+
                 <div className="dates">
-                    <span>{ months[startDate.month - 1] } { startDate.year } &ndash; </span>
+                    <span>{ MONTHS[startDate.month - 1] } { startDate.year } &ndash; </span>
                     { endDate ? (
-                        <span>{ months[endDate.month - 1] } { endDate.year }</span>
+                        <span>{ MONTHS[endDate.month - 1] } { endDate.year }</span>
                     ) : (
                         <span>Present</span>
                     )}
                     <span> { this.getTimeSpent() }</span>
                 </div>
-                <p>{ summary }</p>
-
-                { JSON.stringify(this.props) }
+                { formatParas(summary) }
             </div>
         );
     }
