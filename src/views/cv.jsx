@@ -112,6 +112,34 @@ class Skill extends React.Component {
 }
 
 class Position extends React.Component {
+    getTimeSpent () {
+        let { startDate, endDate } = this.props;
+        if (! endDate) {
+            let now = new Date();
+            endDate = {
+                month: now.getMonth() + 1,
+                year: now.getFullYear(),
+            }
+        }
+        let years = endDate.years - startDate.years;
+        let months = endDate.months - startDate.months;
+
+        function plural(str, n) {
+            return str + (years > 1 ? 's' : '');
+        }
+        let time = [];
+        if (years) {
+            time.push(`${ years } ${ plural('years', years) }`);
+        }
+        if (months) {
+            time.push(`${ months } ${ plural('months', months)}`);
+        }
+        if (! (years || months)) {
+            time.push('1 month');
+        }
+        return '(' + time.join(' ') + ')';
+    }
+
     render () {
         let { id, title, company, startDate, endDate, summary } = this.props;
         return (
@@ -125,6 +153,7 @@ class Position extends React.Component {
                     ) : (
                         <span>Present</span>
                     )}
+                    <span> { this.getTimeSpent() }</span>
                 </div>
                 <p>{ summary }</p>
 
