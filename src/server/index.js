@@ -7,40 +7,28 @@ import debug from 'debug';
 import path from 'path';
 import http from 'http';
 
+const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
 const app = koa();
 
-app.name = 'linkedIn-CV';
-app.env = process.env.NODE_ENV;
-app.port = 8080;
-
-app.config = {
-    mongodb: {
-        connectionString: 'monodb://127.0.0.1:27017',
-        dbName: 'linkedin-cv',
-    },
-    linkedIn: {
-        username: 'your linkedIn username',
-        password: 'your linkedIn password',
-        clientId: 'linkedIn app client id',
-        clientSecret: 'linkedIn app client secret',
-        redirectUrl: 'http://127.0.0.1:8080/auth/linkedin/redirect',
-    },
-};
+app.env = config.env || process.env.NODE_ENV;
+app.name = config.app_name || 'linkedIn-CV';
+app.port = config.app_port || 8080;
+app.secret = config.app_secret;
 
 // static. NOTE: in production use NGINX to serve /public so these route is never reached
-app.use(mount('/public', serve(path.join(process.cwd(), 'public'))));
-app.use(mount('/public', serve(path.join(process.cwd(), 'build'))));
+app.use(mount('/public', serve('../../public')));
+app.use(mount('/public', serve('../../build')));
 // router
 require('./routes')(app);
 
 app.on('error', function (err) {
     // TODO: Error handling
-    console.log(err);
+    console.log('blah', err.stack);
     debug(err);
 });
 
-app.start = function start() {
+function init() {
     let server = http.createServer(app.callback());
     server.on('error', err => {
         debug('Error:', err);
@@ -62,6 +50,6 @@ app.start = function start() {
     });
     server.on('listening', () => console.info('Listening on: ' + app.port));
     server.listen(app.port);
-};
+}
 
-export { app };
+export { init };

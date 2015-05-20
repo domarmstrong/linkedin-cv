@@ -12,6 +12,7 @@ import Q from 'q';
 import path from 'path';
 
 const d = debug('linkedIn-cv:auth');
+const config = require(path.join(process.cwd(), 'config.js'));
 
 /**
  * Manage authentication with linkedIn oauth see https://developer.linkedin.com/docs/oauth2
@@ -21,35 +22,12 @@ export default {
     authRequestUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
     tokenRequestUrl: 'https://www.linkedin.com/uas/oauth2/accessToken',
 
-    get _app () {
-        return require('./index').app;
-    },
-
-    /**
-     * Shortcuts to get app.config.linkedIn.*
-     */
-    get username () {
-        return this._app.config.linkedIn.username;
-    },
-    get password () {
-        return this._app.config.linkedIn.password;
-    },
-    get clientId () {
-        return this._app.config.linkedIn.clientId;
-    },
-    get clientSecret () {
-        return this._app.config.linkedIn.clientSecret;
-    },
-    get redirectUrl () {
-        return this._app.config.linkedIn.redirectUrl;
-    },
-
     /**
      * Get mongo connection on first access
      */
     get db () {
         if (! this._db) {
-            let dbconf = this._app.config.mongodb;
+            let dbconf = config.mongodb;
             let conString = dbconf.connectionString;
             let dbName = dbconf.dbName;
             // Cant use path.join as it messes up double '//' in connection string
@@ -71,8 +49,8 @@ export default {
     requestUserAuth (req) {
         let query = queryString.stringify({
             response_type: 'code',
-            redirect_uri: this.redirectUrl,
-            client_id: this.clientId,
+            redirect_uri: config.linkedIn.redirectUrl,
+            client_id: config.linkedIn.clientId,
             state: this.URN,
         });
         let authUrl = `${ this.authRequestUrl }?${ query }`;
@@ -109,9 +87,9 @@ export default {
             let postData = {
                 grant_type: 'authorization_code',
                 code: params.code,
-                client_id: this.clientId,
-                client_secret: this.clientSecret,
-                redirect_uri: this.redirectUrl,
+                client_id: config.linkedIn.clientId,
+                client_secret: config.linkedIn.clientSecret,
+                redirect_uri: config.linkedIn.redirectUrl,
             };
             request.post({
                 url: this.tokenRequestUrl,
@@ -149,7 +127,7 @@ export default {
             return Q(this.auth);
         }
         return this.db.collection('auth')
-            .findOne({ username: this.username })
+            .findOne({ username: config.linkedIn.username })
             .then(auth => {
                 if (auth) {
                     // Cache look-up
@@ -170,11 +148,11 @@ export default {
         this.auth = access;
         let authCollection = this.db.collection('auth');
         let update = {
-            username: this.username,
+            username: config.linkedIn.username,
             access_token: auth.access_token,
             expires_in: auth.expires_in,
         };
-        return authCollection.update({ username: this.username }, update, { upsert: true });
+        return authCollection.update({ username: config.linkedIn.username }, update, { upsert: true });
     },
 
     apiGet (req, url) {
@@ -192,6 +170,7 @@ export default {
                 return JSON.parse(response);
             }).catch(err => {
                 console.error('Auth error: ', err);
+                throw err;
             });
         });
     },
@@ -247,14 +226,14 @@ export default {
 
     saveProfileImage (id, url) {
         let filePath = `/public/profilePics/${ id }.jpg`;
-        let fullPath = path.join(process.cwd(), filePath);
+        let fullPath = path.join(__dirname, '../../', filePath);
         return request(url, { encoding: 'binary' }).then(function(image) {
             return Qfs.write(fullPath, new Buffer(image, 'binary'));
         }).then(() => filePath);
     },
 
     getProfile () {
-        return this.db.collection('people').findOne();
+        return this.db.collection('people').findOne();//.then(() => { throw new Error('blah') });
     },
 };
 
