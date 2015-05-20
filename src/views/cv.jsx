@@ -35,7 +35,7 @@ export class CV extends React.Component {
                             <h2 className="headline">{ props.headline }</h2>
                         </header>
 
-                        <section className="contact">
+                        <section className="info">
                             <div className="entry">
                                 <span className="label">Location</span>
                                 <span className="value">{ props.location }</span>
@@ -44,17 +44,24 @@ export class CV extends React.Component {
                                 <span className="label">Industry</span>
                                 <span className="value">{ props.industry }</span>
                             </div>
+                        </section>
+
+                        <section className="contact">
                             <div className="entry">
                                 <span className="label">Email</span>
-                                <span className="value">{ props.email }</span>
+                                <span className="value">
+                                    <i className="icon-email" />
+                                    <a href={ "mailto:" + props.email } target="_blank">{ props.email }</a>
+                                </span>
                             </div>
                             <div className="entry">
                                 <span className="label">Phone</span>
-                                <span className="value">{ props.phone }</span>
+                                <span className="value"><i className="icon-phone" />{ props.phone }</span>
                             </div>
                             <div className="entry">
                                 <span className="label">LinkedIn</span>
                                 <span className="value">
+                                    <i className="icon-in" />
                                     <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn profile</a>
                                 </span>
                             </div>
@@ -66,7 +73,10 @@ export class CV extends React.Component {
                     <h1>Background</h1>
 
                     <section>
-                        <h2>Summary</h2>
+                        <header>
+                            <i className="icon-profile" />
+                            <h2>Summary</h2>
+                        </header>
                         { formatParas(props.summary) }
 
                         { props.specialties && (
@@ -78,7 +88,11 @@ export class CV extends React.Component {
                         <section>
                             <hr/>
 
-                            <h2>Experience</h2>
+                            <header>
+                                <i className="icon-experience" />
+                                <h2>Experience</h2>
+                            </header>
+
                             { props.positions.map(position => {
                                 return <Position { ...position } />;
                             }) }
@@ -125,6 +139,10 @@ CV.propTypes = {
     skills: React.PropTypes.array,
     positions: React.PropTypes.array,
     educations: React.PropTypes.array,
+};
+CV.defaultProps = {
+    phone: '0123 456789',
+    email: 'user@test.com',
 };
 
 class Skill extends React.Component {
@@ -173,19 +191,19 @@ class Position extends React.Component {
         return (
             <div key={ id } className="position">
                 <header>
-                    <h1>{ title }</h1>
-                    <h2>{ company.name }</h2>
+                    <h3>{ title }</h3>
+                    <div className="sub">{ company.name }</div>
+                    <div className="dates">
+                        <span>{ MONTHS[startDate.month - 1] } { startDate.year } &ndash; </span>
+                        { endDate ? (
+                            <span>{ MONTHS[endDate.month - 1] } { endDate.year }</span>
+                        ) : (
+                            <span>Present</span>
+                        )}
+                        <span> { this.getTimeSpent() }</span>
+                    </div>
                 </header>
 
-                <div className="dates">
-                    <span>{ MONTHS[startDate.month - 1] } { startDate.year } &ndash; </span>
-                    { endDate ? (
-                        <span>{ MONTHS[endDate.month - 1] } { endDate.year }</span>
-                    ) : (
-                        <span>Present</span>
-                    )}
-                    <span> { this.getTimeSpent() }</span>
-                </div>
                 { formatParas(summary) }
             </div>
         );

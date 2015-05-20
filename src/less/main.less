@@ -1,8 +1,8 @@
+// Generic styling
 body {
   background: #DDD;
   font-size: 13px;
 }
-
 h1 {
   font-size: 28px;
   margin: 0;
@@ -12,11 +12,19 @@ h2 {
   font-weight: normal;
   color: #333;
 }
-
 p {
   line-height: 18px;
 }
+a {
+  text-decoration: none;
+  color: #069;
 
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Mixins
 .clearFix {
   &:after {
     content: '';
@@ -25,8 +33,9 @@ p {
   }
 }
 
+// Content
 .cv {
-  margin: auto;
+  margin: 25px auto;
   width: 650px;
 
   > section {
@@ -66,13 +75,20 @@ p {
     }
   }
 
-  .contact .entry {
-    line-height: 21px;
+  .info, .contact {
+    margin-bottom: 20px;
 
-    .label {
-      display: inline-block;
-      width: 90px;
-      color: #999;
+    .entry {
+      line-height: 21px;
+      i {
+        margin-right: 5px;
+      }
+
+      .label {
+        display: inline-block;
+        width: 90px;
+        color: #999;
+      }
     }
   }
 }
@@ -84,12 +100,45 @@ p {
     display: inline-block;
     padding: 10px 20px;
     font-size: 14px;
-    margin: -20px 0px 15px -20px;
+    margin: -20px 0px 30px -20px;
+  }
+
+  header {
+    margin-bottom: 20px;
+
+    i {
+      float: left;
+      font-size: 36px;
+      color: #444;
+    }
+    h2 {
+      display: inline-block;
+      margin: 10px 15px;
+    }
   }
 
   hr {
     margin-top: 28px;
     margin-bottom: 30px;
     opacity: 0.3;
+  }
+}
+
+.position {
+  header {
+    line-height: 20px;
+
+    h3 {
+      font-size: 17px;
+      margin: 0;
+    }
+    .sub {
+      font-size: 15px;
+      line-height: 18px;
+    }
+    .dates {
+      font-size: 14px;
+      color: #444;
+    }
   }
 }

@@ -1,16 +1,16 @@
 @font-face {
-	font-family: 'linkedin-cv';
-	src:url('fonts/linkedin-cv.eot?ssfgs');
-	src:url('fonts/linkedin-cv.eot?#iefixssfgs') format('embedded-opentype'),
-		url('fonts/linkedin-cv.woff?ssfgs') format('woff'),
-		url('fonts/linkedin-cv.ttf?ssfgs') format('truetype'),
-		url('fonts/linkedin-cv.svg?ssfgs#linkedin-cv') format('svg');
+	font-family: 'iconfont';
+	src:url('/public/font/fonts/iconfont.eot?mi6k52');
+	src:url('/public/font/fonts/iconfont.eot?#iefixmi6k52') format('embedded-opentype'),
+		url('/public/font/fonts/iconfont.woff?mi6k52') format('woff'),
+		url('/public/font/fonts/iconfont.ttf?mi6k52') format('truetype'),
+		url('/public/font/fonts/iconfont.svg?mi6k52#iconfont') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 [class^="icon-"], [class*=" icon-"] {
-	font-family: 'linkedin-cv';
+	font-family: 'iconfont';
 	speak: none;
 	font-style: normal;
 	font-weight: normal;
@@ -23,27 +23,31 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.icon-experience:before {
+	content: "\e600";
+}
+
 .icon-profile:before {
-	content: "\e923";
+	content: "\e601";
 }
 
-.icon-bubbles:before {
-	content: "\e96c";
+.icon-download:before {
+	content: "\e602";
 }
 
-.icon-clipboard:before {
-	content: "\e9b8";
+.icon-error:before {
+	content: "\e603";
 }
 
-.icon-download3:before {
-	content: "\e9c7";
+.icon-phone:before {
+	content: "\e604";
 }
 
-.icon-question:before {
-	content: "\ea09";
+.icon-email:before {
+	content: "\e605";
 }
 
-.icon-linkedin:before {
+.icon-in:before {
 	content: "\eac8";
 }
 
