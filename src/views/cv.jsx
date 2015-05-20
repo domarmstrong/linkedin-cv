@@ -20,7 +20,6 @@ function formatParas(str) {
 export class CV extends React.Component {
     render () {
         let { props } = this;
-        console.log(props);
 
         return (
             <div className="cv">

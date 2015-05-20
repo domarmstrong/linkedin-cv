@@ -233,7 +233,7 @@ export default {
     },
 
     getProfile () {
-        return this.db.collection('people').findOne();//.then(() => { throw new Error('blah') });
+        return this.db.collection('people').findOne();
     },
 };
 
