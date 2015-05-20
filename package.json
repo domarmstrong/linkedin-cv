@@ -51,6 +51,7 @@
     "query-string": "^2.1.0",
     "react": "^0.13.1",
     "request": "^2.55.0",
-    "request-promise": "^0.4.2"
+    "request-promise": "^0.4.2",
+    "underscore": "^1.8.3"
   }
 }
