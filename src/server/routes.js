@@ -6,65 +6,43 @@ import linkedIn from './linkedIn';
 import Q from 'q';
 import Qfs from 'q-io/fs';
 import React from 'react';
-import { CV } from '../views/cv.jsx';
 import debug from 'debug';
 import _ from 'underscore';
 import path from 'path';
+import { CV } from '../views/cv.jsx';
+import { render } from './renderer';
 
 const d = debug('linkedIn-cv:server');
-const router = koaRouter();
-let app;
+const publicRoutes = koaRouter();
+const privateRoutes = koaRouter();
 
-/**
- * Get the compiled html template page and cache it
- * @return {String} html
- */
-let htmlTemplate = '';
-function getHtmlTemplate() {
-    if (htmlTemplate) return Q(htmlTemplate);
-    return Qfs.read(path.join(process.cwd(), '/public/index.html')).then(html => {
-        // Compile to underscore template
-        htmlTemplate =  _.template(html);
-        return htmlTemplate;
-    });
-}
-
-router.get('/', function *(next) {
-    this.body = yield Q.try(() => {
-        // Get profile data and html template in parallel
-        return Q.all([
-            linkedIn.getProfile(),
-            getHtmlTemplate()
-        ]);
-    }).then(data => {
-        let [ profile, template ] = data;
-        return template({
-            name: app.name,
-            body: React.renderToString(<CV { ...profile } />),
-        })
-    }).catch(err => {
-        // TODO: error handling
-        console.error('Err', err.stack);
-        next();
-    });
+publicRoutes.get('/', function *(next) {
+    // Get profile data and html template in parallel
+    this.body = yield linkedIn.getProfile()
+        .then(profile => render( CV, profile ));
 });
 
-router.get('/admin', function *(next) {
-    this.body = yield linkedIn.updateProfile(this).then(record => {
-        return JSON.stringify(record);
-    }).catch(err => {
-        // TODO: error handling
-        console.error('Err', err.stack);
-        next();
-    });
+privateRoutes.get('/admin', function *(next) {
+    yield render( CV );
 });
 
 /**
  * Deal with responses from linkedIn auth
  */
-router.get('/auth/linkedin/redirect', function *(next) {
+publicRoutes.get('/auth/linkedin/redirect', function *(next) {
+    console.log(this);
     let params = queryString.parse(this.req._parsedUrl.query);
     linkedIn.handleAuthResponse(this, params);
+});
+
+privateRoutes.get('/admin', function *(next) {
+    yield render( Login );
+});
+
+privateRoutes.get('/admin/update', function *(next) {
+    this.body = yield linkedIn.updateProfile(this).then(record => {
+        return JSON.stringify(record);
+    });
 });
 
 /**
@@ -73,8 +51,34 @@ router.get('/auth/linkedin/redirect', function *(next) {
  * // require('./routes')(app);
  * @param app: koa app
  */
-export default function (_app) {
-    app = _app;
-    app.use(router.routes());
-    app.use(router.allowedMethods());
+export default function (app) {
+    // Handle routing errors
+    app.use(function *(next) {
+        // Handle errors from actual routes
+        try {
+            yield next;
+        } catch (err) {
+            this.status = err.status || 500;
+            this.body = err.message;
+            this.app.emit('error', err, this);
+        }
+        // Handle 404s etc
+        if (this.response.status === 404) {
+            this.body = 'Woops 404. Page not found';
+        }
+    });
+
+    // Public routes
+    app.use(publicRoutes.middleware());
+    // Require authentication from now
+    app.use(function *(next) {
+        console.log(this);
+        if (true) {//this.isAuthenticated()) {
+            yield next
+        } else {
+            this.redirect('/login')
+        }
+    });
+    // Private routes
+    app.use(privateRoutes.middleware());
 };
