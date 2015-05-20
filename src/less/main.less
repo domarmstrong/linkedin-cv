@@ -1,3 +1,5 @@
+@import 'lesshat.less';
+
 // Generic styling
 body {
   background: #DDD;
@@ -80,8 +82,10 @@ a {
 
     .entry {
       line-height: 21px;
+
       i {
-        margin-right: 5px;
+        margin-right: 7px;
+        color: #666;
       }
 
       .label {
@@ -121,6 +125,26 @@ a {
     margin-top: 28px;
     margin-bottom: 30px;
     opacity: 0.3;
+  }
+}
+
+.location {
+  &:hover {
+    .map-container {
+      height: 260px;
+    }
+  }
+
+  .map-container {
+    height: 0;
+    overflow: hidden;
+    background-color: #eee;
+    .transition(height 0.4s);
+
+    #map-canvas {
+      width: 400px;
+      height: 260px;
+    }
   }
 }
 
