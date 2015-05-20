@@ -35,10 +35,15 @@ export class CV extends React.Component {
                             <h2 className="headline">{ props.headline }</h2>
                         </header>
 
-                        <div className="location">{ props.location }</div>
-                        <div className="industry">{ props.industry }</div>
-
-                        <div className="contact">
+                        <section className="contact">
+                            <div className="entry">
+                                <span className="label">Location</span>
+                                <span className="value">{ props.location }</span>
+                            </div>
+                            <div className="entry">
+                                <span className="label">Industry</span>
+                                <span className="value">{ props.industry }</span>
+                            </div>
                             <div className="entry">
                                 <span className="label">Email</span>
                                 <span className="value">{ props.email }</span>
@@ -47,14 +52,18 @@ export class CV extends React.Component {
                                 <span className="label">Phone</span>
                                 <span className="value">{ props.phone }</span>
                             </div>
-                        </div>
+                            <div className="entry">
+                                <span className="label">LinkedIn</span>
+                                <span className="value">
+                                    <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn profile</a>
+                                </span>
+                            </div>
+                        </section>
                     </div>
-
-                    <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn</a>
                 </section>
 
                 <section className="background">
-                    <legend>Background</legend>
+                    <h1>Background</h1>
 
                     <section>
                         <h2>Summary</h2>
@@ -103,12 +112,15 @@ export class CV extends React.Component {
     }
 }
 CV.propTypes = {
+    imagePath: React.PropTypes.string.isRequired,
     firstName: React.PropTypes.string.isRequired,
     lastName: React.PropTypes.string.isRequired,
-    location: React.PropTypes.string,
     headline: React.PropTypes.string,
+    location: React.PropTypes.string,
+    industry: React.PropTypes.string,
+    email: React.PropTypes.string,
+    phone: React.PropTypes.string,
     summary: React.PropTypes.string,
-    imagePath: React.PropTypes.string,
     specialities: React.PropTypes.string,
     skills: React.PropTypes.array,
     positions: React.PropTypes.array,
