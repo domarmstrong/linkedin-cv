@@ -15,11 +15,11 @@ const d = debug('linkedIn-cv:server');
 const router = koaRouter();
 let app;
 
-let htmlTemplate = '';
 /**
  * Get the compiled html template page and cache it
  * @return {String} html
  */
+let htmlTemplate = '';
 function getHtmlTemplate() {
     if (htmlTemplate) return Q(htmlTemplate);
     return Qfs.read(path.join(process.cwd(), '/public/index.html')).then(html => {
@@ -31,15 +31,19 @@ function getHtmlTemplate() {
 
 router.get('/', function *(next) {
     this.body = yield Q.try(() => {
-        return linkedIn.getProfile();
-    }).then(profile => {
-        return getHtmlTemplate().then(template => {
-            return template({
-                name: app.name,
-                body: React.renderToString(<CV { ...profile } />),
-            })
+        // Get profile data and html template in parallel
+        return Q.all([
+            linkedIn.getProfile(),
+            getHtmlTemplate()
+        ]);
+    }).then(data => {
+        let [ profile, template ] = data;
+        return template({
+            name: app.name,
+            body: React.renderToString(<CV { ...profile } />),
         })
     }).catch(err => {
+        // TODO: error handling
         console.error('Err', err.stack);
         next();
     });
@@ -49,16 +53,10 @@ router.get('/admin', function *(next) {
     this.body = yield linkedIn.updateProfile(this).then(record => {
         return JSON.stringify(record);
     }).catch(err => {
+        // TODO: error handling
         console.error('Err', err.stack);
         next();
     });
-});
-
-/**
- * Request authorisation from the user for linkedIn
- */
-router.get('/auth/linkedin', function *(next) {
-    linkedIn.requestUserAuth(this);
 });
 
 /**
@@ -73,7 +71,7 @@ router.get('/auth/linkedin/redirect', function *(next) {
  * Use the koa-router
  * @example
  * // require('./routes')(app);
- * @param app
+ * @param app: koa app
  */
 export default function (_app) {
     app = _app;
