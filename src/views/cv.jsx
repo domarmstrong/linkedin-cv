@@ -36,9 +36,12 @@ export class CV extends React.Component {
                         </header>
 
                         <section className="info">
-                            <div className="entry">
+                            <div className="entry location">
                                 <span className="label">Location</span>
                                 <span className="value">{ props.location }</span>
+                                <div className="map-container">
+                                    <div id="map-canvas" />
+                                </div>
                             </div>
                             <div className="entry">
                                 <span className="label">Industry</span>
@@ -103,7 +106,11 @@ export class CV extends React.Component {
                         <section>
                             <hr/>
 
-                            <h2>Skills</h2>
+                            <header>
+                                <i className="icon-error" />
+                                <h2>skills</h2>
+                            </header>
+
                             { props.skills.map(skill => {
                                 return <Skill key={ skill.id } { ...skill } />;
                             }) }
@@ -114,7 +121,11 @@ export class CV extends React.Component {
                         <section>
                             <hr/>
 
-                            <h2>Education</h2>
+                            <header>
+                                <i className="icon-error" />
+                                <h2>Education</h2>
+                            </header>
+
                             { props.educations.map(education => {
                                 return <Education key={ education.id } { ...education } />
                             }) }
