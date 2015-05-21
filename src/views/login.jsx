@@ -7,21 +7,23 @@ import React from 'react';
 
 export class Login extends React.Component {
     render () {
-        let { props } = this;
+        let { username, validation } = this.props;
 
         return (
             <div className="login">
                 <div className="spacer" />
                 <div className="login-container">
-                    <form className="pure-form pure-form-stacked" action="/login">
+                    <form className="pure-form pure-form-stacked" action="/login" method="POST">
                         <fieldset>
                             <legend>Sign in</legend>
 
-                            <label>Username</label>
-                            <input type="text" placeholder="Username" />
+                            { validation.login && <div className="form-validation">{ validation.login }</div> }
 
-                            <label>Password</label>
-                            <input type="password" placeholder="Password" />
+                            <label htmlFor="username">Username</label>
+                            <input name="username" type="text" placeholder="Username" value={ username } />
+
+                            <label htmlFor="password">Password</label>
+                            <input name="password" type="password" placeholder="Password" />
 
                             <button type="submit" className="pure-button pure-button-primary">Sign in</button>
                         </fieldset>
@@ -31,3 +33,11 @@ export class Login extends React.Component {
         )
     }
 }
+Login.propTypes = {
+    username: React.PropTypes.string,
+    validation: React.PropTypes.object,
+};
+Login.defaultProps = {
+    username: '',
+    validation: {},
+};

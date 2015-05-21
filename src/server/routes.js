@@ -10,6 +10,7 @@ import debug from 'debug';
 import _ from 'underscore';
 import path from 'path';
 import { render } from './renderer';
+import auth from './auth';
 
 // Views
 import { CV } from '../views/cv.jsx';
@@ -30,7 +31,17 @@ publicRoutes.get('/login', function *(next) {
 });
 
 publicRoutes.post('/login', function *(next) {
-    console.log(this);
+    let { username, password } = this.request.body;
+    yield auth.login(username, password).then(accepted => {
+        if (accepted) {
+            this.redirect('/admin');
+        } else {
+            let props = { username: username, validation: { login: 'Username or password incorrect' } };
+            return render( Login, props ).then(rendered => {
+                this.body = rendered;
+            })
+        }
+    });
 });
 
 privateRoutes.get('/admin', function *(next) {
