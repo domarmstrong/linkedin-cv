@@ -11,6 +11,7 @@ import bodyParser from 'koa-bodyparser';
 import passport from 'koa-passport';
 import { passportSerialize, passportDeserialize, passportStrategy } from './auth';
 import { Strategy as LocalStrategy } from 'passport-local';
+import MongoStore from 'koa-generic-session-mongo';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
@@ -26,7 +27,13 @@ app.use(mount('/public', serve(path.join(__dirname, '../../build'))));
 
 // session
 app.keys = [ config.app_secret ];
-app.use(session());
+app.use(session({
+    store: new MongoStore({
+        url: config.mongodb.connectionString,
+        db: config.mongodb.dbName,
+        collection: 'sessions',
+    })
+}));
 
 // body parser
 app.use(bodyParser());

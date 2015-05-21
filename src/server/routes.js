@@ -107,6 +107,7 @@ export default function (app) {
 
     // Public routes
     app.use(publicRoutes.middleware());
+
     // Require authentication from now
     app.use(function *(next) {
         if (this.isAuthenticated()) {
@@ -115,6 +116,7 @@ export default function (app) {
             this.redirect('/login')
         }
     });
+
     // Private routes
     app.use(privateRoutes.middleware());
 };
