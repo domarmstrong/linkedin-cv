@@ -25,6 +25,14 @@ publicRoutes.get('/', function *(next) {
         .then(profile => render( CV, profile ));
 });
 
+publicRoutes.get('/login', function *(next) {
+    this.body = yield render( Login );
+});
+
+publicRoutes.post('/login', function *(next) {
+    console.log(this);
+});
+
 privateRoutes.get('/admin', function *(next) {
     yield render( CV );
 });
