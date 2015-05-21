@@ -1,6 +1,5 @@
 "use strict";
 
-import mongodb from 'promised-mongo';
 import request from 'request-promise';
 import requestOrig from 'request';
 import queryString from 'query-string';
@@ -10,6 +9,7 @@ import Qfs from 'q-io/fs';
 import fs from 'fs';
 import Q from 'q';
 import path from 'path';
+import { db } from './db';
 
 const d = debug('linkedIn-cv:auth');
 const config = require(path.join(process.cwd(), 'config.js'));
@@ -22,26 +22,6 @@ export default {
     authRequestUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
     tokenRequestUrl: 'https://www.linkedin.com/uas/oauth2/accessToken',
     AUTH_REQUIRED: 'LinkedIn auth required', // constant
-
-    /**
-     * Get mongo connection on first access
-     */
-    get db () {
-        if (! this._db) {
-            let dbconf = config.mongodb;
-            let conString = dbconf.connectionString;
-            let dbName = dbconf.dbName;
-            // Cant use path.join as it messes up double '//' in connection string
-            if (! conString.endsWith('/')) {
-                conString += '/';
-            }
-            if (dbName.startsWith('/')) {
-                dbName = dbName.slice(1);
-            }
-            this._db = mongodb(conString + dbName);
-        }
-        return this._db;
-    },
 
     /**
      * Request auth from linkedIn
@@ -127,7 +107,7 @@ export default {
             // Return cached value if present wrap in a promise
             return Q(this.auth);
         }
-        return this.db.collection('auth')
+        return db.collection('linkedIn-auth')
             .findOne({ username: config.linkedIn.username })
             .then(auth => {
                 if (auth) {
@@ -148,7 +128,7 @@ export default {
     setAuth (access) {
         // Update the cached auth data
         this.auth = access;
-        let authCollection = this.db.collection('auth');
+        let authCollection = db.collection('linkedIn-auth');
         let update = {
             username: config.linkedIn.username,
             access_token: this.auth.access_token,
@@ -220,7 +200,7 @@ export default {
                 publicProfileUrl: person.publicProfileUrl,
                 imagePath: imagePath,
             };
-            return this.db.collection('people')
+            return db.collection('people')
                 .update({ id: person.id }, record, { upsert: true })
                 .then(() => record);
         });
@@ -235,7 +215,7 @@ export default {
     },
 
     getProfile () {
-        return this.db.collection('people').findOne();
+        return db.collection('people').findOne();
     },
 };
 
