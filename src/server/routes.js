@@ -9,8 +9,11 @@ import React from 'react';
 import debug from 'debug';
 import _ from 'underscore';
 import path from 'path';
-import { CV } from '../views/cv.jsx';
 import { render } from './renderer';
+
+// Views
+import { CV } from '../views/cv.jsx';
+import { Login } from '../views/login.jsx';
 
 const d = debug('linkedIn-cv:server');
 const publicRoutes = koaRouter();
@@ -30,9 +33,8 @@ privateRoutes.get('/admin', function *(next) {
  * Deal with responses from linkedIn auth
  */
 publicRoutes.get('/auth/linkedin/redirect', function *(next) {
-    console.log(this);
     let params = queryString.parse(this.req._parsedUrl.query);
-    linkedIn.handleAuthResponse(this, params);
+    yield linkedIn.handleAuthResponse(this, params);
 });
 
 privateRoutes.get('/admin', function *(next) {
@@ -40,8 +42,16 @@ privateRoutes.get('/admin', function *(next) {
 });
 
 privateRoutes.get('/admin/update', function *(next) {
-    this.body = yield linkedIn.updateProfile(this).then(record => {
-        return JSON.stringify(record);
+    yield linkedIn.updateProfile(this).then(record => {
+        return this.body = JSON.stringify(record);
+    }).catch(err => {
+        if (err.message === linkedIn.AUTH_REQUIRED) {
+            // No auth found in database, redirect to linkedIn oauth
+            linkedIn.requestUserAuth(this);
+        } else {
+            // rethrow error for outer handler
+            throw err;
+        }
     });
 });
 
@@ -72,8 +82,7 @@ export default function (app) {
     app.use(publicRoutes.middleware());
     // Require authentication from now
     app.use(function *(next) {
-        console.log(this);
-        if (true) {//this.isAuthenticated()) {
+        if (this.isAuthenticated()) {
             yield next
         } else {
             this.redirect('/login')

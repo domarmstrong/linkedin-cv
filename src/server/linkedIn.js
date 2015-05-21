@@ -21,6 +21,7 @@ export default {
     URN: uuid.v4(), // Unique value used to test for CSRF attacks
     authRequestUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
     tokenRequestUrl: 'https://www.linkedin.com/uas/oauth2/accessToken',
+    AUTH_REQUIRED: 'LinkedIn auth required', // constant
 
     /**
      * Get mongo connection on first access
@@ -91,7 +92,7 @@ export default {
                 client_secret: config.linkedIn.clientSecret,
                 redirect_uri: config.linkedIn.redirectUrl,
             };
-            request.post({
+            return request.post({
                 url: this.tokenRequestUrl,
                 form: postData
             }).then(body => {
@@ -100,12 +101,12 @@ export default {
                 return this.setAuth(auth);
             }).then(auth => {
                 d('Auth token saved');
-                req.redirect('/');
+                req.redirect('/admin/update');
             }).catch(err => {
                 // TODO: error logging
                 console.error(err);
                 req.throw(501);
-            }).done();
+            });
         }
     },
 
@@ -121,7 +122,7 @@ export default {
      * Get the auth token from the database if present else request auth
      * @return (Promise) { access_token, expires_in }
      */
-    getAuth (req) {
+    getAuth () {
         if (this.auth.access_token) {
             // Return cached value if present wrap in a promise
             return Q(this.auth);
@@ -134,8 +135,9 @@ export default {
                     this.auth = auth;
                     return auth;
                 }
-                // No auth found, request user auth
-                return this.requestUserAuth(req);
+                // User auth is via remote service and cannot be controlled
+                // Throw to break out promise
+                throw new Error(this.AUTH_REQUIRED);
             });
     },
 
@@ -149,14 +151,14 @@ export default {
         let authCollection = this.db.collection('auth');
         let update = {
             username: config.linkedIn.username,
-            access_token: auth.access_token,
-            expires_in: auth.expires_in,
+            access_token: this.auth.access_token,
+            expires_in: this.auth.expires_in,
         };
         return authCollection.update({ username: config.linkedIn.username }, update, { upsert: true });
     },
 
-    apiGet (req, url) {
-        return this.getAuth(req).then(auth => {
+    apiGet (url) {
+        return this.getAuth().then(auth => {
             return {
                 auth: {
                     bearer: auth.access_token,
@@ -179,7 +181,7 @@ export default {
      * Get users profile
      * @return (Promise)
      */
-    updateProfile (req) {
+    updateProfile () {
         let fields = [
             'id',
             'first-name',
@@ -196,7 +198,7 @@ export default {
             'picture-urls::(original)'
         ];
         let person;
-        return this.apiGet(req, `https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(_person => {
+        return this.apiGet(`https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(_person => {
             person = _person;
         }).then(() => {
             let pictureUrl = person.pictureUrls.values[0];
