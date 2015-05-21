@@ -10,11 +10,12 @@ import debug from 'debug';
 import _ from 'underscore';
 import path from 'path';
 import { render } from './renderer';
-import auth from './auth';
+import passport from 'koa-passport';
 
 // Views
 import { CV } from '../views/cv.jsx';
 import { Login } from '../views/login.jsx';
+import { Admin } from '../views/admin.jsx';
 
 const d = debug('linkedIn-cv:server');
 const publicRoutes = koaRouter();
@@ -31,21 +32,28 @@ publicRoutes.get('/login', function *(next) {
 });
 
 publicRoutes.post('/login', function *(next) {
-    let { username, password } = this.request.body;
-    yield auth.login(username, password).then(accepted => {
-        if (accepted) {
-            this.redirect('/admin');
+    var ctx = this;
+    let { username } = this.request.body;
+
+    yield* passport.authenticate('local', function*(err, user, info) {
+        if (err) throw err;
+
+        if (user) {
+            d('Login success: ', username);
+            yield ctx.login(user);
+            ctx.redirect('/admin');
         } else {
-            let props = { username: username, validation: { login: 'Username or password incorrect' } };
-            return render( Login, props ).then(rendered => {
-                this.body = rendered;
-            })
+            d('Login failed: ', username, info.message);
+            ctx.status = 401;
+            let props = { username: username, validation: {login: info.message} };
+            yield render( Login, props ).then(rendered => ctx.body = rendered);
         }
-    });
+    }).call(this, next);
 });
 
 privateRoutes.get('/admin', function *(next) {
-    yield render( CV );
+    // TODO: admin page
+    this.body = yield render( Admin );
 });
 
 /**

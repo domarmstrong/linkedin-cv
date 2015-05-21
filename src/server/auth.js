@@ -11,19 +11,19 @@ function sha1(str) {
     return crypto.createHash('sha1').update(str).digest('hex');
 }
 
-export default {
+ let auth = {
     /**
-     * Takes plaintext username and password and return bool if user in database
+     * Takes plaintext username and password and return the user object
      *
      * @param username
      * @param password
      * @return (Boolean)
      */
-    login (username, password) {
+    getUser (username, password) {
         return db.collection('users').findOne({
             username: username,
             password: sha1(password),
-        }).then(user => !!user);
+        });
     },
 
     /**
@@ -53,5 +53,48 @@ export default {
                 password: sha1(password),
             });
         });
-    }
+    },
 };
+
+export default auth;
+
+/**
+ * Passport serializeUser function
+ * @param user
+ * @param done
+ */
+export function passportSerialize (user, done) {
+    done(null, user._id);
+}
+
+/**
+ * Passport deserializeUser function
+ * @param id
+ * @param done
+ */
+export function passportDeserialize (id, done) {
+    db.collection('users')
+        .findOne({ _id: id })
+        .then(user => done(null, user))
+        .catch(err => done(err))
+        .done();
+}
+
+/**
+ * Strategy for use with passport
+ * @example
+ * ```
+ * passport.use(new LocalStrategy(auth.passportStrategy));
+ * ```
+ */
+export function passportStrategy (username, password, done) {
+    auth.getUser(username, password).then(user => {
+        if (user) {
+            done(null, user);
+        } else {
+            done(null, false, {message: 'Username or password incorrect'});
+        }
+    })
+    .catch(done)
+    .done();
+}

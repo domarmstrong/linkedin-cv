@@ -9,6 +9,8 @@ import http from 'http';
 import session from 'koa-generic-session';
 import bodyParser from 'koa-bodyparser';
 import passport from 'koa-passport';
+import { passportSerialize, passportDeserialize, passportStrategy } from './auth';
+import { Strategy as LocalStrategy } from 'passport-local';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
@@ -30,6 +32,9 @@ app.use(session());
 app.use(bodyParser());
 
 // Authentication
+passport.serializeUser(passportSerialize);
+passport.deserializeUser(passportDeserialize);
+passport.use(new LocalStrategy(passportStrategy));
 app.use(passport.initialize());
 app.use(passport.session());
 
