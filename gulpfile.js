@@ -60,7 +60,7 @@ gulp.task('less', function () {
 gulp.task('watch-run', ['watch', 'run']);
 
 gulp.task('watch', ['less'], function () {
-  gulp.watch('./src/less/*', ['less']);
+  gulp.watch('./src/less/**/*', ['less']);
 });
 
 gulp.task('run', function () {
