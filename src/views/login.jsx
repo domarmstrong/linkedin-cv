@@ -25,7 +25,7 @@ export class Login extends React.Component {
               <label htmlFor="password">Password</label>
               <input name="password" type="password" placeholder="Password" />
 
-              <button type="submit" className="pure-button pure-button-primary">Sign in</button>
+              <button type="submit">Sign in</button>
             </fieldset>
           </form>
         </div>
