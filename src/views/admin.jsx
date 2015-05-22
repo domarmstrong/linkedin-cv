@@ -10,9 +10,14 @@ export class Admin extends React.Component {
   render () {
     return (
       <Layout id="admin">
-        Admin
-        <form className="pure-form" action="/admin/update" method="GET">
-          <button type="submit" className="pure-button pure-button-primary">Update profile</button>
+        <h1>Admin</h1>
+
+        <form action="/logout" method="GET">
+          <button type="submit">Logout</button>
+        </form>
+
+        <form action="/admin/update" method="GET">
+          <button type="submit">Update profile</button>
         </form>
       </Layout>
     )

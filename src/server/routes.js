@@ -31,6 +31,11 @@ publicRoutes.get('/login', function *(next) {
   this.body = yield render( Login );
 });
 
+publicRoutes.get('/logout', function *(next) {
+  this.logout();
+  this.redirect('/');
+});
+
 publicRoutes.post('/login', function *(next) {
   var ctx = this;
   let { username } = this.request.body;
