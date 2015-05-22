@@ -1,0 +1,21 @@
+"use strict";
+/**
+ * Author: Dom Armstrong, Date: 22/05/15
+ */
+
+import React from 'react';
+import { PageMenu } from './page_menu';
+
+export class Layout extends React.Component {
+  render () {
+    return (
+      <div className="layout">
+        <PageMenu />
+
+        <div className="container">
+          { this.props.children }
+        </div>
+      </div>
+    )
+  }
+}

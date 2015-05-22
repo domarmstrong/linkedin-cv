@@ -1,13 +1,23 @@
 .cv {
-  margin: 25px auto;
+  margin: 0 auto;
   width: 650px;
 
   > section {
     padding: 20px;
-    background: white;
+    //background: white;
     margin-bottom: 6px;
     border-bottom: 1px solid #AAA;
-    border-right: 1px solid #CCC;
+    //border-right: 1px solid #CCC;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.cv a {
+  &:hover {
+    text-decoration: underline;
   }
 }
 

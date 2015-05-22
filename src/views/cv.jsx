@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Layout } from '../components/layout';
 
 /**
  * Take a string that is broken by \n chars and return an array of <p> elements.
@@ -22,116 +23,118 @@ export class CV extends React.Component {
     let { props } = this;
 
     return (
-      <div className="cv">
-        <section className="about">
-          <div className="profile-pic">
-            <img className="profile-img" src={ props.imagePath } />
-          </div>
+      <Layout id="cv">
+        <div className="cv">
+          <section className="about">
+            <div className="profile-pic">
+              <img className="profile-img" src={ props.imagePath } />
+            </div>
 
-          <div className="details">
-            <header>
-              <h1 className="name">{ props.firstName } { props.lastName }</h1>
-              <h2 className="headline">{ props.headline }</h2>
-            </header>
+            <div className="details">
+              <header>
+                <h1 className="name">{ props.firstName } { props.lastName }</h1>
+                <h2 className="headline">{ props.headline }</h2>
+              </header>
 
-            <section className="info">
-              <div className="entry location">
-                <span className="label">Location</span>
-                <span className="value">{ props.location }</span>
-                <div className="map-container">
-                  <div id="map-canvas" />
+              <section className="info">
+                <div className="entry location">
+                  <span className="label">Location</span>
+                  <span className="value">{ props.location }</span>
+                  <div className="map-container">
+                    <div id="map-canvas" />
+                  </div>
                 </div>
-              </div>
-              <div className="entry">
-                <span className="label">Industry</span>
-                <span className="value">{ props.industry }</span>
-              </div>
-            </section>
+                <div className="entry">
+                  <span className="label">Industry</span>
+                  <span className="value">{ props.industry }</span>
+                </div>
+              </section>
 
-            <section className="contact">
-              <div className="entry">
-                <span className="label">Email</span>
-                <span className="value">
-                  <i className="icon-email" />
-                  <a href={ "mailto:" + props.email } target="_blank">{ props.email }</a>
-                </span>
-              </div>
-              <div className="entry">
-                <span className="label">Phone</span>
-                <span className="value"><i className="icon-phone" />{ props.phone }</span>
-              </div>
-              <div className="entry">
-                <span className="label">LinkedIn</span>
-                <span className="value">
-                  <i className="icon-in" />
-                  <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn profile</a>
-                </span>
-              </div>
-            </section>
-          </div>
-        </section>
-
-        <section className="background">
-          <h1>Background</h1>
-
-          <section>
-            <header>
-              <i className="icon-profile" />
-              <h2>Summary</h2>
-            </header>
-            { formatParas(props.summary) }
-
-            { props.specialties && (
-              formatParas(props.specialties)
-            )}
+              <section className="contact">
+                <div className="entry">
+                  <span className="label">Email</span>
+                  <span className="value">
+                    <i className="icon-email" />
+                    <a href={ "mailto:" + props.email } target="_blank">{ props.email }</a>
+                  </span>
+                </div>
+                <div className="entry">
+                  <span className="label">Phone</span>
+                  <span className="value"><i className="icon-phone" />{ props.phone }</span>
+                </div>
+                <div className="entry">
+                  <span className="label">LinkedIn</span>
+                  <span className="value">
+                    <i className="icon-in" />
+                    <a className="linkedIn-link" href={ props.publicProfileUrl } target="_blank">LinkedIn profile</a>
+                  </span>
+                </div>
+              </section>
+            </div>
           </section>
 
-          { props.positions.length > 0 && (
+          <section className="background">
+            <h1>Background</h1>
+
             <section>
-              <hr/>
-
               <header>
-                <i className="icon-experience" />
-                <h2>Experience</h2>
+                <i className="icon-profile" />
+                <h2>Summary</h2>
               </header>
+              { formatParas(props.summary) }
 
-              { props.positions.map(position => {
-                return <Position { ...position } />;
-              }) }
+              { props.specialties && (
+                formatParas(props.specialties)
+              )}
             </section>
-          )}
 
-          { props.skills.length > 0 && (
-            <section>
-              <hr/>
+            { props.positions.length > 0 && (
+              <section>
+                <hr/>
 
-              <header>
-                <i className="icon-error" />
-                <h2>skills</h2>
-              </header>
+                <header>
+                  <i className="icon-experience" />
+                  <h2>Experience</h2>
+                </header>
 
-              { props.skills.map(skill => {
-                return <Skill key={ skill.id } { ...skill } />;
-              }) }
-            </section>
-          )}
+                { props.positions.map(position => {
+                  return <Position { ...position } />;
+                }) }
+              </section>
+            )}
 
-          { props.educations.length > 0 && (
-            <section>
-              <hr/>
+            { props.skills.length > 0 && (
+              <section>
+                <hr/>
 
-              <header>
-                <i className="icon-error" />
-                <h2>Education</h2>
-              </header>
+                <header>
+                  <i className="icon-error" />
+                  <h2>skills</h2>
+                </header>
 
-              { props.educations.map(education => {
-                return <Education key={ education.id } { ...education } />
-              }) }
-            </section>
-          )}
-        </section>
-      </div>
+                { props.skills.map(skill => {
+                  return <Skill key={ skill.id } { ...skill } />;
+                }) }
+              </section>
+            )}
+
+            { props.educations.length > 0 && (
+              <section>
+                <hr/>
+
+                <header>
+                  <i className="icon-error" />
+                  <h2>Education</h2>
+                </header>
+
+                { props.educations.map(education => {
+                  return <Education key={ education.id } { ...education } />
+                }) }
+              </section>
+            )}
+          </section>
+        </div>
+      </Layout>
     )
   }
 }

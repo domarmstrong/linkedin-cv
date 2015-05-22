@@ -4,16 +4,17 @@
  */
 
 import React from 'react';
+import { Layout } from '../components/layout';
 
 export class Admin extends React.Component {
-    render () {
-        return (
-            <div className="admin">
-                Admin
-                <form className="pure-form" action="/admin/update" method="GET">
-                    <button type="submit" className="pure-button pure-button-primary">Update profile</button>
-                </form>
-            </div>
-        )
-    }
+  render () {
+    return (
+      <Layout id="admin">
+        Admin
+        <form className="pure-form" action="/admin/update" method="GET">
+          <button type="submit" className="pure-button pure-button-primary">Update profile</button>
+        </form>
+      </Layout>
+    )
+  }
 }

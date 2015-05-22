@@ -1,0 +1,91 @@
+.page-menu {
+  position: fixed;
+  height: 100%;
+  background-color: @prim;
+  padding: 0px;
+
+  .menu-heading {
+    display: block;
+    font-size: 22px;
+    padding: 20px;
+    background-color: @prim-dark;
+    color: @prim-light;
+    text-transform: none;
+    letter-spacing: 1px;
+  }
+  .menu-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu-item {
+    height: auto;
+    border-bottom: 1px solid @divider;
+    margin: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    a {
+      display: block;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      padding-left: 10%;
+      box-sizing: border-box;
+      width: 100%;
+      color: @text-light;
+      font-size: 15px;
+      .transition(background 0.3s, color 0.3s, width, 0.3s);
+    }
+
+    &:hover, &:focus, &.active {
+      a {
+        background-color: @accent;
+        .box-shadow(1px 2px 3px rgba(0, 0, 0, 0.2));
+      }
+    }
+    &:hover, &:focus {
+      a {
+        padding-left: 13%;
+        width: 103%;
+      }
+    }
+    &.active a {
+      padding-left: 15%;
+      width: 110%;
+    }
+
+    // Unfortunate tweaks to make icons consistent
+    .icon-code {
+      font-size: 24px;
+      margin-left: -2px;
+      padding-right: 2px;
+      margin-top: -3px;
+    }
+
+    i {
+      margin-right: 8px;
+      font-size: 28px;
+      display: block;
+      float: left;
+      margin-top: -5px;
+    }
+  }
+
+  .menu-footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    .menu-item {
+      background-color: @prim-dark;
+    }
+  }
+
+  @media all and (min-width: 700px) {
+    //text-align: left;
+    //.menu-list {
+    //  float: right;
+    //}
+  }
+}

@@ -24,7 +24,7 @@ const privateRoutes = koaRouter();
 publicRoutes.get('/', function *(next) {
   // Get profile data and html template in parallel
   this.body = yield linkedIn.getProfile()
-    .then(profile => render( CV, profile ));
+    .then(profile => render( CV, profile, { active_route: '/' } ));
 });
 
 publicRoutes.get('/login', function *(next) {
@@ -53,7 +53,7 @@ publicRoutes.post('/login', function *(next) {
 
 privateRoutes.get('/admin', function *(next) {
   // TODO: admin page
-  this.body = yield render( Admin );
+  this.body = yield render( Admin, {}, { active_route: '/admin' } );
 });
 
 /**

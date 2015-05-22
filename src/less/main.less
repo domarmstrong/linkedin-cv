@@ -2,8 +2,9 @@
 
 // Generic styling
 body {
-  background: #DDD;
+  //background: #DDD;
   font-size: 13px;
+  font-family: 'Roboto', sans-serif;
 }
 h1 {
   font-size: 28px;
@@ -20,10 +21,6 @@ p {
 a {
   text-decoration: none;
   color: #069;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 // Mixins
@@ -35,7 +32,18 @@ a {
   }
 }
 
+@prim-dark: #455A64;
+@prim: #607D8B;
+@prim-light: #CFD8DC;
+@secondary: #727272;
+@divider: #B6B6B6;
+@accent: #FF5722;
+@text: #212121;
+@text-light: #FFF;
+
 @import 'forms.less';
 @import 'cv.less';
 @import 'login.less';
+@import 'components/layout.less';
+@import 'components/page_menu.less';
 
