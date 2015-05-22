@@ -6,38 +6,38 @@
 import React from 'react';
 
 export class Login extends React.Component {
-    render () {
-        let { username, validation } = this.props;
+  render () {
+    let { username, validation } = this.props;
 
-        return (
-            <div className="login">
-                <div className="spacer" />
-                <div className="login-container">
-                    <form className="pure-form pure-form-stacked" action="/login" method="POST">
-                        <fieldset>
-                            <legend>Sign in</legend>
+    return (
+      <div className="login">
+        <div className="spacer" />
+        <div className="login-container">
+          <form className="pure-form pure-form-stacked" action="/login" method="POST">
+            <fieldset>
+              <legend>Sign in</legend>
 
-                            { validation.login && <div className="form-validation">{ validation.login }</div> }
+              { validation.login && <div className="form-validation">{ validation.login }</div> }
 
-                            <label htmlFor="username">Username</label>
-                            <input name="username" type="text" placeholder="Username" value={ username } />
+              <label htmlFor="username">Username</label>
+              <input name="username" type="text" placeholder="Username" value={ username } />
 
-                            <label htmlFor="password">Password</label>
-                            <input name="password" type="password" placeholder="Password" />
+              <label htmlFor="password">Password</label>
+              <input name="password" type="password" placeholder="Password" />
 
-                            <button type="submit" className="pure-button pure-button-primary">Sign in</button>
-                        </fieldset>
-                    </form>
-                </div>
-            </div>
-        )
-    }
+              <button type="submit" className="pure-button pure-button-primary">Sign in</button>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    )
+  }
 }
 Login.propTypes = {
-    username: React.PropTypes.string,
-    validation: React.PropTypes.object,
+  username: React.PropTypes.string,
+  validation: React.PropTypes.object,
 };
 Login.defaultProps = {
-    username: '',
-    validation: {},
+  username: '',
+  validation: {},
 };

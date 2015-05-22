@@ -14,22 +14,22 @@ const config = require(path.join(process.cwd(), 'config.js'));
  */
 let htmlTemplate = '';
 function getHtmlTemplate() {
-    // Return cached version
-    if (htmlTemplate) {
-        return Q(htmlTemplate);
-    }
+  // Return cached version
+  if (htmlTemplate) {
+    return Q(htmlTemplate);
+  }
 
-    return Qfs.read(path.join(__dirname, '../../', '/public/index.html')).then(html => {
-        // Compile to underscore template and return a partial function
-        // which only requires the body html string to be passed
-        htmlTemplate =  function (body) {
-            return _.template(html)({
-                name: config.app_name,
-                body: body,
-            });
-        };
-        return htmlTemplate;
-    });
+  return Qfs.read(path.join(__dirname, '../../', '/public/index.html')).then(html => {
+    // Compile to underscore template and return a partial function
+    // which only requires the body html string to be passed
+    htmlTemplate =  function (body) {
+      return _.template(html)({
+        name: config.app_name,
+        body: body,
+      });
+    };
+    return htmlTemplate;
+  });
 }
 
 /**
@@ -39,7 +39,7 @@ function getHtmlTemplate() {
  * @return {Promise} html string
  */
 export function render(Component, props={}) {
-    return getHtmlTemplate().then(template => {
-        return template( React.renderToString(<Component { ...props } />) );
-    });
+  return getHtmlTemplate().then(template => {
+    return template( React.renderToString(<Component { ...props } />) );
+  });
 }

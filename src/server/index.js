@@ -28,11 +28,11 @@ app.use(mount('/public', serve(path.join(__dirname, '../../build'))));
 // session
 app.keys = [ config.app_secret ];
 app.use(session({
-    store: new MongoStore({
-        url: config.mongodb.connectionString,
-        db: config.mongodb.dbName,
-        collection: 'sessions',
-    })
+  store: new MongoStore({
+    url: config.mongodb.connectionString,
+    db: config.mongodb.dbName,
+    collection: 'sessions',
+  })
 }));
 
 // body parser
@@ -49,33 +49,33 @@ app.use(passport.session());
 require('./routes')(app);
 
 app.on('error', function (err) {
-    // TODO: Error handling
-    console.log('blah', err.stack);
-    debug(err);
+  // TODO: Error handling
+  console.log('blah', err.stack);
+  debug(err);
 });
 
 function init() {
-    let server = http.createServer(app.callback());
-    server.on('error', err => {
-        debug('Error:', err);
-        if (err.syscall !== 'listen') {
-            throw err;
-        }
-        switch (err.code) {
-            case 'EACCES':
-                console.err(app.port + ' requires elevated privileges');
-                process.exit(1);
-                break;
-            case 'EADDRINUSE':
-                console.err(app.port + ' is already in use');
-                process.exit(1);
-                break;
-            default:
-                throw err;
-        }
-    });
-    server.on('listening', () => console.info('Listening on: ' + app.port));
-    server.listen(app.port);
+  let server = http.createServer(app.callback());
+  server.on('error', err => {
+    debug('Error:', err);
+    if (err.syscall !== 'listen') {
+      throw err;
+    }
+    switch (err.code) {
+      case 'EACCES':
+        console.err(app.port + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.err(app.port + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw err;
+    }
+  });
+  server.on('listening', () => console.info('Listening on: ' + app.port));
+  server.listen(app.port);
 }
 
 export { init };

@@ -12,19 +12,19 @@
  */
 
 require('babel/register')({
-    only: /(server|views)/
+  only: /(server|views)/
 });
 var argv = require('minimist')(process.argv.slice(2));
 var auth = require('../src/server/auth');
 
 function wrap(str) {
-     return '\n' + str + '\n';
+   return '\n' + str + '\n';
 }
 
 auth.createUser(argv.u, argv.p).then(function (info) {
-    process.stdout.write(wrap('User created id: ' + info._id + ' > ' + info.username));
+  process.stdout.write(wrap('User created id: ' + info._id + ' > ' + info.username));
 }).catch(function (err) {
-    process.stderr.write(wrap('Error: ' + err.message));
+  process.stderr.write(wrap('Error: ' + err.message));
 }).finally(function () {
-    process.exit();
+  process.exit();
 }).done();
