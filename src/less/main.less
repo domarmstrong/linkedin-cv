@@ -1,17 +1,28 @@
 @import 'lesshat.less';
 
+@prim-dark: #455A64;
+@prim: #607D8B;
+@prim-light: #CFD8DC;
+@secondary: #727272;
+@divider: #B6B6B6;
+@accent: #FF5722;
+@text: #212121;
+@text-light: #FFF;
+
 // Generic styling
 body {
   //background: #DDD;
   font-size: 13px;
   font-family: 'Roboto', sans-serif;
 }
+h1,h2,h3,h4,h5,h6 {
+  font-weight: 100;
+}
 h1 {
-  font-size: 28px;
-  margin: 0;
+  font-size: 45px;
 }
 h2 {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: normal;
   color: #333;
 }
@@ -23,6 +34,23 @@ a {
   color: #069;
 }
 
+button {
+  background: @accent;
+  border: 0;
+  padding: 8px 16px;
+  color: @text-light;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  .transition(background 0.5s);
+  cursor: pointer;
+  .border-radius(2px);
+
+  &:hover {
+    .background-image(linear-gradient(to bottom, @accent 0%, darken(@accent, 10) 100%));
+  }
+}
+
 // Mixins
 .clearFix {
   &:after {
@@ -31,15 +59,6 @@ a {
     clear: both;
   }
 }
-
-@prim-dark: #455A64;
-@prim: #607D8B;
-@prim-light: #CFD8DC;
-@secondary: #727272;
-@divider: #B6B6B6;
-@accent: #FF5722;
-@text: #212121;
-@text-light: #FFF;
 
 @import 'forms.less';
 @import 'cv.less';
