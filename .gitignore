@@ -1,6 +1,5 @@
 .idea
 node_modules
 build
-test.js
 config.js
 public/profilePics

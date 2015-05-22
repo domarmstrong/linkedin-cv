@@ -67,7 +67,7 @@ gulp.task('run', function () {
   var supervisor = require('gulp-supervisor');
 
   // Start server
-  supervisor('./test', {
+  supervisor('./init', {
     harmony: true,
     args: [],
     watch: [ './src' ],
