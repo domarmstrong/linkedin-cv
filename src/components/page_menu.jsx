@@ -10,15 +10,18 @@ export class PageMenu extends React.Component {
   render () {
     return (
         <div className="page-menu">
-          <a className="menu-heading" href="/">{ this.context.app_name }</a>
+          <div className="wrapper">
+            <a className="menu-heading" href="/">{ this.context.app_name }</a>
 
-          <ul className="menu-list">
-            <MenuItem href="/" icon="icon-profile">Curriculum Vitae</MenuItem>
-            <MenuItem href="/the-code" icon="icon-code">Look inside</MenuItem>
-          </ul>
-          <ul className="menu-footer menu-list">
-            <MenuItem href="/admin" icon="icon-settings">Admin</MenuItem>
-          </ul>
+            <ul className="menu-list">
+              <MenuItem href="/" icon="icon-profile">Curriculum Vitae</MenuItem>
+              <MenuItem href="/the-code" icon="icon-code">Look inside</MenuItem>
+              <MenuItem href="/contact" icon="icon-phone">Contact</MenuItem>
+            </ul>
+            <ul className="menu-footer menu-list">
+              <MenuItem href="/admin" icon="icon-settings">Admin</MenuItem>
+            </ul>
+          </div>
         </div>
     )
   }
