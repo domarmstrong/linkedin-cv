@@ -12,7 +12,7 @@
  */
 
 require('babel/register')({
-  only: /(server|views)/
+  only: /src/
 });
 var argv = require('minimist')(process.argv.slice(2));
 var auth = require('../src/server/auth');
