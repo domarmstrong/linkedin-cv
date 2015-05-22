@@ -11,15 +11,46 @@ import _ from 'underscore';
 import path from 'path';
 import { render } from './renderer';
 import passport from 'koa-passport';
+import code from './code';
 
 // Views
 import { CV } from '../views/cv.jsx';
 import { Login } from '../views/login.jsx';
 import { Admin } from '../views/admin.jsx';
+import { Code } from '../views/code.jsx';
 
 const d = debug('linkedIn-cv:server');
 const publicRoutes = koaRouter();
 const privateRoutes = koaRouter();
+
+publicRoutes
+  .get('/login', function *(next) {
+    this.body = yield render( Login );
+  })
+  .post('/login', function *(next) {
+    var ctx = this;
+    let { username } = this.request.body;
+
+    yield* passport.authenticate('local', function*(err, user, info) {
+      if (err) throw err;
+
+      if (user) {
+        d('Login success: ', username);
+        yield ctx.login(user);
+        ctx.redirect('/admin');
+      } else {
+        d('Login failed: ', username, info.message);
+        ctx.status = 401;
+        let props = { username: username, validation: {login: info.message} };
+        yield render( Login, props ).then(rendered => ctx.body = rendered);
+      }
+    }).call(this, next);
+  });
+
+publicRoutes.get('/logout', function *(next) {
+  this.logout();
+  this.redirect('/');
+});
 
 publicRoutes.get('/', function *(next) {
   // Get profile data and html template in parallel
@@ -27,33 +58,10 @@ publicRoutes.get('/', function *(next) {
     .then(profile => render( CV, profile, { active_route: '/' } ));
 });
 
-publicRoutes.get('/login', function *(next) {
-  this.body = yield render( Login );
-});
-
-publicRoutes.get('/logout', function *(next) {
-  this.logout();
-  this.redirect('/');
-});
-
-publicRoutes.post('/login', function *(next) {
-  var ctx = this;
-  let { username } = this.request.body;
-
-  yield* passport.authenticate('local', function*(err, user, info) {
-    if (err) throw err;
-
-    if (user) {
-      d('Login success: ', username);
-      yield ctx.login(user);
-      ctx.redirect('/admin');
-    } else {
-      d('Login failed: ', username, info.message);
-      ctx.status = 401;
-      let props = { username: username, validation: {login: info.message} };
-      yield render( Login, props ).then(rendered => ctx.body = rendered);
-    }
-  }).call(this, next);
+publicRoutes.get('/the-code', function *(next) {
+  this.body = yield code.renderFile(path.join(__dirname, '../views/code.jsx')).then(highlighted => {
+    return render( Code, { code: highlighted }, { active_route: '/the-code' } );
+  });
 });
 
 privateRoutes.get('/admin', function *(next) {
