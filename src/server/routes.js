@@ -74,7 +74,6 @@ publicRoutes.get('/the-code/:fileId', function *(next) {
 });
 
 privateRoutes.get('/admin', function *(next) {
-  // TODO: admin page
   this.body = yield render( Admin, {}, { active_route: '/admin' } );
 });
 
