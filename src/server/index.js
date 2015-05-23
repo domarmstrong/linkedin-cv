@@ -12,6 +12,9 @@ import passport from 'koa-passport';
 import { passportSerialize, passportDeserialize, passportStrategy } from './auth';
 import { Strategy as LocalStrategy } from 'passport-local';
 import MongoStore from 'koa-generic-session-mongo';
+import gzip from 'koa-gzip';
+import fresh from 'koa-fresh';
+import etag from 'koa-etag';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
@@ -20,6 +23,10 @@ const app = koa();
 app.env = config.env || process.env.NODE_ENV;
 app.name = config.app_name || 'linkedIn-CV';
 app.port = config.app_port || 8080;
+
+app.use(gzip());
+app.use(fresh());
+app.use(etag());
 
 // static. NOTE: in production use NGINX to serve /public so these route is never reached
 app.use(mount('/public', serve(path.join(__dirname, '../../public'))));
