@@ -1,11 +1,8 @@
 {
   "name": "linkedin-cv",
   "version": "1.0.0",
-  "description": "Create your own personal cv page with your linkedin profile data",
+  "description": "My personal cv site with linkedin profile data",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dominataa/linkedin-cv.git"
