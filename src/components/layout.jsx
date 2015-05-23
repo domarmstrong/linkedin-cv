@@ -9,7 +9,7 @@ import { PageMenu } from './page_menu';
 export class Layout extends React.Component {
   render () {
     return (
-      <div className="layout">
+      <div id={ this.props.id } className="layout">
         <PageMenu />
 
         <div className="container">
