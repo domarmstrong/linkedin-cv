@@ -11,13 +11,13 @@ function sha1(str) {
   return crypto.createHash('sha1').update(str).digest('hex');
 }
 
- let auth = {
+let auth = {
   /**
    * Takes plaintext username and password and return the user object
    *
    * @param username
    * @param password
-   * @return (Boolean)
+   * @return {Boolean}
    */
   getUser (username, password) {
     return db.collection('users').findOne({
@@ -32,7 +32,7 @@ function sha1(str) {
    *
    * @param username
    * @param password
-   * @return (Object) the new user record
+   * @return {Object} the new user record
    */
   createUser (username, password) {
     if (! (username || password)) {
