@@ -27,7 +27,8 @@ export default {
       '.git',
       'config.js',
       'build',
-      'node_modules'
+      'node_modules',
+      'public'
     ].map(function (p) { return path.join(projectRoot, p); }),
   },
 
@@ -123,6 +124,33 @@ export default {
   },
 
   /**
+   * Get the filetype based on the files extension
+   * defaults to 'text' if no extension found
+   * @param filepath {String}
+   * @returns {String}
+   */
+  getFileType (filepath) {
+    let extension = /\.\w*$/.exec(filepath);
+    if (! extension) {
+      return 'text';
+    }
+
+    switch (extension[0]) {
+      case '.less':
+        return 'less';
+      case '.json':
+        return 'json';
+      case '.md':
+        return 'markdown';
+      case '.js':
+      case '.jsx':
+        return 'javascript';
+      default:
+        throw new Error('Not implemented');
+    }
+  },
+
+  /**
    * Render the file using highlightjs
    * Example:
    * ```
@@ -137,7 +165,7 @@ export default {
    * Requires extra css file to be included to view
    * see https://highlightjs.org
    *
-   * @param fileUuid {String} see getPublicTree/getPrivateTree
+   * @param fileId {String} see getPublicTree/getPrivateTree
    * @return {Promise.<String>} highlightjs parsed code
    */
   renderFile(fileId) {
@@ -150,9 +178,11 @@ export default {
         err.status = 401;
         throw err;
       }
-      return Qfs.read(tree[fileId].fullpath).then(file => {
+      let filepath = tree[fileId].fullpath;
+      let filetype = this.getFileType(filepath);
+      return Qfs.read(filepath).then(file => {
         // Parse the file and cache the result
-        let parsed = hljs.highlight('javascript', file, true).value;
+        let parsed = hljs.highlight(filetype, file, true).value;
         this.cache[fileId] = parsed;
         return parsed;
       });
