@@ -17,7 +17,7 @@ privateRoutes.use(function *(next) {
   if (this.isAuthenticated()) {
     yield next;
   } else {
-    this.redirect('/login')
+    this.redirect('/login');
   }
 });
 
