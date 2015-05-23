@@ -53,14 +53,49 @@ export default {
   },
 
   /**
-   * Get a file tree that can be used to display the file structure
+   * Keep an internal reference to the files full path hashed against a unique id
+   * Example:
+   * ```
+   * getPrivateTree();
+   * > {
+   *  id { filename: 'a.js', fullpath: '/home/user/project/folder/a.js', relfolderpath: ['folder'] },
+   *  id { filename: 'b.js', fullpath: '/home/user/project/b.js', relfolderpath: [] },
+   * }
+   * ```
+   * @returns {Promise.<Object>}
+   */
+  getPrivateTree () {
+    if (this.cache['__privateTree']) {
+      return Q(this.cache['__privateTree']);
+    }
+
+    let privateTree = {};
+
+    return this.getFileTree().then(paths => {
+      paths.forEach(fullpath => {
+        let relpath = fullpath.replace(projectRoot, '').split('/');
+        let id = relpath.join('-');
+        privateTree[ id ] = {
+          filename: relpath.pop(),
+          fullpath: fullpath,
+          relfolderpath: relpath,
+        };
+      });
+      // Cache the tree. To update restart the server
+      this.cache['__privateTree'] = privateTree;
+      return privateTree;
+    });
+  },
+
+  /**
+   * Get a file tree that can be used to display the file structure to the client
    * Example:
    * ```
    * getPublicTree();
    * > {
-   *   file.js: null,
+   *   file.js: id,
    *   folder: {
-   *     file.js: null,
+   *     file.js: id,
    *     folder: {}
    *   }
    * }
@@ -70,43 +105,21 @@ export default {
   getPublicTree () {
     let tree = {};
 
-    return this.getFileTree().then(paths => {
-      paths.map(path => {
-          // remove the project path so not made public
-          return path.replace(projectRoot, '')
-            .split('/');
-        })
-        // sort so top level files and folders are first
-        .sort((a, b) => a.length > b.length ? 1 : -1)
-        .forEach(path => {
-          let file = path.pop();
-          this._setNested(tree, path, file);
-        });
+    function setNested (path, file, id) {
+      var o = tree;  // a moving reference to internal objects within tree
+      path.forEach(part => {
+        if( !o[part] ) o[part] = {};
+        o = o[part];
+      });
+      o[file] = id;
+    }
+
+    return this.getPrivateTree().then(tree => {
+      Object.keys(tree).forEach(id => {
+        var fileObject = tree[id];
+        setNested(fileObject.relfolderpath, fileObject.filename, id);
+      });
     }).then(() => tree);
-  },
-
-  _setNested (tree, path, file) {
-    var o = tree;  // a moving reference to internal objects within tree
-    path.forEach(part => {
-      if( !o[part] ) o[part] = {};
-      o = o[part];
-    });
-    o[file] = null;
-  },
-
-  /**
-   * Only allow rendering of files that are returned from `getFileTree`
-   * @param filepath
-   * @returns {Promise}
-   * @throws Access denied error
-   */
-  canView (filepath) {
-    return this.getFileTree().then(paths => {
-      if (paths.indexOf(filepath) === -1) {
-        d('Error: access denied for file: ', filepath);
-        throw new Error(401);
-      }
-    });
   },
 
   /**
@@ -124,17 +137,24 @@ export default {
    * Requires extra css file to be included to view
    * see https://highlightjs.org
    *
-   * @param filepath
+   * @param fileUuid {String} see getPublicTree/getPrivateTree
    * @return {Promise.<String>} highlightjs parsed code
    */
-  renderFile(filepath) {
-    console.log(filepath);
-    if (this.cache[filepath]) {
-      return Q(this.cache[filepath]);
+  renderFile(fileId) {
+    if (this.cache[fileId]) {
+      return Q(this.cache[fileId]);
     }
-    return this.canView(filepath).then(() => {
-      return Qfs.read(filepath).then(file => {
-        return hljs.highlight('javascript', file, true).value;
+    return this.getPrivateTree().then(tree => {
+      if (! (fileId in tree)) {
+        let err = new Error('Access denied');
+        err.status = 401;
+        throw err;
+      }
+      return Qfs.read(tree[fileId].fullpath).then(file => {
+        // Parse the file and cache the result
+        let parsed = hljs.highlight('javascript', file, true).value;
+        this.cache[fileId] = parsed;
+        return parsed;
       });
     });
   }

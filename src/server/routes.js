@@ -53,14 +53,23 @@ publicRoutes.get('/logout', function *(next) {
 });
 
 publicRoutes.get('/', function *(next) {
-  // Get profile data and html template in parallel
   this.body = yield linkedIn.getProfile()
     .then(profile => render( CV, profile, { active_route: '/' } ));
 });
 
 publicRoutes.get('/the-code', function *(next) {
-  this.body = yield code.renderFile(path.join(__dirname, '../views/code.jsx')).then(highlighted => {
-    return render( Code, { code: highlighted }, { active_route: '/the-code' } );
+  this.body = yield code.getPublicTree().then(tree => {
+    return render( Code, { fileTree: tree }, { active_route: '/the-code' } );
+  });
+});
+
+publicRoutes.get('/the-code/:fileId', function *(next) {
+  this.body = yield Q.all([
+    code.getPublicTree(),
+    code.renderFile(this.params.fileId)
+  ]).then(data => {
+    let [ tree, file ] = data;
+    return render( Code, { code: file, fileTree: tree }, { active_route: '/the-code' } );
   });
 });
 
