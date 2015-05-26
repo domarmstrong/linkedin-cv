@@ -1,10 +1,11 @@
 #!/usr/bin/env node
+
 "use strict";
 
 /**
  * Author: Dom Armstrong, Date: 21/05/15
  *
- * Annoyingly mongo does not has sha1 build in so we must use a script to create users..
+ * Annoyingly mongo does not have sha1 build in so we must use a script to create users..
  *
  * Usage:
  *

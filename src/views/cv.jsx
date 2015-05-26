@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * Author: Dom Armstrong, Date: 18/05/15
  */
