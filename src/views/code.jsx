@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * Author: Dom Armstrong, Date: 21/05/15
  */
@@ -11,11 +12,13 @@ export class Code extends React.Component {
   render () {
     return (
       <Layout id="code">
-        <h1>The code</h1>
+        <div className="file-browser">
+          <h2>Files</h2>
 
-        <FileTree data={ this.props.fileTree } urlPrefix={ this.context.active_route } />
+          <FileTree data={ this.props.fileTree } urlPrefix={ this.context.active_route } active={ this.props.current_file } />
+        </div>
 
-        <pre>
+        <pre  className="code-view">
           <code className="hljs" dangerouslySetInnerHTML={{__html: this.props.code }} />
         </pre>
       </Layout>
@@ -24,4 +27,9 @@ export class Code extends React.Component {
 }
 Code.contextTypes = {
   active_route: React.PropTypes.string,
+};
+Code.propTypes = {
+  code: React.PropTypes.string,
+  fileTree: React.PropTypes.object,
+  current_file: React.PropTypes.string,
 };
