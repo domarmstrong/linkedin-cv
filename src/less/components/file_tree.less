@@ -1,7 +1,4 @@
 .file-tree {
-  float: left;
-  margin-right: 20px;
-
   ul, li {
     list-style: none;
     margin: 0;
@@ -20,13 +17,19 @@
     cursor: default;
   }
 
+  .file.active a,
+  .file a:hover {
+    background-color: @accent;
+    color: @text-light;
+  }
+
   .file a {
     display: block;
     padding: 1px;
+    .border-radius(3px);
+  }
 
-    &:hover {
-      background-color: @accent;
-      color: @text-light;
-    }
+  .wrapper > .folder {
+    margin-left: 0;
   }
 }
