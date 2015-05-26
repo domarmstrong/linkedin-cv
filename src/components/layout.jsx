@@ -14,9 +14,7 @@ export class Layout extends React.Component {
         <PageMenu />
 
         <div className="container">
-          <div className="wrapper">
-            { this.props.children }
-          </div>
+          { this.props.children }
         </div>
       </div>
     )

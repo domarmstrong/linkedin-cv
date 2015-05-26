@@ -11,15 +11,17 @@ export class Admin extends React.Component {
   render () {
     return (
       <Layout id="admin">
-        <h1>Admin</h1>
+        <div className="single-col">
+          <h1>Admin</h1>
 
-        <form action="/logout" method="GET">
-          <button type="submit">Logout</button>
-        </form>
+          <form action="/logout" method="GET">
+            <button type="submit">Logout</button>
+          </form>
 
-        <form action="/admin/update" method="GET">
-          <button type="submit">Update profile</button>
-        </form>
+          <form action="/admin/update" method="GET">
+            <button type="submit">Update profile</button>
+          </form>
+        </div>
       </Layout>
     )
   }

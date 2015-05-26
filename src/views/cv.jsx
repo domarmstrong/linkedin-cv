@@ -25,8 +25,8 @@ export class CV extends React.Component {
 
     return (
       <Layout id="cv">
-        <div className="cv">
-          <section className="about">
+        <div className="single-col">
+          <section className="cv-section about">
             <div className="profile-pic">
               <img className="profile-img" src={ props.imagePath } />
             </div>
@@ -74,7 +74,7 @@ export class CV extends React.Component {
             </div>
           </section>
 
-          <section className="background">
+          <section className="cv-section background">
             <h1>Background</h1>
 
             <section>
