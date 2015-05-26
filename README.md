@@ -1,9 +1,9 @@
 LinkedIn based CV site
 ======================
 
-The idea behind this project came after updating my LinkedIn profile. I also needed to update my CV at the same time 
-and realized that it was all the same information anyway and why not just share the data. I looked into the LinkedIn 
-APIs and realized that it should be possible.
+The idea behind this project came after updating my LinkedIn profile. I also needed to update 
+my CV at the same time  and realized that it was all the same information anyway and why not 
+just share the data. I looked into the LinkedIn  APIs and realized that it should be possible.
 
 Technology
 ----------
@@ -13,8 +13,8 @@ Technology
 * React > javascript view components/templates
 * Koa > web framework for node js 
 
-Initially this site is completely rendered server side. This allows the site to work without javascript 
-enabled and speeds up initial page loads.
+Initially this site is completely rendered server side. This allows the site to work without 
+javascript  enabled and speeds up initial page loads.
 
 Usage
 -----
