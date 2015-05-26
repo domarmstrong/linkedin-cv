@@ -1,77 +1,24 @@
-'use strict';
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var sourcemaps = require('gulp-sourcemaps');
-
-var PRODUCTION = process.env.NODE_ENV === 'production';
-
-/**
- * The default task that is run with 'gulp'.
+/*
+ gulpfile.js
+ ===========
+ Rather than manage one giant configuration file responsible
+ for creating multiple tasks, tasks are broken out into
+ separate files in src/gulp/tasks. Any files in that directory get
+ automatically required below.
+ To add a new task, simply add a new task file that directory.
+ gulp/tasks/default.js specifies the default set of tasks to run
+ when you run `gulp`.
+ Tasks may be grouped in files by relevance.
+ Any imports are parsed with babel from this point.
  */
-gulp.task('default', ['bundle','vendor','less']);
 
-/**
- * Removed compiled files.
- */
-gulp.task('clean', function () {
-  var clean = require('gulp-clean');
-  gulp.src('./build', { read: false }).pipe(clean());
-  gulp.src('./bundle.js', { read: false }).pipe(clean());
-  gulp.src('./node_modules/install.stamp', { read: false }).pipe(clean());
+var requireDir = require('require-dir');
+
+// Parse further import with babel
+require('babel/register')({
+  only: /src/
 });
 
-/**
- * Remove compiled files and installed node modules.
- */
-gulp.task('veryclean', ['clean'], function () {
-  var clean = require('gulp-clean');
-  return gulp.src('./node_modules', { read: false })
-    .pipe(clean());
-});
+// Require all tasks in gulp/tasks, including subfolders
+requireDir('./src/gulp/tasks', { recurse: true });
 
-/**
- * Compile less to css.
- *
- * Files will be compiled from `src/css` to `build/main.css`.
- */
-gulp.task('less', function () {
-  var less = require('gulp-less');
-  var minifyCSS = require('gulp-minify-css');
-
-  return gulp.src('./src/less/main.less')
-    .pipe(less())
-    .on('error', function (err) {
-      console.error('Less error: ' + err.message);
-      this.emit('end');
-    })
-    .pipe(minifyCSS({
-      keepBreaks: true,
-      keepSpecialComments: 0,
-    }))
-    .on('error', function (err) {
-      console.error('CSS minify error: ' + err.message);
-      this.emit('end');
-    })
-    .pipe(gulp.dest('./build'));
-});
-
-gulp.task('watch-run', ['watch', 'run']);
-
-gulp.task('watch', ['less'], function () {
-  gulp.watch('./src/less/**/*', ['less']);
-});
-
-gulp.task('run', function () {
-  var supervisor = require('gulp-supervisor');
-
-  // Start server
-  supervisor('./init', {
-    harmony: true,
-    args: [],
-    watch: [ './src' ],
-    extensions: [ '.jsx', '.js' ],
-    ignore: [ './build' ]
-  });
-});

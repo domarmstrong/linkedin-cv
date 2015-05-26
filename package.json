@@ -60,6 +60,7 @@
     "react": "^0.13.1",
     "request": "^2.55.0",
     "request-promise": "^0.4.2",
+    "require-dir": "^0.3.0",
     "underscore": "^1.8.3"
   }
 }
