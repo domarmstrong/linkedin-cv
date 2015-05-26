@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * Author: Dom Armstrong, Date: 22/05/15
  */
@@ -8,23 +9,25 @@ import classNames from 'classnames';
 
 export class FileTree extends React.Component {
   render () {
+    let { data, urlPrefix, active } = this.props;
     return (
         <div className="file-tree">
           <ul className="wrapper">
-            <Folder name="Root" content={ this.props.data } urlPrefix={ this.props.urlPrefix } />
+            <Folder name="Root" content={ data } urlPrefix={ urlPrefix } active={ active } />
           </ul>
         </div>
-    )
+    );
   }
 }
 FileTree.propTypes = {
   data: React.PropTypes.object.isRequired,
   urlPrefix: React.PropTypes.string,
+  active: React.PropTypes.string,
 };
 
 class Folder extends React.Component {
   render () {
-    let { name, content, urlPrefix } = this.props;
+    let { name, content, urlPrefix, active } = this.props;
 
     let items = Object.keys(content).map(key => {
       return { name: key, value: content[key] };
@@ -35,9 +38,9 @@ class Folder extends React.Component {
       return a.name > b.name ? 1 : -1
     }).map(item => {
       if (typeof item.value === 'string') {
-        return <File name={ item.name } value={ item.value } urlPrefix={ urlPrefix } />;
+        return <File name={ item.name } value={ item.value } urlPrefix={ urlPrefix } active={ active } />;
       }
-      return <Folder name={ item.name } content={ item.value } urlPrefix={ urlPrefix } />;
+      return <Folder name={ item.name } content={ item.value } urlPrefix={ urlPrefix } active={ active } />;
     });
 
     return (
@@ -54,16 +57,22 @@ Folder.propTypes = {
   name: React.PropTypes.string.isRequired,
   content: React.PropTypes.object.isRequired,
   urlPrefix: React.PropTypes.string,
+  active: React.PropTypes.string,
 };
 
 class File extends React.Component {
   render () {
-    let href = this.props.urlPrefix + '/' + this.props.value;
+    let { name, value, urlPrefix, active } = this.props;
+    let href = urlPrefix + '/' + value;
+    let classes = classNames({
+      'file': true,
+      'active': active === value,
+    });
 
     return (
-      <li className="file">
+      <li className={ classes }>
         <a href={ href }>
-          <i className="icon-file" />{ this.props.name }
+          <i className="icon-file" />{ name }
         </a>
       </li>
     );
@@ -73,4 +82,5 @@ File.propTypes = {
   name: React.PropTypes.string.isRequired,
   value: React.PropTypes.string,
   urlPrefix: React.PropTypes.string,
+  active: React.PropTypes.string,
 };

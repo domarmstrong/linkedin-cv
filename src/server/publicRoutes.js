@@ -62,12 +62,13 @@ publicRoutes.get('/the-code', function *(next) {
 });
 
 publicRoutes.get('/the-code/:fileId', function *(next) {
+  let fileId = this.params.fileId;
   this.body = yield Q.all([
     code.getPublicTree(),
-    code.renderFile(this.params.fileId)
+    code.renderFile(fileId)
   ]).then(data => {
     let [ tree, file ] = data;
-    return render( Code, { code: file, fileTree: tree }, { active_route: '/the-code' } );
+    return render( Code, { code: file, fileTree: tree, current_file: fileId }, { active_route: '/the-code' } );
   });
 });
 
