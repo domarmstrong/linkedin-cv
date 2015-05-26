@@ -56,9 +56,8 @@ publicRoutes.get('/', function *(next) {
 });
 
 publicRoutes.get('/the-code', function *(next) {
-  this.body = yield code.getPublicTree().then(tree => {
-    return render( Code, { fileTree: tree }, { active_route: '/the-code' } );
-  });
+  // TODO: Add overview page
+  this.redirect('/the-code/README.md');
 });
 
 publicRoutes.get('/the-code/:fileId', function *(next) {
