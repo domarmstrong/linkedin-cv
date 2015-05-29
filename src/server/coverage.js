@@ -62,6 +62,12 @@ function setUpRequireHook () {
   return Q();
 }
 
+/**
+ * Convert files with Babel to allow istanbul to understand them then instrument with istanbul
+ * write source maps to the source map dir so the coverage can be translated to the originals later
+ * @param sources glob/array for gulp.src
+ * @returns {Function,Promise}
+ */
 function instrumentSources (sources) {
   let instrumenter = new istanbul.Instrumenter({ coverageVariable: config.coverage.coverageVariable });
   let { mapDir } = config.coverage;
@@ -94,7 +100,7 @@ function instrumentSources (sources) {
 }
 
 /**
- *
+ * Clear requires cache and require all source files to ensure they are analyzed by istanbul
  * @param sources source file globs for gulp.src
  * @returns {Function,[Promise]}
  */
