@@ -14,9 +14,9 @@ import { render } from './renderer';
 import code from './code';
 
 // Views
-import { CV } from '../views/cv.jsx';
-import { Login } from '../views/login.jsx';
-import { Code } from '../views/code.jsx';
+import { CV } from '../views/cv';
+import { Login } from '../views/login';
+import { Code } from '../views/code';
 
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');

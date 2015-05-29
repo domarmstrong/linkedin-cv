@@ -143,7 +143,6 @@ export default {
       case '.md':
         return 'markdown';
       case '.js':
-      case '.jsx':
         return 'javascript';
       default:
         throw new Error('Not implemented');
