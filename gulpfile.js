@@ -16,7 +16,7 @@ var requireDir = require('require-dir');
 
 // Parse further import with babel
 require('babel/register')({
-  only: /src/
+  only: /(src|test)/
 });
 
 // Require all tasks in gulp/tasks, including subfolders
