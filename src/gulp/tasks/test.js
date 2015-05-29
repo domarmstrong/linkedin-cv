@@ -15,6 +15,6 @@ import path from 'path';
 
 gulp.task('test', function () {
   let argv = minimist(process.argv.slice(2));
-  let src = argv.f || argv.file || path.join(config.test.src);
-  return gulp.src(src, { read: false }).pipe(mocha());
+  let src = argv.f || argv.file || config.test.src;
+  return gulp.src(src, { read: false }).pipe(mocha(config.test.mochaOpts));
 });

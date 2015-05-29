@@ -1,5 +1,5 @@
 .idea
 node_modules
 build
-config.js
+/config.js
 public/profilePics
