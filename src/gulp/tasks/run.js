@@ -12,7 +12,7 @@ import gulp from 'gulp';
 import supervisor from 'gulp-supervisor';
 import config from '../config';
 
-gulp.task('run', function () {
+gulp.task('run', ['less'], function () {
   // Start server
   supervisor(config.run.entry, {
     harmony: true, // Enable harmony with generator support for Koa
