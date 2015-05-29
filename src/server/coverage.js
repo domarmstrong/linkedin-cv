@@ -52,7 +52,7 @@ export default function createCoverage () {
 function setUpRequireHook () {
   istanbul.hook.hookRequire(
     // Should the require call be transformed?
-      file => file in instrumentedCode,
+    file => file in instrumentedCode,
     // Return the transformed code
     (code, file) => instrumentedCode[file],
     // Options
