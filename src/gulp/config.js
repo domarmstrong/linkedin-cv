@@ -1,14 +1,11 @@
-const src = './src';
-const dest = './build';
-
 export default {
   less: {
-    entry: `${ src }/less/main.less`,
-    dest: dest,
+    entry: `./src/less/main.less`,
+    dest: './build',
   },
   run: {
     entry: './init.js',
-    watch: [ src ],
+    watch: [ './src' ],
     extensions: [ '.js' ],
   },
   test: {
