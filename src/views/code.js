@@ -8,7 +8,7 @@ import React from 'react';
 import { Layout } from '../components/layout';
 import { FileTree } from '../components/file_tree';
 
-export class Code extends React.Component {
+export default class Code extends React.Component {
   render () {
     return (
       <Layout id="code">

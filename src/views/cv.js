@@ -19,7 +19,7 @@ function formatParas(str) {
     .map((para, i) => <p key={ i }>{ para }</p>);
 }
 
-export class CV extends React.Component {
+export default class CV extends React.Component {
   render () {
     let { props } = this;
 

@@ -7,7 +7,7 @@
 import React from 'react';
 import { Layout } from '../components/layout';
 
-export class Page404 extends React.Component {
+export default class Page404 extends React.Component {
   render () {
     return (
       <Layout id="Page404" className="error-page">

@@ -7,7 +7,7 @@
 import React from 'react';
 import { Layout } from '../components/layout';
 
-export class PageError extends React.Component {
+export default class PageError extends React.Component {
   render () {
     let support = 'dom@dom-armstrong.co.uk';
 

@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-export class Login extends React.Component {
+export default class Login extends React.Component {
   render () {
     let { username, validation } = this.props;
 

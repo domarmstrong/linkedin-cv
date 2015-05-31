@@ -9,7 +9,7 @@ import linkedIn from './linkedIn';
 import { render } from './renderer';
 
 // Views
-import { Admin } from '../views/admin';
+import Admin from '../views/admin';
 
 const privateRoutes = koaRouter();
 

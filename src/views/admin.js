@@ -7,7 +7,7 @@
 import React from 'react';
 import { Layout } from '../components/layout';
 
-export class Admin extends React.Component {
+export default class Admin extends React.Component {
   render () {
     return (
       <Layout id="admin">
