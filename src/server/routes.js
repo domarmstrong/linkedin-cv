@@ -5,8 +5,8 @@ import publicRoutes from './publicRoutes';
 import { render } from './renderer';
 
 // Views
-import { Page404 } from '../views/404';
-import { PageError } from '../views/error';
+import Page404 from '../views/404';
+import PageError from '../views/error';
 
 /**
  * Add routing
