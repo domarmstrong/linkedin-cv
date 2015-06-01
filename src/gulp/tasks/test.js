@@ -8,13 +8,12 @@
  */
 
 import gulp from 'gulp';
-import config from '../config';
-import mocha from 'gulp-mocha';
 import minimist from 'minimist';
-import path from 'path';
+import test from '../../server/test';
 
 gulp.task('test', function () {
   let argv = minimist(process.argv.slice(2));
-  let src = argv.f || argv.file || config.test.src;
-  return gulp.src(src, { read: false }).pipe(mocha(config.test.mochaOpts));
+  let pipe = test.run(null, argv.f || argv.file);
+  pipe.pipe(process.stdout);
+  return pipe;
 });

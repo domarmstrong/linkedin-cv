@@ -66,6 +66,7 @@
     "request": "^2.55.0",
     "request-promise": "^0.4.2",
     "require-dir": "^0.3.0",
+    "through2": "^1.1.1",
     "underscore": "^1.8.3"
   }
 }

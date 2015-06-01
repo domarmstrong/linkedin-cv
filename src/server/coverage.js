@@ -27,6 +27,7 @@ import istanbulSourceMap from 'istanbul-coverage-source-map';
 import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
 import Q from 'q';
+import test from './test';
 
 
 // Holds transformed and instrumented code against absolute file paths
@@ -35,7 +36,6 @@ let instrumentedCode = {};
 // Map source files to their map files
 // eg. { '/home/foo/bar/file.js': './maps/file.js.map' }
 let sourceMaps = {};
-
 
 /**
  * Generate coverage reports
@@ -53,7 +53,7 @@ export default function createCoverage () {
   return setUpRequireHook()
     .then(instrumentSources(sources))
     .then(forceRequireSources(sources))
-    .then(runAllTests)
+    .then(test.runAll)
     .then(createCoverageReport);
 }
 
@@ -127,17 +127,6 @@ function forceRequireSources (sources) {
         .pipe(tap(f => require(f.path)))
     );
   }
-}
-
-/**
- * Run all tests with mocha
- * @returns {Promise}
- */
-function runAllTests() {
-  return promisePipe(
-    gulp.src(config.test.src, { read: false })
-      .pipe( mocha(config.test.mochaOpts) )
-  );
 }
 
 /**

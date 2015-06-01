@@ -12,6 +12,7 @@ import Q from 'q';
 import debug from 'debug';
 import { render } from './renderer';
 import code from './code';
+import test from './test';
 
 // Views
 import CV from '../views/cv';
@@ -19,6 +20,7 @@ import Login from '../views/login';
 import Code from '../views/code';
 import LookInside from '../views/look_inside';
 import Tests from '../views/tests';
+import TestCoverage from '../views/test_coverage';
 
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
@@ -58,11 +60,21 @@ publicRoutes.get('/', function *(next) {
 });
 
 publicRoutes.get('/the-code', function *(next) {
-  // TODO: Add overview page
-  this.redirect('/the-code/README.md');
+  this.body = yield render( LookInside, {}, { active_route: '/the-code' });
+});
+
+publicRoutes.get('/the-code/tests', function *(next) {
+  this.body = yield test.jsonReport().then(data => {
+    return data;//render( Tests, { data: data }, { active_route: '/the-code' })
+  });
+});
+
+publicRoutes.get('/the-code/test-coverage', function *(next) {
+  this.body = yield render( TestCoverage, {}, { active_route: '/the-code' });
 });
 
 publicRoutes.get('/the-code/:fileId', function *(next) {
+  console.log('+++++ run');
   let fileId = this.params.fileId;
   this.body = yield Q.all([
     code.getPublicTree(),

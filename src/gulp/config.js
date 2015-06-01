@@ -5,14 +5,15 @@ export default {
   },
   run: {
     entry: './init.js',
-    watch: [ './src' ],
+    watch: [ './src', './test' ],
     extensions: [ '.js' ],
   },
   test: {
     src: ['./test/**/*.js'],
     require: ['__setup.js'],
     mochaOpts: {
-      reporter: 'spec'
+      ui: 'bdd',
+      reporter: 'spec',
     }
   },
   coverage: {
