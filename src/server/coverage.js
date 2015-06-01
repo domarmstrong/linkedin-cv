@@ -2,6 +2,19 @@
  * Generate code coverage using istanbul/babel/mocha
  *
  * See gulp coverage > src/gulp/tasks/coverage
+ *
+ * config options:
+ *
+ * coverage: {
+ *  cover: {Array} run coverage for these files. glob of files for gulp.src eg. "src/*.js"
+ *  ignore: {Array} ignore these files / globs
+ *  coverageVariable: {String} constant that istanbul will define a global variable with the output
+ *  mapDir: {String} location to generate map files
+ *  htmlReport: { The html report will always be generated
+ *    dest: {String} location to generate report
+ *  }
+ *  reports: {Array} Other reports to generate eg. ['text', 'text-summary']
+ * }
  */
 
 import gulp from 'gulp';
