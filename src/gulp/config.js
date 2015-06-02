@@ -10,7 +10,7 @@ export default {
   },
   test: {
     src: ['./test/**/*.js'],
-    require: ['__setup.js'],
+    require: [],
     mochaOpts: {
       ui: 'bdd',
       reporter: 'spec',
