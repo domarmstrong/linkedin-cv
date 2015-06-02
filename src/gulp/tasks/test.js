@@ -17,3 +17,10 @@ gulp.task('test', function () {
   pipe.pipe(process.stdout);
   return pipe;
 });
+
+gulp.task('test-json', function () {
+  let argv = minimist(process.argv.slice(2));
+  let pipe = test.run('json-stream', argv.f || argv.file);
+  pipe.pipe(process.stdout);
+  return pipe;
+});
