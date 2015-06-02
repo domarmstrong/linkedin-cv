@@ -38,7 +38,6 @@ app.keys = [ config.app_secret ];
 app.use(session({
   store: new MongoStore({
     url: config.mongodb.connectionString,
-    db: config.mongodb.dbName,
     collection: 'sessions',
   })
 }));

@@ -37,8 +37,7 @@ module.exports = {
     "redirectUrl": "http://127.0.0.1:8080/auth/linkedin/redirect"
   },
   "mongodb": {
-    "connectionString": "mongodb://127.0.0.1:27017",
-    "dbName": "linkedin-cv"
+    "connectionString": "mongodb://127.0.0.1:27017/linkedin-cv"
   }
 };
 ```
