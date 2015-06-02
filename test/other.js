@@ -9,8 +9,7 @@ describe('test', () => {
   it('should not', () => {
     throw new Error('nope');
   });
-  it('should async', done => {
-    setTimeout(done, 1500);
+  it.skip('should async', done => {
+    setTimeout(done, 12);
   });
-  it('should timeout', done => { });
 });
