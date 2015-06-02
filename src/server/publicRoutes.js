@@ -64,8 +64,8 @@ publicRoutes.get('/the-code', function *(next) {
 });
 
 publicRoutes.get('/the-code/tests', function *(next) {
-  this.body = yield test.jsonReport().then(data => {
-    return data;//render( Tests, { data: data }, { active_route: '/the-code' })
+  this.body = yield test.getLastResult().then(data => {
+    return render( Tests, { data: data.streamData }, { active_route: '/the-code' })
   });
 });
 
@@ -74,7 +74,6 @@ publicRoutes.get('/the-code/test-coverage', function *(next) {
 });
 
 publicRoutes.get('/the-code/:fileId', function *(next) {
-  console.log('+++++ run');
   let fileId = this.params.fileId;
   this.body = yield Q.all([
     code.getPublicTree(),

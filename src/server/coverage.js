@@ -53,7 +53,7 @@ export default function createCoverage () {
   return setUpRequireHook()
     .then(instrumentSources(sources))
     .then(forceRequireSources(sources))
-    .then(test.runAll)
+    .then(test.runPromise)
     .then(createCoverageReport);
 }
 
