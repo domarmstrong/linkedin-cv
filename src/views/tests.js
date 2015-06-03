@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import { Layout } from '../components/layout';
 import classNames from 'classnames';
 
 
@@ -14,14 +13,14 @@ export default class Tests extends React.Component {
   constructor () {
     super();
 
-    this.isLiveComponent = false;
     this.state = {
       liveResult: null,
+      isMounted: false,
     };
   }
 
   componentDidMount () {
-    this.isLiveComponent = true;
+    this.setState({ isMounted: true });
   }
 
   handleRunTests () {
@@ -89,17 +88,15 @@ export default class Tests extends React.Component {
 
   render () {
     return (
-      <Layout id="tests">
-        <div className="single-col">
-          <h1>Tests</h1>
+      <div id="tests" className="single-col">
+        <h1>Tests</h1>
 
-          { this.isLiveComponent && <button onClick={ this.handleRunTests }>Run tests</button> }
+        { this.state.isMounted && <button onClick={ this.handleRunTests }>Run tests</button> }
 
-          <ul className="tests">
-            { this.renderResults() }
-          </ul>
-        </div>
-      </Layout>
+        <ul className="tests">
+          { this.renderResults() }
+        </ul>
+      </div>
     )
   }
 }
