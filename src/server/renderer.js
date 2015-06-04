@@ -1,6 +1,6 @@
 "use strict";
 
-import Q from 'q';
+import Pomise from 'bluebird';
 import Qfs from 'q-io/fs';
 import React from 'react';
 import _ from 'underscore';
@@ -17,7 +17,7 @@ let htmlTemplate = '';
 function getHtmlTemplate() {
   // Return cached version
   if (htmlTemplate) {
-    return Q(htmlTemplate);
+    return Promise.resolve(htmlTemplate);
   }
 
   return Qfs.read(path.join(__dirname, '../../', '/public/index.html')).then(html => {

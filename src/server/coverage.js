@@ -26,7 +26,7 @@ import istanbul from 'istanbul';
 import istanbulSourceMap from 'istanbul-coverage-source-map';
 import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
-import Q from 'q';
+import Promise from 'bluebird';
 import test from './test';
 
 
@@ -72,7 +72,7 @@ function setUpRequireHook () {
     {}
   );
   // Return promise to allow chain, because it reads better ;)
-  return Q();
+  return Promise.resolve();
 }
 
 /**
@@ -136,18 +136,18 @@ function forceRequireSources (sources) {
 function createCoverageReport () {
   let collector = new istanbul.Collector();
   let reporter = new istanbul.Reporter(null, config.coverage.reportDir);
-  let deferred = Q.defer();
 
-  // Get the coverage data from the global var that istanbul creates
-  let coverageData = global[config.coverage.coverageVariable];
-  if (! coverageData) {
-    throw new Error('Cannot find coverage data for coverageVariable: ' + config.coverage.coverageVariable);
-  }
-  // Use sourcemaps to correct the output lines for coverage report
-  let coverage = istanbulSourceMap(coverageData, { sourceMaps: sourceMaps });
-  collector.add(JSON.parse(coverage));
+  return new Promise(resolve => {
+    // Get the coverage data from the global var that istanbul creates
+    let coverageData = global[config.coverage.coverageVariable];
+    if (! coverageData) {
+        throw new Error('Cannot find coverage data for coverageVariable: ' + config.coverage.coverageVariable);
+    }
+    // Use sourcemaps to correct the output lines for coverage report
+    let coverage = istanbulSourceMap(coverageData, { sourceMaps: sourceMaps });
+    collector.add(JSON.parse(coverage));
 
-  reporter.addAll(config.coverage.reports);
-  reporter.write(collector, true, deferred.resolve);
-  return deferred.promise;
+    reporter.addAll(config.coverage.reports);
+    reporter.write(collector, true, done => resolve());
+  });
 }

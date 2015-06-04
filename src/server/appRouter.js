@@ -27,7 +27,7 @@
 import Router from 'react-router';
 import routes from '../app-routes';
 import { render } from './renderer';
-import Q from 'q';
+import Pomise from 'bluebird';
 import config from '../../config';
 import _ from 'underscore';
 
@@ -38,9 +38,9 @@ export default {
 
       // Start the router but return a promise
       function routerAsPromised () {
-        let deferred = Q.defer();
-        router.run((Handler, state) => deferred.resolve([ Handler, state ]));
-        return deferred.promise;
+        return new Promise(resolve => {
+            router.run((Handler, state) => resolve([ Handler, state ]));
+        });
       }
 
       this.body = yield routerAsPromised().then(([ Handler, state ]) => {
@@ -62,10 +62,10 @@ export default {
             context.routeData[key] = data[key];
           });
         }
-        return Q.all(
+        return Promise.all(
           state.routes
             .filter(route => route.handler.fetchData)
-            .map(route => Q(route.handler.fetchData(state))
+            .map(route => Pomise.resolve(route.handler.fetchData(state))
                 .then(d => extendContext(d))
                 .catch(err => console.error('ERROR: blah')) // TODO error logging
             )

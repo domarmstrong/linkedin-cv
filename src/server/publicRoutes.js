@@ -8,7 +8,6 @@ import koaRouter from 'koa-router';
 import passport from 'koa-passport';
 import queryString from 'query-string';
 import linkedIn from './linkedIn';
-import Q from 'q';
 import debug from 'debug';
 import { render } from './renderer';
 import code from './code';

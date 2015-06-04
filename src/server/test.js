@@ -5,7 +5,6 @@ import gulp from 'gulp';
 import config from '../gulp/config';
 import path from 'path';
 import promisePipe from 'promisepipe';
-import Q from 'q';
 import tap from 'gulp-tap';
 import { spawn } from 'child_process';
 import stream from 'stream';
