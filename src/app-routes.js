@@ -27,9 +27,9 @@ export default (
     <DefaultRoute name="cv" handler={ CV } />
     <Route name="the-code">
       <DefaultRoute name="look-inside" handler={ LookInside } />
-      <Route name="code" handler={ Code } />
       <Route name="tests" handler={ Tests } />
       <Route name="test-coverage" handler={ TestCoverage } />
+      <Route name="code" path=":file" handler={ Code } />
     </Route>
     <Route name="login" handler={ Login } />
     <Route name="admin" handler={ Admin } />

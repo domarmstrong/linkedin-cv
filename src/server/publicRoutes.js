@@ -45,15 +45,15 @@ publicRoutes.get('/api/profile', function *() {
   this.body = yield linkedIn.getProfile();
 });
 
-/*publicRoutes.get('/', function *(next) {
-  this.body = yield linkedIn.getProfile()
-    .then(profile => render( CV, profile, { active_route: '/' } ));
+publicRoutes.get('/api/code/:fileId', function *(next) {
+  this.body = yield code.renderFile(this.params.fileId);
 });
 
-publicRoutes.get('/the-code', function *(next) {
-  this.body = yield render( LookInside, {}, { active_route: '/the-code' });
+publicRoutes.get('/api/code-tree', function *() {
+  this.body = yield code.getPublicTree();
 });
 
+/*
 publicRoutes.get('/the-code/tests', function *(next) {
   this.body = yield test.getLastResult().then(data => {
     return render( Tests, { data: data.streamData }, { active_route: '/the-code' })
@@ -62,17 +62,6 @@ publicRoutes.get('/the-code/tests', function *(next) {
 
 publicRoutes.get('/the-code/test-coverage', function *(next) {
   this.body = yield render( TestCoverage, {}, { active_route: '/the-code' });
-});
-
-publicRoutes.get('/the-code/:fileId', function *(next) {
-  let fileId = this.params.fileId;
-  this.body = yield Q.all([
-    code.getPublicTree(),
-    code.renderFile(fileId)
-  ]).then(data => {
-    let [ tree, file ] = data;
-    return render( Code, { code: file, fileTree: tree, current_file: fileId }, { active_route: '/the-code' } );
-  });
 });
 
 /**
