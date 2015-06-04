@@ -13,6 +13,9 @@ import supervisor from 'gulp-supervisor';
 import config from '../config';
 
 gulp.task('run', ['less'], function () {
+
+  process.env.DEBUG='linkedIn-cv:*';
+
   // Start server
   supervisor(config.run.entry, {
     harmony: true, // Enable harmony with generator support for Koa
