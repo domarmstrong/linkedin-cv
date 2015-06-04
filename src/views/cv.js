@@ -22,7 +22,7 @@ function formatParas(str) {
 export default class CV extends React.Component {
 
   static fetchData () {
-    return request.get('/api/profile').then(profile => ({ cvProfile: profile }));
+    return request.get('/api/profile', { json: true }).then(profile => ({ cvProfile: profile }));
   }
 
   render () {

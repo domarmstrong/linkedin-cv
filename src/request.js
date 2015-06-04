@@ -3,47 +3,36 @@
 /**
  * Author: Dom Armstrong, Date: 03/06/15
  *
- * A wrapper around superagent-promise that rewrites urls to absolute paths
+ * A wrapper around request-promise that rewrites urls to absolute paths
  * for the server which cannot operate with relative paths
- * it also calls end and return res.body
- *
- * Note: methods must be used as request.method('url') request('method', 'url') is not supported
- *
- * @example
- * ```
- * // before
- * request.get('localhost:8080/api/data').end().then(res => res.body);
- * // after
- * request.get('/api/data');
- * ```
  */
 
-import superagentPromise from 'superagent-promise';
-import Q from 'q';
-import superagent from 'superagent';
+import request from 'request-promise';
 
 // TODO MAKE SURE config is not included in client bundle
 import config from '../config';
 
-let request = superagentPromise(superagent, Q.Promise);
-
-function wrap (fn) {
-  return function (...args) {
-    return fn.apply(request, args)
-      .use(function (req) {
-        if (process.browser) return req;
-        // TODO make more robust pattern match?
-        if (req.url[0] === '/') {
-          req.url = 'localhost:' + config.app_port + req.url;
-        }
-      })
-      .end()
-      .then(res => res.body);
+function relToAbsoluteUrl(url) {
+  // relative paths are correct for the browser
+  // TODO make more robust pattern match?
+  if (!process.browser && url[0] === '/') {
+    return 'http://localhost:' + config.app_port + url;
   }
+  return url;
 }
 
-let superDooperAgent = {};
+function wrapped (url, ...args) {
+  return request(relToAbsoluteUrl(url), ...args);
+}
 
-Object.keys(request).forEach(key => superDooperAgent[key] = wrap(request[key]));
+Object.keys(request).forEach(key => {
+  if (['get', 'head', 'post', 'put', 'patch', 'del'].indexOf(key) !== -1) {
+    wrapped[key] = function (url, ...args) {
+      return request[key](relToAbsoluteUrl(url), ...args);
+    }
+  } else {
+    wrapped[key] = request[key]
+  }
+});
 
-export default superDooperAgent;
+export default wrapped;
