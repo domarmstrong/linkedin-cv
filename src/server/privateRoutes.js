@@ -31,7 +31,7 @@ privateRoutes.get('/admin/update', function *(next) {
   yield linkedIn.updateProfile(this).then(record => {
     return this.body = JSON.stringify(record);
   }).catch(err => {
-    if (err.message === linkedIn.AUTH_REQUIRED) {
+    if (err.message === linkedIn.AUTH_REQUIRED || err.status === 401) {
       // No auth found in database, redirect to linkedIn oauth
       linkedIn.requestUserAuth(this);
     } else {
