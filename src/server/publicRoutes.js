@@ -80,6 +80,7 @@ publicRoutes.get('/the-code/:fileId', function *(next) {
  */
 publicRoutes.get('/auth/linkedin/redirect', function *(next) {
   let params = queryString.parse(this.req._parsedUrl.query);
+  debug('LinkedIn auth response', params);
   yield linkedIn.handleAuthResponse(this, params);
 });
 

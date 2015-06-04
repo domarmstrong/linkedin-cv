@@ -20,6 +20,8 @@ const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
 const app = koa();
 
+d('Debug is active');
+
 app.env = config.env || process.env.NODE_ENV;
 app.name = config.app_name || 'linkedIn-CV';
 app.port = config.app_port || 8080;
