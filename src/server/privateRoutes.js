@@ -21,9 +21,11 @@ privateRoutes.use(function *(next) {
   }
 });
 
+/*
 privateRoutes.get('/admin', function *(next) {
   this.body = yield render( Admin, {}, { active_route: '/admin' } );
 });
+*/
 
 privateRoutes.get('/admin/update', function *(next) {
   yield linkedIn.updateProfile(this).then(record => {

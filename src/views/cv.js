@@ -25,30 +25,6 @@ export default class CV extends React.Component {
     return request.get('/api/profile').then(profile => ({ cvProfile: profile }));
   }
 
-  getDefaults () {
-    /*
-    CV.propTypes = {
-      imagePath: React.PropTypes.string.isRequired,
-      firstName: React.PropTypes.string.isRequired,
-      lastName: React.PropTypes.string.isRequired,
-      headline: React.PropTypes.string,
-      location: React.PropTypes.string,
-      industry: React.PropTypes.string,
-      email: React.PropTypes.string,
-      phone: React.PropTypes.string,
-      summary: React.PropTypes.string,
-      specialities: React.PropTypes.string,
-      skills: React.PropTypes.array,
-      positions: React.PropTypes.array,
-      educations: React.PropTypes.array,
-    };
-    CV.defaultProps = {
-      phone: '0123 456789',
-      email: 'user@test.com',
-    };
-    */
-  }
-
   render () {
     let profile = this.context.routeData.cvProfile;
 

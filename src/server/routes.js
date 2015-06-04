@@ -2,6 +2,7 @@
 
 import privateRoutes from './privateRoutes';
 import publicRoutes from './publicRoutes';
+import appRouter from './appRouter';
 import { render } from './renderer';
 
 // Views
@@ -36,4 +37,7 @@ export default function (app) {
 
   // Private routes
   app.use(privateRoutes.middleware());
+
+  // React application router
+  app.use(appRouter.middleware());
 };

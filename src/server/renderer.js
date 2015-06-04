@@ -34,16 +34,6 @@ function getHtmlTemplate() {
 }
 
 /**
- * Get context extended with global context that all components can access
- * @return (Object)
- */
-function getContext(context) {
-  return util._extend({
-    app_name: config.app_name,
-  }, context);
-}
-
-/**
  * Render component into the html template
  * @param Component : React component
  * @param props {Object}
@@ -53,7 +43,7 @@ function getContext(context) {
 export function render(Component, props={}, context={}) {
   return getHtmlTemplate().then(template => {
     return template( React.renderToString(
-      <Container component={ Component } props={ props } context={ getContext(context) } />
+      <Container component={ Component } props={ props } context={ context } />
     ) );
   });
 }
@@ -70,6 +60,5 @@ class Container extends React.Component {
   }
 }
 Container.childContextTypes = {
-  app_name: React.PropTypes.string.isRequired,
-  active_route: React.PropTypes.string.isRequired,
+  routeData: React.PropTypes.object,
 };

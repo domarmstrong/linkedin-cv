@@ -14,22 +14,10 @@ import { render } from './renderer';
 import code from './code';
 import test from './test';
 
-// Views
-import CV from '../views/cv';
-import Login from '../views/login';
-import Code from '../views/code';
-import LookInside from '../views/look_inside';
-import Tests from '../views/tests';
-import TestCoverage from '../views/test_coverage';
-
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
 
-publicRoutes
-  .get('/login', function *(next) {
-    this.body = yield render( Login );
-  })
-  .post('/login', function *(next) {
+publicRoutes.post('/login', function *(next) {
     var ctx = this;
     let { username } = this.request.body;
 
@@ -54,7 +42,11 @@ publicRoutes.get('/logout', function *(next) {
   this.redirect('/');
 });
 
-publicRoutes.get('/', function *(next) {
+publicRoutes.get('/api/profile', function *() {
+  this.body = yield linkedIn.getProfile();
+});
+
+/*publicRoutes.get('/', function *(next) {
   this.body = yield linkedIn.getProfile()
     .then(profile => render( CV, profile, { active_route: '/' } ));
 });
