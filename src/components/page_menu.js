@@ -36,11 +36,27 @@ PageMenu.propTypes = {
 };
 
 class MenuItem extends React.Component {
+  /**
+   * Is this the active route
+   * @returns {boolean}
+   */
+  isActive () {
+    let { href, active_route } = this.props;
+
+    if (href === '/') {
+      // special case or it will match everything
+      return active_route === '/';
+    } else {
+      // any route that starts with this href will be matched
+      return new RegExp('^' + href).test(active_route);
+    }
+  }
+
   render () {
-    let { href, icon, active_route } = this.props;
+    let { href, icon } = this.props;
 
     return (
-      <li className={ classNames('menu-item', { 'active': active_route === href }) }>
+      <li className={ classNames('menu-item', { 'active': this.isActive() }) }>
         <a href={ href }>
           <i className={ icon } />{ this.props.children }
         </a>
