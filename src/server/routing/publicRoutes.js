@@ -16,25 +16,27 @@ import test from '../test';
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
 
+let defaultLoginPath = '/admin';
 publicRoutes.post('/login', function *(next) {
-    var ctx = this;
-    let { username } = this.request.body;
+  var ctx = this;
+  let { username } = this.request.body;
+  let query = queryString.parse(this.req.url.split('?')[1]);
 
-    yield* passport.authenticate('local', function*(err, user, info) {
-      if (err) throw err;
+  yield* passport.authenticate('local', function*(err, user, info) {
+    if (err) throw err;
 
-      if (user) {
-        d('Login success: ', username);
-        yield ctx.login(user);
-        ctx.redirect('/admin');
-      } else {
-        d('Login failed: ', username, info.message);
-        ctx.status = 401;
-        let props = { username: username, validation: {login: info.message} };
-        yield render( Login, props ).then(rendered => ctx.body = rendered);
-      }
-    }).call(this, next);
-  });
+    if (user) {
+      d('Login success: ', username);
+      yield ctx.login(user);
+      ctx.redirect(query.next || defaultLoginPath);
+    } else {
+      d('Login failed: ', username, info.message);
+      ctx.status = 401;
+      let props = { username: username, validation: {login: info.message} };
+      yield render( Login, props ).then(rendered => ctx.body = rendered);
+    }
+  }).call(this, next);
+});
 
 publicRoutes.get('/logout', function *(next) {
   this.logout();

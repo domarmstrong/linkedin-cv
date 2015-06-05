@@ -13,11 +13,11 @@ import request from '../request';
  * the login page will get a query of `?then=/where-i-wanted-to-go`
  */
 class Component extends React.Component {
-  static willTransitionTo(transition, params, query, router) {
-    console.log('transistion', transition, params, query);
+  static willTransitionTo(transition, params, query, done) {
     if (! transition.context.auth.isAuthenticated()) {
       transition.redirect('/login', {}, { then : transition.path });
     }
+    done();
   }
 }
 

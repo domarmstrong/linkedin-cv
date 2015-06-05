@@ -5,8 +5,7 @@
  */
 
 import Router from 'react-router';
-import routes from '../../app-routes';
-import { render } from '../renderer';
+import routes from '../app-routes';
 
 export default {
 
