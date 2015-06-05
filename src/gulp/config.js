@@ -1,3 +1,14 @@
+var libs = [
+  //'jquery',
+  'bluebird',
+  'classnames',
+  'react',
+  'react-router',
+  'request-promise',
+];
+
+const cwd = process.cwd();
+
 export default {
   less: {
     entry: `./src/less/main.less`,
@@ -7,6 +18,31 @@ export default {
     entry: './init.js',
     watch: [ './src', './test' ],
     extensions: [ '.js' ],
+  },
+  bundle: {
+    app: {
+      bundleName: 'app.js',
+      browserifyOpts: {
+        // absolute path required to analyze with disc
+        entries: [cwd + '/src/client/client.js'],
+        fullPaths: true,
+      },
+      external: libs,
+      require: [],
+      dest: './build',
+    },
+    vendor: {
+      bundleName: 'vendor.js',
+      browserifyOpts: {
+        entries: [cwd + '/vendor.js'],
+        fullPaths: true,
+        insertGlobals: false,
+        bare: true,
+      },
+      external: [],
+      require: [],
+      dest: './build',
+    },
   },
   test: {
     src: ['./test/**/*.js'],
