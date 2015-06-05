@@ -14,9 +14,11 @@ export default class LookInside extends React.Component {
       <div id="look-inside" className="single-col">
         <h1>Look inside</h1>
 
-        <a className="btn" href="/the-code/README.md">The code</a>
-
-        <a className="btn" href="/the-code/tests">Tests &amp; coverage</a>
+        <ul>
+          <li><a className="btn" href="/the-code/README.md">The code</a></li>
+          <li><a className="btn" href="/the-code/tests">Tests</a></li>
+          <li><a className="btn" href="/the-code/test-coverage">Test coverage</a></li>
+        </ul>
       </div>
     )
   }

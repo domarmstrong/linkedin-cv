@@ -3,11 +3,11 @@
 import privateRoutes from './privateRoutes';
 import publicRoutes from './publicRoutes';
 import appRouter from './appRouter';
-import { render } from './renderer';
+import { render } from '../renderer';
 
 // Views
-import Page404 from '../views/404';
-import PageError from '../views/error';
+import Page404 from '../../views/404';
+import PageError from '../../views/error';
 
 /**
  * Add routing
@@ -28,7 +28,7 @@ export default function (app) {
     }
 
     if (this.status === 404) {
-      this.body = yield render(Page404, {url: this.originalUrl});
+      this.body = yield render(Page404, {currentPath: this.originalUrl});
     }
   });
 

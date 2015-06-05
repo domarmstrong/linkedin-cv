@@ -5,11 +5,11 @@
  */
 
 import koaRouter from 'koa-router';
-import linkedIn from './linkedIn';
-import { render } from './renderer';
+import linkedIn from '../linkedIn';
+import { render } from '../renderer';
 
 // Views
-import Admin from '../views/admin';
+import Admin from '../../views/admin';
 
 const privateRoutes = koaRouter();
 
@@ -20,12 +20,6 @@ privateRoutes.use(function *(next) {
     this.redirect('/login');
   }
 });
-
-/*
-privateRoutes.get('/admin', function *(next) {
-  this.body = yield render( Admin, {}, { active_route: '/admin' } );
-});
-*/
 
 privateRoutes.get('/admin/update', function *(next) {
   yield linkedIn.updateProfile(this).then(record => {

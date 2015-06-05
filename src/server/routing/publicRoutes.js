@@ -7,11 +7,11 @@
 import koaRouter from 'koa-router';
 import passport from 'koa-passport';
 import queryString from 'query-string';
-import linkedIn from './linkedIn';
+import linkedIn from '../linkedIn';
 import debug from 'debug';
-import { render } from './renderer';
-import code from './code';
-import test from './test';
+import { render } from '../renderer';
+import code from '../code';
+import test from '../test';
 
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
@@ -53,15 +53,8 @@ publicRoutes.get('/api/code-tree', function *() {
   this.body = yield code.getPublicTree();
 });
 
-/*
-publicRoutes.get('/the-code/tests', function *(next) {
-  this.body = yield test.getLastResult().then(data => {
-    return render( Tests, { data: data.streamData }, { active_route: '/the-code' })
-  });
-});
-
-publicRoutes.get('/the-code/test-coverage', function *(next) {
-  this.body = yield render( TestCoverage, {}, { active_route: '/the-code' });
+publicRoutes.get('/api/test-results', function *() {
+  this.body = yield test.getLastResult().then(data => data.streamData);
 });
 
 /**

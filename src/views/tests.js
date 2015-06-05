@@ -6,6 +6,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import request from '../request';
 
 
 export default class Tests extends React.Component {
@@ -19,6 +20,10 @@ export default class Tests extends React.Component {
     };
   }
 
+  static fetchData () {
+    return request.get('/api/test-results', { json: true }).then(results => ({ testResults: results }))
+  }
+
   componentDidMount () {
     this.setState({ isMounted: true });
   }
@@ -28,7 +33,7 @@ export default class Tests extends React.Component {
   }
 
   renderResults () {
-    let result = this.state.liveResult || this.props.data;
+    let result = this.state.liveResult || this.context.routeData.testResults;
 
     return result.map((entry, i) => {
       let [ type, data ] = entry;
@@ -100,6 +105,6 @@ export default class Tests extends React.Component {
     )
   }
 }
-Tests.propTypes = {
-  data: React.PropTypes.array,
+Tests.contextTypes = {
+  routeData: React.PropTypes.object.isRequired,
 };

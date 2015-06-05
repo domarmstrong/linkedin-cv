@@ -55,7 +55,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // router
-require('./routes')(app);
+require('./routing/routing')(app);
 
 app.on('error', function (err) {
   // TODO: Error handling

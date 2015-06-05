@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
+import Auth from '../components/auth';
 
-export default class Admin extends React.Component {
+export default class Admin extends Auth.Component {
   render () {
     return (
       <div id="admin" className="single-col">
