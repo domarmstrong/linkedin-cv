@@ -33,6 +33,7 @@ app.use(etag());
 // static. NOTE: in production use NGINX to serve /public so these route is never reached
 app.use(mount('/public', serve(path.join(__dirname, '../../public'))));
 app.use(mount('/public', serve(path.join(__dirname, '../../build'))));
+app.use(mount('/public', serve(path.join(__dirname, '../../node_modules'))));
 app.use(mount('/test-coverage', serve(path.join(__dirname, '../../build/coverage'))));
 
 // session

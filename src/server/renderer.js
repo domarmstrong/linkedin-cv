@@ -5,6 +5,7 @@ import React from 'react';
 import _ from 'underscore';
 import path from 'path';
 import util from 'util';
+import { ContextWrapper } from '../components/context_wrapper';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 
@@ -24,6 +25,11 @@ function getHtmlTemplate() {
     // which only requires the body html string to be passed
     htmlTemplate =  function (body) {
       return _.template(html)({
+        globals: `
+          <script>
+            window.app_name = "${ config.app_name }";
+          </script>
+        `,
         name: config.app_name,
         body: body,
       });
@@ -42,22 +48,7 @@ function getHtmlTemplate() {
 export function render(Component, props={}, context={}) {
   return getHtmlTemplate().then(template => {
     return template( React.renderToString(
-      <Container component={ Component } props={ props } context={ context } />
+      <ContextWrapper component={ Component } props={ props } context={ context } />
     ) );
   });
 }
-
-/**
- * Wrapper component used for passing context to children
- */
-class Container extends React.Component {
-  getChildContext () {
-    return this.props.context;
-  }
-  render () {
-    return <this.props.component { ...this.props.props } />
-  }
-}
-Container.childContextTypes = {
-  routeData: React.PropTypes.object,
-};

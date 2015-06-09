@@ -8,7 +8,7 @@
  */
 
 import Router from 'react-router';
-import routes from '../../app-routes';
+import routes, { fetchHandlerData } from '../../app-routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import _ from 'underscore';
@@ -83,43 +83,3 @@ function renderHandler (Handler, state) {
     return render(Handler, props, context);
   })
 }
-
-/**
- * Before a route is rendered all handler components will be checked for a `fetchData` static method
- *
- * @example:
- *
- * class Component {
- *   static fetchData () {
- *     // mynamespace should be unique to this component, error will be thrown on name clash
- *     return APromiseFor > { mynamespace: mydata }
- *   }
- *
- *   render () {
- *     let mydata = this.context.routeData.mynamespace;
- *   }
- * }
- * Component.context = {
- *   routeData: React.PropTypes.object,
- * }
- */
-function fetchHandlerData (state) {
-  let routeData = {};
-
-  function extend (data) {
-    Object.keys(data).forEach(key => {
-      if (key in routeData) throw new Error('Name conflict for data: ' + key);
-      routeData[key] = data[key];
-    });
-  }
-
-  return Promise.all(
-    state.routes
-      .filter(route => route.handler.fetchData)
-      .map(route => Promise.resolve(route.handler.fetchData(state))
-        .then(extend)
-        .catch(err => console.error('ERROR: blah')) // TODO error logging
-    )
-  ).then(() => routeData);
-}
-

@@ -3,5 +3,9 @@
  */
 
 import gulp from 'gulp';
+import runSequence from 'run-sequence';
 
-gulp.task('watch-run', ['watch', 'run']);
+gulp.task('watch-run', () => {
+  global.watching = true;
+  runSequence(['watch', 'bundle', 'run']);
+});

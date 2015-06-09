@@ -28,7 +28,7 @@ function bundle (config) {
     }, config.browserifyOpts);
 
     let bundler = browserify(opts)
-      .exclude('./config.js')
+      .ignore('./config.js')
       .external(config.external)
       .require(config.require)
       .transform(babelify.configure({ stage: 1 }));
@@ -66,7 +66,8 @@ function bundle (config) {
         });
     }
 
-    if (global.isWatching) {
+    if (global.watching && config.watchable) {
+      gutil.log('Watching bundle');
       // Wrap with watchify and rebundle on changes
       bundler = watchify(bundler);
       // Rebundle on update

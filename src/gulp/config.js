@@ -4,6 +4,7 @@ var libs = [
   'react',
   'react-router',
   'superagent',
+  'superagent-promise',
 ];
 
 const cwd = process.cwd();
@@ -21,9 +22,10 @@ export default {
   bundle: {
     app: {
       bundleName: 'app.js',
+      watchable: true,
       browserifyOpts: {
         // absolute path required to analyze with disc
-        entries: [cwd + '/src/client/client.js'],
+        entries: [cwd + '/src/client/bootstrap.js'],
         fullPaths: true,
       },
       external: libs,
@@ -32,6 +34,7 @@ export default {
     },
     vendor: {
       bundleName: 'vendor.js',
+      watchable: false,
       browserifyOpts: {
         entries: [cwd + '/vendor.js'],
         fullPaths: true,
@@ -39,7 +42,7 @@ export default {
         bare: true,
       },
       external: [],
-      require: [],
+      require: libs,
       dest: './build',
     },
   },
