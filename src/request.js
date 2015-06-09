@@ -3,17 +3,32 @@
 /**
  * Author: Dom Armstrong, Date: 03/06/15
  *
- * A wrapper around request-promise that rewrites urls to absolute paths
+ * A wrapper around superagent-promise that rewrites urls to absolute paths
  * for the server which cannot operate with relative paths
  */
 
-import request from 'request-promise';
+// TODO write tests....
+import superagent from 'superagent';
+import superagentPromise from 'superagent-promise';
 
-// TODO MAKE SURE config is not included in client bundle
+// Note: MAKE SURE config is not included in client bundle
 import config from '../config';
 
-function relToAbsoluteUrl(url) {
-  // relative paths are correct for the browser
+let agent = superagentPromise(superagent, Promise);
+
+/**
+ * If the path starts with '/' convert it to an absolute localhost url.
+ * This transformation is ignored for the browser where relative paths are correct.
+ *
+ * @example:
+ * ```
+ * toAbsoluteUrl('/home') // http://localhost/home
+ * ```
+ *
+ * @param url {String}
+ * @returns {String}
+ */
+function toAbsoluteUrl (url) {
   // TODO make more robust pattern match?
   if (!process.browser && url[0] === '/') {
     return 'http://localhost:' + config.app_port + url;
@@ -21,18 +36,15 @@ function relToAbsoluteUrl(url) {
   return url;
 }
 
-function wrapped (url, ...args) {
-  return request(relToAbsoluteUrl(url), ...args);
+function absolutePlugin (req) {
+  req.url = Agent.toAbsoluteUrl(req.url);
 }
 
-Object.keys(request).forEach(key => {
-  if (['get', 'head', 'post', 'put', 'patch', 'del'].indexOf(key) !== -1) {
-    wrapped[key] = function (url, ...args) {
-      return request[key](relToAbsoluteUrl(url), ...args);
-    }
-  } else {
-    wrapped[key] = request[key]
-  }
+export default function Agent(method, url, ...args) {
+  return agent(method, toAbsoluteUrl(url), ...args);
+}
+Object.keys(agent).forEach(key => {
+  Agent[key] = function (url, ...args) {
+    return agent[key](toAbsoluteUrl(url), ...args);
+  };
 });
-
-export default wrapped;

@@ -7,19 +7,18 @@
 import React from 'react';
 import { FileTree } from '../components/file_tree';
 import request from '../request';
-import Promise from 'bluebird';
 
 export default class Code extends React.Component {
 
   static fetchData (routerState) {
     let fileId = routerState.params.file;
     return Promise.all([
-      request.get('/api/code-tree', { json: true }),
+      request.get('/api/code-tree'),
       request.get('/api/code/' + fileId),
     ]).then(([ tree, code ]) => {
       return { theCode: {
-        tree: tree,
-        code: code,
+        tree: tree.body,
+        code: code.text,
       }}
     })
   }

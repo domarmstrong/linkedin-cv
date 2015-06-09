@@ -39,7 +39,7 @@ export default {
   getFileTree () {
     let config = this.config;
     if (this.cache['__filetree']) {
-      return Pomise.resolve(this.cache['__filetree']);
+      return Promise.resolve(this.cache['__filetree']);
     }
     return Qfs.listTree(projectRoot, (path, stat) => {
       // do not return or traverse into ignores paths
@@ -66,7 +66,7 @@ export default {
    */
   getPrivateTree () {
     if (this.cache['__privateTree']) {
-      return Pomise.resolve(this.cache['__privateTree']);
+      return Promise.resolve(this.cache['__privateTree']);
     }
 
     let privateTree = {};
@@ -168,7 +168,7 @@ export default {
    */
   renderFile(fileId) {
     if (this.cache[fileId]) {
-      return Pomise.resolve(this.cache[fileId]);
+      return Promise.resolve(this.cache[fileId]);
     }
     return this.getPrivateTree().then(tree => {
       if (! (fileId in tree)) {

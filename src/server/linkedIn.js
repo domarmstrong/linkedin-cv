@@ -69,20 +69,20 @@ export default {
         client_secret: config.linkedIn.clientSecret,
         redirect_uri: config.linkedIn.redirectUrl,
       };
-      return request.post(this.tokenRequestUrl, { form: postData })
-      .then(body => {
-        d('Token request responce', body);
-        let auth = JSON.parse(body);
-        d('Access token granted', auth);
-        return this.setAuth(auth);
-      }).then(auth => {
-        d('Auth token saved');
-        req.redirect('/admin/update');
-      }).catch(err => {
-        // TODO: error logging
-        console.error(err);
-        req.throw(501);
-      });
+      return request.post(this.tokenRequestUrl)
+        .type('form')
+        .send(postData)
+        .then(req => {
+          d('Access token granted', req.body);
+          return this.setAuth(req.body);
+        }).then(auth => {
+          d('Auth token saved');
+          req.redirect('/admin/update');
+        }).catch(err => {
+          // TODO: error logging
+          console.error(err);
+          req.throw(501);
+        });
     }
   },
 
@@ -135,22 +135,13 @@ export default {
 
   apiGet (url) {
     return this.getAuth().then(auth => {
-      return {
-        auth: {
-          bearer: auth.access_token,
-        },
-        headers: {
-          'x-li-format': 'json',
-        }
-      };
-    }).then(options => {
-      return request.get(url, options).then(data => {
-        return JSON.parse(data);
+      return request.get(url)
+        .set('x-li-format', 'json')
+        .set('Authorization', 'Bearer ' + auth.access_token);
       }).catch(err => {
         console.error('Auth error: ', err.status);
         throw err;
       });
-    });
   },
 
   /**
@@ -174,8 +165,8 @@ export default {
       'picture-urls::(original)'
     ];
     let person;
-    return this.apiGet(`https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(_person => {
-      person = _person;
+    return this.apiGet(`https://api.linkedin.com/v1/people/~:(${ fields.join(',') })`).then(res => {
+      person = res.body;
     }).then(() => {
       let pictureUrl = person.pictureUrls.values[0];
       if (! pictureUrl) throw new Error('pictureUrl not received');
@@ -205,8 +196,8 @@ export default {
   saveProfileImage (id, url) {
     let filePath = `/public/profilePics/${ id }.jpg`;
     let fullPath = path.join(__dirname, '../../', filePath);
-    return request.get(url, { encoding: 'binary' }).then(function(image) {
-      return Qfs.write(fullPath, new Buffer(image, 'binary'));
+    return request.get(url).type('binary').then(function(res) {
+      return Qfs.write(fullPath, res.body);
     }).then(() => filePath);
   },
 
