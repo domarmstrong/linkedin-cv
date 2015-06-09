@@ -12,14 +12,13 @@ import buffer from 'vinyl-buffer';
 import sourcemaps from 'gulp-sourcemaps';
 import babelify from 'babelify';
 import uglify from 'gulp-uglify';
-import _ from 'underscore';
 import envify from 'envify';
 
 const PRODUCTION = process.env.NODE_ENV === 'production';
 
 function bundle (config) {
   return new Promise((resolve, reject) => {
-    let opts = _.extend({
+    let opts = Object.assign({
       // Required watchify args
       cache: {},
       packageCache: {},

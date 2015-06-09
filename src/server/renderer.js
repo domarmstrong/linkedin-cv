@@ -2,7 +2,7 @@
 
 import Qfs from 'q-io/fs';
 import React from 'react';
-import _ from 'underscore';
+import Handlebars from 'handlebars';
 import path from 'path';
 import util from 'util';
 import { ContextWrapper } from '../components/context_wrapper';
@@ -23,18 +23,18 @@ function getHtmlTemplate() {
   return Qfs.read(path.join(__dirname, '../../', '/public/index.html')).then(html => {
     // Compile to underscore template and return a partial function
     // which only requires the body html string to be passed
-    htmlTemplate =  function (body) {
-      return _.template(html)({
-        globals: `
+    let template = Handlebars.compile(html);
+    return function partial(body) {
+      return template({
+        inject: new Handlebars.SafeString(`
           <script>
             window.app_name = "${ config.app_name }";
           </script>
-        `,
+        `),
         name: config.app_name,
         body: body,
       });
     };
-    return htmlTemplate;
   });
 }
 

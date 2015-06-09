@@ -49,6 +49,7 @@
     "compression": "^1.4.2",
     "core-js": "^0.9.15",
     "debug": "^2.2.0",
+    "handlebars": "^3.0.3",
     "highlight.js": "^8.6.0",
     "koa": "^0.18.1",
     "koa-bodyparser": "^2.0.0",
@@ -72,7 +73,6 @@
     "require-dir": "^0.3.0",
     "superagent": "^1.2.0",
     "superagent-promise": "^1.0.0",
-    "through2": "^1.1.1",
-    "underscore": "^1.8.3"
+    "through2": "^1.1.1"
   }
 }

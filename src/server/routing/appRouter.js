@@ -11,7 +11,6 @@ import Router from 'react-router';
 import routes, { fetchHandlerData } from '../../app-routes';
 import { render } from '../renderer';
 import config from '../../../config';
-import _ from 'underscore';
 import queryString from 'query-string';
 import auth from '../../interfaces/auth';
 
