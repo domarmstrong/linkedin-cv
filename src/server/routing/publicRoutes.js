@@ -48,10 +48,12 @@ publicRoutes.get('/api/profile', function *() {
 });
 
 publicRoutes.get('/api/code/:fileId', function *(next) {
+  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
   this.body = yield code.renderFile(this.params.fileId);
 });
 
 publicRoutes.get('/api/code-tree', function *() {
+  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
   this.body = yield code.getPublicTree();
 });
 
