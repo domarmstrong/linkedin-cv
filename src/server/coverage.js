@@ -26,7 +26,6 @@ import istanbul from 'istanbul';
 import istanbulSourceMap from 'istanbul-coverage-source-map';
 import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
-import Promise from 'bluebird';
 import test from './test';
 
 

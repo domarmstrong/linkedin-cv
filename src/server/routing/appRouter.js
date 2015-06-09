@@ -10,7 +10,6 @@
 import Router from 'react-router';
 import routes from '../../app-routes';
 import { render } from '../renderer';
-import Promise from 'bluebird';
 import config from '../../../config';
 import _ from 'underscore';
 import queryString from 'query-string';

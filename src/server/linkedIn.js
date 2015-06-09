@@ -5,8 +5,6 @@ import queryString from 'query-string';
 import uuid from 'node-uuid';
 import debug from 'debug';
 import Qfs from 'q-io/fs';
-import fs from 'fs';
-import Promise from 'bluebird';
 import path from 'path';
 import { db } from './db';
 

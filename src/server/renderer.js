@@ -1,6 +1,5 @@
 "use strict";
 
-import Pomise from 'bluebird';
 import Qfs from 'q-io/fs';
 import React from 'react';
 import _ from 'underscore';

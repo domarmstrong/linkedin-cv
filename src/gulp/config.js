@@ -1,10 +1,9 @@
 var libs = [
   //'jquery',
-  'bluebird',
   'classnames',
   'react',
   'react-router',
-  'request-promise',
+  'superagent',
 ];
 
 const cwd = process.cwd();

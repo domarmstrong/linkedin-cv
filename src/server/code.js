@@ -6,7 +6,6 @@
 
 import hljs from 'highlight.js';
 import Qfs from 'q-io/fs';
-import Pomise from 'bluebird';
 import path from 'path';
 import debug from 'debug';
 
