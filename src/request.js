@@ -3,8 +3,7 @@
 /**
  * Author: Dom Armstrong, Date: 03/06/15
  *
- * A wrapper around superagent-promise that rewrites urls to absolute paths
- * for the server which cannot operate with relative paths
+ * A wrapper around superagent-promise
  */
 
 // TODO write tests....
@@ -12,6 +11,7 @@ import superagent from 'superagent';
 import superagentPromise from 'superagent-promise';
 
 // Note: MAKE SURE config is not included in client bundle
+// should only be required for server code
 import config from '../config';
 
 let agent = superagentPromise(superagent, Promise);
@@ -37,9 +37,12 @@ function toAbsoluteUrl (url) {
 }
 
 function absolutePlugin (req) {
-  req.url = Agent.toAbsoluteUrl(req.url);
+  req.url = toAbsoluteUrl(req.url);
 }
 
+/**
+ * Export an agent with all methods extended to use absolute urls
+ */
 export default function Agent(method, url, ...args) {
   return agent(method, toAbsoluteUrl(url), ...args);
 }
@@ -47,4 +50,45 @@ Object.keys(agent).forEach(key => {
   Agent[key] = function (url, ...args) {
     return agent[key](toAbsoluteUrl(url), ...args);
   };
+});
+
+let cache = {};
+
+Object.assign(Agent, {
+  /**
+   * Make a get request and cache the results
+   * further request with the same url and query params will return from cache
+   * and not make a new request.
+   * @param url
+   */
+  getCached (url) {
+    //if (cache[url]) return Promise.resolve(cache[url]);
+    let req = Agent('GET', toAbsoluteUrl(url));
+
+    function getCacheKey(req) {
+      return req.url + (JSON.stringify(req.qs || req._query) || '');
+    }
+
+    let end = req.end;
+    req.end = function (...args) {
+      throw new Error('Not implemented');
+      return end(...args);
+    };
+
+    let then = req.then;
+    req.then = function (resolve, reject) {
+      let key = getCacheKey(this);
+      if (key in cache) {
+        return resolve(cache[key]);
+      } else {
+        return then.call(this, res => {
+          // Cache the res
+          cache[key] = res;
+          return res;
+        }, reject).then(resolve);
+      }
+    };
+
+    return req;
+  }
 });

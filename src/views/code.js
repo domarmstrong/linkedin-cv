@@ -8,13 +8,15 @@ import React from 'react';
 import { FileTree } from '../components/file_tree';
 import request from '../request';
 
+let cache = {};
+
 export default class Code extends React.Component {
 
   static fetchData (routerState) {
     let fileId = routerState.params.file;
     return Promise.all([
-      request.get('/api/code-tree'),
-      request.get('/api/code/' + fileId),
+      request.getCached('/api/code-tree'),
+      request.getCached('/api/code/' + fileId),
     ]).then(([ tree, code ]) => {
       return { theCode: {
         tree: tree.body,
