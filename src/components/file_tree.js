@@ -6,6 +6,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router';
 
 export class FileTree extends React.Component {
   render () {
@@ -71,9 +72,9 @@ class File extends React.Component {
 
     return (
       <li className={ classes }>
-        <a href={ href }>
+        <Link to={ href }>
           <i className="icon-file" />{ name }
-        </a>
+        </Link>
       </li>
     );
   }

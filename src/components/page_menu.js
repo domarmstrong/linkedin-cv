@@ -6,6 +6,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router';
 
 export class PageMenu extends React.Component {
 
@@ -57,9 +58,9 @@ class MenuItem extends React.Component {
 
     return (
       <li className={ classNames('menu-item', { 'active': this.isActive() }) }>
-        <a href={ href }>
+        <Link to={ href }>
           <i className={ icon } />{ this.props.children }
-        </a>
+        </Link>
       </li>
     );
   }

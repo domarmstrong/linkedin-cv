@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router';
 
 
 export default class LookInside extends React.Component {
@@ -15,9 +16,9 @@ export default class LookInside extends React.Component {
         <h1>Look inside</h1>
 
         <ul>
-          <li><a className="btn" href="/the-code/README.md">The code</a></li>
-          <li><a className="btn" href="/the-code/tests">Tests</a></li>
-          <li><a className="btn" href="/the-code/test-coverage">Test coverage</a></li>
+          <li><Link className="btn" to="/the-code/README.md">The code</Link></li>
+          <li><Link className="btn" to="/the-code/tests">Tests</Link></li>
+          <li><Link className="btn" to="/the-code/test-coverage">Test coverage</Link></li>
         </ul>
       </div>
     )
