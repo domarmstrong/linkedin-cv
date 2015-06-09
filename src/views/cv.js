@@ -103,7 +103,7 @@ export default class CV extends React.Component {
               </header>
 
               { profile.positions.map(position => {
-                return <Position { ...position } />;
+                return <Position key={ position.id } { ...position } />;
               }) }
             </section>
           )}
