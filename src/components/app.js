@@ -2,29 +2,31 @@
 
 /**
  * Author: Dom Armstrong, Date: 22/05/15
+ *
+ * App container, if no children are passed in defaults to the CV view
  */
 
 import React from 'react';
-import { RouteHandler } from 'react-router';
 import { PageMenu } from './page_menu';
 import request from '../request';
+import CV from '../views/cv';
 
 export default class App extends React.Component {
 
-  static fetchData (routerState) {
-    return {};
+  static fetchProps (routerState) {
+    return request.get('/api/app-name').then(res => ({ app_name: res.text }));
   }
 
   render () {
-    let { app_name } = this.props;
-    let active_route = this.context.router.getCurrentPath();
+    let { app_name, routerState, children } = this.props;
+    let active_route = routerState.location.pathname;
 
     return (
       <div id="app">
         <PageMenu app_name={ app_name } active_route={ active_route } />
 
         <div className="container">
-          <RouteHandler />
+          { children }
         </div>
       </div>
     )
@@ -32,7 +34,4 @@ export default class App extends React.Component {
 }
 App.propTypes = {
   app_name: React.PropTypes.string.isRequired,
-};
-App.contextTypes = {
-  router: React.PropTypes.any,
 };

@@ -6,7 +6,6 @@
 
 import koaRouter from 'koa-router';
 import linkedIn from '../linkedIn';
-import { render } from '../renderer';
 
 const privateRoutes = koaRouter();
 

@@ -12,6 +12,7 @@ import debug from 'debug';
 import { render } from '../renderer';
 import code from '../code';
 import test from '../test';
+import config from '../../../config';
 
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
@@ -32,8 +33,7 @@ publicRoutes.post('/login', function *(next) {
     } else {
       d('Login failed: ', username, info.message);
       ctx.status = 401;
-      let props = { username: username, validation: {login: info.message} };
-      yield render( Login, props ).then(rendered => ctx.body = rendered);
+      ctx.body = render(<Login username={ username } validation={{ login: info.message }} />);
     }
   }).call(this, next);
 });
@@ -41,6 +41,10 @@ publicRoutes.post('/login', function *(next) {
 publicRoutes.get('/logout', function *(next) {
   this.logout();
   this.redirect('/');
+});
+
+publicRoutes.get('/api/app-name', function *() {
+  this.body = config.app_name;
 });
 
 publicRoutes.get('/api/profile', function *() {

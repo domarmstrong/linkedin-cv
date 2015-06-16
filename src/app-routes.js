@@ -4,7 +4,7 @@
  * Author: Dom Armstrong, Date: 02/06/15
  */
 
-import { Route, DefaultRoute, NotFoundRoute } from 'react-router';
+import { Route } from 'react-router';
 
 // Views
 import App from './components/app';
@@ -23,55 +23,45 @@ import Admin from './views/admin';
 global.React = require('react');
 
 export default (
-  <Route name="app" path="/" handler={ App }>
-    <DefaultRoute name="cv" handler={ CV } />
-    <Route name="the-code">
-      <DefaultRoute name="look-inside" handler={ LookInside } />
-      <Route name="tests" handler={ Tests } />
-      <Route name="test-coverage" handler={ TestCoverage } />
-      <Route name="code" path=":file" handler={ Code } />
+  <Route path="/" component={ App } indexRoute={{ component: CV }}>
+    <Route path="the-code" indexRoute={{ component: LookInside }}>
+      <Route path="tests" component={ Tests } />
+      <Route path="test-coverage" component={ TestCoverage } />
+      <Route path=":file" component={ Code } />
     </Route>
-    <Route name="login" handler={ Login } />
-    <Route name="admin" handler={ Admin } />
-    <NotFoundRoute name="404" handler={ Page404 } />
+    <Route path="login*" component={ Login } />
+    <Route path="admin*" component={ Admin } loginRequired={ true } />
+    <Route path="*" component={ Page404 } />
   </Route>
 );
 
 /**
- * Before a route is rendered all handler components will be checked for a `fetchData` static method
+ * Before a route is rendered all component components will be checked for a `fetchProps` static method
  *
  * @example:
  *
  * class Component {
- *   static fetchData () {
+ *   static fetchProps () {
  *     // mynamespace should be unique to this component, error will be thrown on name clash
- *     return APromiseFor > { mynamespace: mydata }
+ *     return APromiseFor > { myprop: data }
  *   }
  *
  *   render () {
- *     let mydata = this.context.routeData.mynamespace;
+ *     let { myprops } = this.props;
  *   }
  * }
- * Component.context = {
- *   routeData: React.PropTypes.object,
- * }
+ *
+ * @returns {Map}
  */
-export function fetchHandlerData (state) {
-  let routeData = {};
-
-  function extend (data) {
-    Object.keys(data).forEach(key => {
-      if (key in routeData) throw new Error('Name conflict for data: ' + key);
-      routeData[key] = data[key];
-    });
-  }
+export function fetchProps (state) {
+  let routeData = new Map();
 
   return Promise.all(
-    state.routes
-      .filter(route => route.handler.fetchData)
-      .map(route => Promise.resolve(route.handler.fetchData(state))
-        .then(extend)
-        .catch(err => console.error('ERROR: blah')) // TODO error logging
+    state.components
+      .filter(Component => Component && Component.fetchProps) // find which components have a fetchProps method
+      .map(Component => Promise.resolve(Component.fetchProps(state)) // fetch the data, may be promise
+        .then(data => routeData.set(Component, data)) // set the data against the Component
+        .catch(err => console.error('Error->fetchProps: ', err.stack)) // TODO error logging
     )
   ).then(() => routeData);
 }

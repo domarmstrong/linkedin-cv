@@ -23,12 +23,12 @@ export default function (app) {
       yield next;
     } catch (err) {
       this.status = err.status || 500;
-      this.body = yield render( PageError, { url: this.originalUrl, status: this.status, error: err.message } );
+      this.body = render(<PageError url={ this.originalUrl } status={ this.status } error={ err.message } />);
       this.app.emit('error', err, this);
     }
 
     if (this.status === 404) {
-      this.body = yield render(Page404, {currentPath: this.originalUrl});
+      this.body = render(<Page404 routerState={{ location: { pathname: this.originalUrl }}} />);
     }
   });
 

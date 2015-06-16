@@ -7,8 +7,8 @@
  *
  */
 
-import Router from 'react-router';
-import routes, { fetchHandlerData } from '../../app-routes';
+import { Router, Location } from 'react-router';
+import routes, { fetchProps } from '../../app-routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import queryString from 'query-string';
@@ -20,7 +20,7 @@ import auth from '../../interfaces/auth';
 export default {
   middleware () {
     return function *(next) {
-      this.body = yield handleRoute(this, this.req.url);
+      this.body = yield handleRoute(this);
     }
   }
 }
@@ -42,43 +42,55 @@ function createAuth(req) {
  * @param req
  * @returns {Object}
  */
+// TODO not used
 function getTransitionContext(req) {
   return {
     auth: createAuth(req)
   }
 }
 
-function handleRoute (req, url) {
+function handleRoute (ctx, location) {
+  if (! location) {
+    location = new Location(ctx.req.url, ctx.req.query);
+  }
+
   return new Promise((resolve, reject) => {
-    let router = Router.create({
-      location: url,
-      routes: routes,
-      transitionContext: getTransitionContext(req),
-      onError: err => reject(err),
-      onAbort: info => reject(info) // caught below as 'Redirect'
-    });
-    router.run((Handler, state) => {
-      resolve(renderHandler(Handler, state))
+    // Run the router to work out what to render
+    Router.run(routes, location, (err, initialState, transition) => {
+      if (err) return reject(err);
+      resolve([initialState, transition]);
+    })
+  }).then(([initialState, transition]) => {
+    // Fetch data from any fetchProps methods on the componnents
+    return fetchProps(initialState).then(routeData => {
+
+      // Pass the props in from the Components fetchProps method
+      function createElement(Component, state) {
+        if (state.route.loginRequired && ! ctx.isAuthenticated()) {
+          let err = new Error('Login required');
+          err.redirect = '/login';
+          err.location = location;
+          throw err;
+        }
+        let props = routeData.get(Component);
+        return <Component {...props} routerState={ state }>{ state.children }</Component>;
+      }
+
+      // Render the router
+      return render(<Router { ...initialState } createElement={ createElement } />);
     });
   }).catch(err => {
-    if (err.constructor.name === 'Redirect') {
-      let query = queryString.stringify(err.query);
-      let path = [ err.to ];
+    // If the error is a redirect, do a server redirect and restart the process
+    if (err.redirect) {
+      console.log('err redirect');
+      let query = queryString.stringify({ then: err.location.pathname });
+      let path = [ err.redirect ];
       if (query) path.push(query);
       path = path.join('?');
-      req.redirect(path);
-      return handleRoute(path);
+      ctx.redirect(path);
+      ctx.req.url = path;
+      return handleRoute(ctx);
     }
     throw err;
   });
-}
-
-function renderHandler (Handler, state) {
-  return fetchHandlerData(state).then(routeData => {
-    // context.routeData will be available to all components
-    let context = { routeData };
-    // Props for top level app component
-    let props = { app_name: config.app_name };
-    return render(Handler, props, context);
-  })
 }

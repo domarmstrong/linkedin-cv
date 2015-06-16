@@ -20,8 +20,8 @@ export default class Tests extends React.Component {
     };
   }
 
-  static fetchData () {
-    return request.get('/api/test-results', { json: true }).then(results => ({ testResults: results }))
+  static fetchProps () {
+    return request.get('/api/test-results', { json: true }).then(res => ({ testResults: res.body }))
   }
 
   componentDidMount () {
@@ -33,7 +33,8 @@ export default class Tests extends React.Component {
   }
 
   renderResults () {
-    let result = this.state.liveResult || this.context.routeData.testResults;
+    let result = this.state.liveResult || this.props.testResults;
+    console.log(this.props);
 
     return result.map((entry, i) => {
       let [ type, data ] = entry;
@@ -105,6 +106,6 @@ export default class Tests extends React.Component {
     )
   }
 }
-Tests.contextTypes = {
-  routeData: React.PropTypes.object.isRequired,
+Tests.propTypes = {
+  testResults: React.PropTypes.object.isRequired,
 };

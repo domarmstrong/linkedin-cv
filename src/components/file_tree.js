@@ -39,9 +39,9 @@ class Folder extends React.Component {
       return a.name > b.name ? 1 : -1
     }).map(item => {
       if (typeof item.value === 'string') {
-        return <File name={ item.name } value={ item.value } urlPrefix={ urlPrefix } active={ active } />;
+        return <File key={ item.name } name={ item.name } value={ item.value } urlPrefix={ urlPrefix } active={ active } />;
       }
-      return <Folder name={ item.name } content={ item.value } urlPrefix={ urlPrefix } active={ active } />;
+      return <Folder key={ item.name } name={ item.name } content={ item.value } urlPrefix={ urlPrefix } active={ active } />;
     });
 
     return (

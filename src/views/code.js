@@ -12,37 +12,35 @@ let cache = {};
 
 export default class Code extends React.Component {
 
-  static fetchData (routerState) {
+  static fetchProps (routerState) {
     let fileId = routerState.params.file;
     return Promise.all([
       request.getCached('/api/code-tree'),
       request.getCached('/api/code/' + fileId),
     ]).then(([ tree, code ]) => {
-      return { theCode: {
+      return {
         tree: tree.body,
         code: code.text,
-      }}
+      }
     })
   }
 
   render () {
-    let { router, routeData } = this.context;
-    let { tree, code } = routeData.theCode;
-    let { params } = this.props;
+    let { tree, code, routerState } = this.props;
 
     // Because the file tree only knows the file ids, it does not know where they are
     // we add a urlPrefix so it can create correct links without hardcoding
     // eg: /location/of/code/FILE.foo
     // current file = FILE.foo
     // urlPrefix = /location/of/code
-    let urlPrefix = router.getCurrentPath().replace('/' + params.file, '');
+    let urlPrefix = routerState.location.pathname.replace('/' + routerState.params.file, '');
 
     return (
       <div id="code">
         <div className="file-browser">
           <h2>Files</h2>
 
-          <FileTree data={ tree } urlPrefix={ urlPrefix } active={ params.file } />
+          <FileTree data={ tree } urlPrefix={ urlPrefix } active={ routerState.params.file } />
         </div>
 
         <pre className="code-view">
@@ -52,12 +50,7 @@ export default class Code extends React.Component {
     )
   }
 }
-Code.contextTypes = {
-  router: React.PropTypes.any,
-  routeData: React.PropTypes.object,
-};
 Code.propTypes = {
-  code: React.PropTypes.string,
-  fileTree: React.PropTypes.object,
-  current_file: React.PropTypes.string,
+  tree: React.PropTypes.object.isRequired,
+  code: React.PropTypes.string.isRequired,
 };

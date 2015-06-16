@@ -8,12 +8,7 @@ import React from 'react';
 
 export default class Page404 extends React.Component {
   render () {
-    let currentPath;
-    if (this.props.currentPath) {
-      currentPath = this.props.currentPath;
-    } else if (this.context.router) {
-      currentPath = this.context.router.getCurrentPath();
-    }
+    let currentPath = this.props.routerState.location.pathname;
 
     return (
       <div id="Page404" className="error-page">
@@ -24,8 +19,6 @@ export default class Page404 extends React.Component {
   }
 }
 Page404.propTypes = {
-  currentPath: React.PropTypes.string,
+  routerState: React.PropTypes.object.isRequired,
 };
-Page404.contextTypes = {
-  router: React.PropTypes.any,
-};
+

@@ -36,10 +36,6 @@ function toAbsoluteUrl (url) {
   return url;
 }
 
-function absolutePlugin (req) {
-  req.url = toAbsoluteUrl(req.url);
-}
-
 /**
  * Export an agent with all methods extended to use absolute urls
  */
@@ -69,10 +65,8 @@ Object.assign(Agent, {
       return req.url + (JSON.stringify(req.qs || req._query) || '');
     }
 
-    let end = req.end;
     req.end = function (...args) {
       throw new Error('Not implemented');
-      return end(...args);
     };
 
     let then = req.then;

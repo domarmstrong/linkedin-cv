@@ -81,7 +81,7 @@ function init() {
         process.exit(1);
         break;
       case 'EADDRINUSE':
-        console.err(app.port + ' is already in use');
+        console.error(app.port + ' is already in use');
         process.exit(1);
         break;
       default:
