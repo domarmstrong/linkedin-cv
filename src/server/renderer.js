@@ -1,54 +1,53 @@
 "use strict";
 
-import Qfs from 'q-io/fs';
 import React from 'react';
-import Handlebars from 'handlebars';
 import path from 'path';
-import util from 'util';
-import { ContextWrapper } from '../components/context_wrapper';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 
 /**
- * Get the compiled html template page and cache it
+ * Render component into the html template
+ * @param component {XML} React component // Note not xml just working round annoying jsDoc complaint
  * @return {String} html
  */
-let htmlTemplate = '';
-function getHtmlTemplate() {
-  // Return cached version
-  if (htmlTemplate) {
-    return Promise.resolve(htmlTemplate);
-  }
+export function render(component) {
+  return `
+<html lang="en">
+  <head>
+    <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+    <script>
+      window.app_name = "${ config.app_name }";
+    </script>
+    <link rel="stylesheet" href="/public/main.css" type="text/css">
+    <link rel="stylesheet" href="/public/font/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:100,300' rel='stylesheet' type='text/css'>
 
-  return Qfs.read(path.join(__dirname, '../../', '/public/index.html')).then(html => {
-    // Compile to underscore template and return a partial function
-    // which only requires the body html string to be passed
-    let template = Handlebars.compile(html);
-    return function partial(body) {
-      return template({
-        inject: new Handlebars.SafeString(`
-          <script>
-            window.app_name = "${ config.app_name }";
-          </script>
-        `),
-        name: config.app_name,
-        body: body,
-      });
-    };
-  });
-}
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ff5722">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 
-/**
- * Render component into the html template
- * @param Component : React component
- * @param props {Object}
- * @param context {Object}
- * @return {Promise} html string
- */
-export function render(Component, props={}, context={}) {
-  return getHtmlTemplate().then(template => {
-    return template( React.renderToString(
-      <ContextWrapper component={ Component } props={ props } context={ context } />
-    ) );
-  });
+    <title>${ config.app_name }</title>
+  </head>
+  <body>
+    <div id="_mount">${ React.renderToString(component) }</div>
+    <script src="/public/vendor.js"></script>
+    <script src="/public/app.js"></script>
+  </body>
+</html>
+`;
 }
