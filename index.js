@@ -5,7 +5,8 @@
  */
 
 require('babel/register')({
-  only: /(src|test)/
+  only: /(src|test)/,
+  stage: 0,
 });
 
 module.exports = require('./src/server/index.js');
