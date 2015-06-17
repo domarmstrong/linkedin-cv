@@ -57,10 +57,10 @@ export function fetchProps (state) {
   let routeData = new Map();
 
   return Promise.all(
-    state.components
-      .filter(Component => Component && Component.fetchProps) // find which components have a fetchProps method
-      .map(Component => Promise.resolve(Component.fetchProps(state)) // fetch the data, may be promise
-        .then(data => routeData.set(Component, data)) // set the data against the Component
+    state.branch
+      .filter(branch => branch.component && branch.component.fetchProps) // find which components have a fetchProps method
+      .map(branch => Promise.resolve(branch.component.fetchProps(state)) // fetch the data, may be promise
+        .then(data => routeData.set(branch.component, data)) // set the data against the Component
         .catch(err => console.error('Error->fetchProps: ', err.stack)) // TODO error logging
     )
   ).then(() => routeData);
