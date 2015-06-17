@@ -52,7 +52,7 @@ function getTransitionContext(req) {
 
 function handleRoute (ctx, location) {
   if (! location) {
-    location = new Location(ctx.req.url, ctx.req.query);
+    location = new Location(ctx.path, ctx.query);
   }
 
   return new Promise((resolve, reject) => {
