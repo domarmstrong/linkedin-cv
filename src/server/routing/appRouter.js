@@ -7,11 +7,12 @@
  *
  */
 
-import { Router, Location } from 'react-router';
+import { Router } from 'react-router';
+import Location from 'react-router/lib/Location';
 import routes, { fetchProps } from '../../app-routes';
 import { render } from '../renderer';
 import config from '../../../config';
-import queryString from 'query-string';
+import queryString from 'querystring';
 import auth from '../../interfaces/auth';
 
 /**
