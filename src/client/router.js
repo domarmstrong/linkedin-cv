@@ -4,32 +4,45 @@
  * Author: Dom Armstrong, Date: 05/06/15
  */
 
-import Router from 'react-router';
-import routes, { fetchHandlerData } from '../app-routes';
-import { ContextWrapper } from '../components/context_wrapper';
+import { Router } from 'react-router';
+import Location from 'react-router/lib/Location';
+import BrowserHistory from 'react-router/lib/BrowserHistory';
+import routes, { fetchProps } from '../app-routes';
+import queryString from 'querystring';
+
+/** @Map */
+let routeData;
+
+// On transition fetchProps async for components
+function onTransition(nextState, transition, cb) {
+  fetchProps(nextState).then(_routeData => {
+    routeData = _routeData;
+    cb();
+  });
+}
+
+// Create route components passing in data from fetchProps
+function createElement(Component, state) {
+  let props = routeData.get(Component);
+  return <Component {...props} routerState={ state }>{ state.children }</Component>;
+}
 
 export default {
   init () {
-    return new Promise((resolve, reject) => {
-      console.log('Initialize router');
-      let router = Router.create({
-        location: Router.HistoryLocation,
-        routes: routes,
-      });
-      router.run((Handler, state) => {
-        return fetchHandlerData(state).then(routeData => {
-          // context.routeData will be available to all components
-          let context = { routeData };
-          // Props for top level app component
-          let props = { app_name: window.app_name };
+    console.info('Initialize router');
 
-          React.render(
-            <ContextWrapper component={ Handler } props={ props } context={ context } />,
-            document.querySelector('#_mount')
-          );
-        })
-      });
+    let query = queryString.parse(window.location.search.replace('?',''));
+    let location = new Location(window.location.pathname, query);
+
+    Router.run(routes, location, [onTransition], (err, initialState, transition) => {
+      if (err) throw err; // TODO error logging
+
+      let router = React.render(
+        <Router { ...initialState } routes={ routes } history={ BrowserHistory } createElement={ createElement } />,
+        document.querySelector('#_mount')
+      );
+      router.addTransitionHook(onTransition);
     });
-  },
+  }
 }
 
