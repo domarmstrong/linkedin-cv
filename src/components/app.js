@@ -14,7 +14,7 @@ import CV from '../views/cv';
 export default class App extends React.Component {
 
   static fetchProps (routerState) {
-    return request.get('/api/app-name').then(res => ({ app_name: res.text }));
+    return request.getCached('/api/app-name').then(res => ({ app_name: res.text }));
   }
 
   render () {
