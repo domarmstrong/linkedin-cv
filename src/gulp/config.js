@@ -1,8 +1,9 @@
 var libs = [
-  //'jquery',
   'classnames',
   'react',
-  //'react-router',
+  'react-router',
+  'react-router/lib/Location',
+  'react-router/lib/BrowserHistory',
   'superagent',
   'superagent-promise',
 ];
@@ -26,7 +27,7 @@ export default {
       browserifyOpts: {
         // absolute path required to analyze with disc
         entries: [cwd + '/src/client/bootstrap.js'],
-        fullPaths: true,
+        fullPaths: false,
       },
       external: libs,
       require: [],
@@ -36,8 +37,8 @@ export default {
       bundleName: 'vendor.js',
       watchable: false,
       browserifyOpts: {
-        entries: [cwd + '/vendor.js'],
-        fullPaths: true,
+        entries: [],
+        fullPaths: false,
         insertGlobals: false,
         bare: true,
       },
