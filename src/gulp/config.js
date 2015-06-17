@@ -2,7 +2,7 @@ var libs = [
   //'jquery',
   'classnames',
   'react',
-  'react-router',
+  //'react-router',
   'superagent',
   'superagent-promise',
 ];
