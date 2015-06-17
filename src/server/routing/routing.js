@@ -1,13 +1,31 @@
 "use strict";
 
+/**
+ * Author: Dom Armstrong, Date: 23/05/15
+ *
+ * Set up for all routing
+ */
+
 import privateRoutes from './privateRoutes';
 import publicRoutes from './publicRoutes';
 import appRouter from './appRouter';
+import serve from 'koa-static';
+import mount from 'koa-mount';
+import path from 'path';
 import { render } from '../renderer';
 
 // Views
 import Page404 from '../../views/404';
 import PageError from '../../views/error';
+
+/**
+ * Convert days to milliseconds
+ * @param days {number}
+ * @returns {number}
+ */
+function daysToMS(days) {
+  return days * 24 * 60 * 60 * 1000;
+}
 
 /**
  * Add routing
@@ -16,6 +34,12 @@ import PageError from '../../views/error';
  * @param app: koa app
  */
 export default function (app) {
+  // static. NOTE: in production use NGINX to serve static resources so these routes are never reached
+  app.use(mount('/', serve(path.join(__dirname, '../../public/favicon'), { maxage: daysToMS(100) })));
+  app.use(mount('/public', serve(path.join(__dirname, '../../public'), { maxage: daysToMS(5) })));
+  app.use(mount('/public', serve(path.join(__dirname, '../../build'), { maxage: daysToMS(5) })));
+  app.use(mount('/test-coverage', serve(path.join(__dirname, '../../build/coverage'), { maxage: daysToMS(1) })));
+
   // Handle routing errors
   app.use(function *(next) {
     // Handle errors from actual routes

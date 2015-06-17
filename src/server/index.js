@@ -1,8 +1,6 @@
 "use strict";
 
 import koa from 'koa';
-import serve from 'koa-static';
-import mount from 'koa-mount';
 import debug from 'debug';
 import path from 'path';
 import http from 'http';
@@ -29,16 +27,6 @@ app.port = config.app_port || 8080;
 app.use(gzip());
 app.use(fresh());
 app.use(etag());
-
-function daysToMS(days) {
-  return days * 24 * 60 * 60 * 1000;
-}
-
-// static. NOTE: in production use NGINX to serve /public so these route is never reached
-app.use(mount('/', serve(path.join(__dirname, '../../public/favicon'), { maxage: daysToMS(100) })));
-app.use(mount('/public', serve(path.join(__dirname, '../../public'), { maxage: daysToMS(5) })));
-app.use(mount('/public', serve(path.join(__dirname, '../../build'), { maxage: daysToMS(5) })));
-app.use(mount('/test-coverage', serve(path.join(__dirname, '../../build/coverage'), { maxage: daysToMS(1) })));
 
 // session
 app.keys = [ config.app_secret ];
