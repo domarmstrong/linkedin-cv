@@ -35,10 +35,10 @@ function daysToMS(days) {
  */
 export default function (app) {
   // static. NOTE: in production use NGINX to serve static resources so these routes are never reached
-  app.use(mount('/', serve(path.join(__dirname, '../../public/favicon'), { maxage: daysToMS(100) })));
-  app.use(mount('/public', serve(path.join(__dirname, '../../public'), { maxage: daysToMS(5) })));
-  app.use(mount('/public', serve(path.join(__dirname, '../../build'), { maxage: daysToMS(5) })));
-  app.use(mount('/test-coverage', serve(path.join(__dirname, '../../build/coverage'), { maxage: daysToMS(1) })));
+  app.use(mount('/', serve(path.join(__dirname, '../../../public/favicon'), { maxage: daysToMS(100) })));
+  app.use(mount('/public', serve(path.join(__dirname, '../../../public'), { maxage: daysToMS(5) })));
+  app.use(mount('/public', serve(path.join(__dirname, '../../../build'), { maxage: daysToMS(5) })));
+  app.use(mount('/test-coverage', serve(path.join(__dirname, '../../../build/coverage'), { maxage: daysToMS(1) })));
 
   // Handle routing errors
   app.use(function *(next) {
