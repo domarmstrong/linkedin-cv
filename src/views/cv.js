@@ -14,6 +14,7 @@ import request from '../request';
  * @return {Array} <p> elements
  */
 function formatParas(str) {
+  if (typeof str !== 'string') return str;
   return str.split('\n')
     .filter(para => !!para)
     .map((para, i) => <p key={ i }>{ para }</p>);
@@ -143,18 +144,18 @@ export default class CV extends React.Component {
   }
 }
 CV.propTypes = {
-  firstName: React.PropTypes.string,
-  lastName: React.PropTypes.string,
-  headline: React.PropTypes.string,
-  location: React.PropTypes.string,
-  industry: React.PropTypes.string,
-  email: React.PropTypes.string,
-  publicProfile: React.PropTypes.string,
-  summary: React.PropTypes.string,
-  specialties: React.PropTypes.string,
-  positions: React.PropTypes.array,
-  skills: React.PropTypes.array,
-  educations: React.PropTypes.array,
+  firstName: React.PropTypes.string.isRequired,
+  lastName: React.PropTypes.string.isRequired,
+  headline: React.PropTypes.string.isRequired,
+  location: React.PropTypes.string.isRequired,
+  industry: React.PropTypes.string.isRequired,
+  email: React.PropTypes.string.isRequired,
+  publicProfile: React.PropTypes.string.isRequired,
+  summary: React.PropTypes.string.isRequired,
+  specialties: React.PropTypes.string.isRequired,
+  positions: React.PropTypes.array.isRequired,
+  skills: React.PropTypes.array.isRequired,
+  educations: React.PropTypes.array.isRequired,
 };
 
 class Skill extends React.Component {

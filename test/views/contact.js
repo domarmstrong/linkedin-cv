@@ -1,11 +1,11 @@
 "use strict";
 
 import { assert } from 'chai';
-import Admin from '../../src/views/admin';
+import Contact from '../../src/views/contact';
 import React from 'react';
 
-describe('Admin page', () => {
+describe('Contact page', () => {
   it('renders with no errors', () => {
-    React.renderToString( <Admin /> );
+    React.renderToString( <Contact /> );
   });
 });

@@ -23,6 +23,6 @@ export default class PageError extends React.Component {
   }
 }
 PageError.propTypes = {
-  status: React.PropTypes.number,
-  error: React.PropTypes.string,
+  status: React.PropTypes.number.isRequired,
+  error: React.PropTypes.string.isRequired,
 };

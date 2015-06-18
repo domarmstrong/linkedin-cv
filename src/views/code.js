@@ -25,22 +25,29 @@ export default class Code extends React.Component {
     })
   }
 
+  /**
+   * Because the file tree only knows the file ids, it does not know where they are
+   * we add a urlPrefix so it can createDOM correct links without hardcoding
+   * eg: /location/of/code/FILE.foo
+   * current file = FILE.foo
+   * urlPrefix = /location/of/code
+   *
+   * @returns {string}
+   */
+  getUrlPrefix () {
+    let { routerState } = this.props;
+    return routerState.location.pathname.replace('/' + routerState.params.file, '');
+  }
+
   render () {
     let { tree, code, routerState } = this.props;
-
-    // Because the file tree only knows the file ids, it does not know where they are
-    // we add a urlPrefix so it can create correct links without hardcoding
-    // eg: /location/of/code/FILE.foo
-    // current file = FILE.foo
-    // urlPrefix = /location/of/code
-    let urlPrefix = routerState.location.pathname.replace('/' + routerState.params.file, '');
 
     return (
       <div id="code">
         <div className="file-browser">
           <h2>Files</h2>
 
-          <FileTree data={ tree } urlPrefix={ urlPrefix } active={ routerState.params.file } />
+          <FileTree data={ tree } urlPrefix={ this.getUrlPrefix() } active={ routerState.params.file } />
         </div>
 
         <pre className="code-view">
@@ -53,4 +60,5 @@ export default class Code extends React.Component {
 Code.propTypes = {
   tree: React.PropTypes.object.isRequired,
   code: React.PropTypes.string.isRequired,
+  routerState: React.PropTypes.object.isRequired,
 };

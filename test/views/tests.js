@@ -5,7 +5,7 @@ import Tests from '../../src/views/tests';
 import React from 'react';
 
 describe('Tests page', () => {
-  it('should render with no errors', () => {
-    React.renderToString( <Tests /> );
+  it('renders with no errors', () => {
+    React.renderToString( <Tests testResults={[]} /> );
   });
 });
