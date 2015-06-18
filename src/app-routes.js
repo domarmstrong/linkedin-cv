@@ -14,6 +14,8 @@ import Code from './views/code';
 import LookInside from './views/look_inside';
 import Tests from './views/tests';
 import TestCoverage from './views/test_coverage';
+import Contact from './views/contact';
+
 import Page404 from './views/404';
 
 // Private
@@ -29,6 +31,7 @@ export default (
       <Route path="test-coverage" component={ TestCoverage } />
       <Route path=":file" component={ Code } />
     </Route>
+    <Route path="contact*" component={ Contact } />
     <Route path="login*" component={ Login } />
     <Route path="admin*" component={ Admin } loginRequired={ true } />
     <Route path="*" component={ Page404 } />
