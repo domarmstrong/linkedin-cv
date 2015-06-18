@@ -7,6 +7,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import request from '../request';
+import autobind from 'autobind-decorator';
 
 
 export default class Tests extends React.Component {
@@ -26,16 +27,51 @@ export default class Tests extends React.Component {
 
   componentDidMount () {
     this.setState({ isMounted: true });
+
+    client.socket.on('test-result', result => {
+      this.state.liveResult.push(result);
+      this.forceUpdate();
+    });
+    client.socket.on('test-error', err => {
+      console.log(err);
+      this.setState({
+        liveResult: [],
+        error: {
+          message: 'Woops. An error occured while running the test suit...',
+          error: err
+        }
+      });
+    });
   }
 
-  handleRunTests () {
+  componentWillUnmount () {
+    client.socket.off('test-result');
+    client.socket.off('test-error');
+  }
 
+  @autobind
+  handleRunTests () {
+    client.socket.emit('run-tests');
+    this.setState({
+      liveResult: [],
+      error: null,
+    });
   }
 
   renderResults () {
-    let result = this.state.liveResult || this.props.testResults;
-    console.log(this.props);
+    let { liveResult, error } = this.state;
 
+    if (error) {
+      return [
+        <li key="message"><h2>{ error.message }</h2></li>,
+        <li key="error"><pre><code>{ error.error }</code></pre></li>,
+      ]
+    }
+    else if (liveResult && ! liveResult.length) {
+      return <li><h2>Running...</h2></li>;
+    }
+
+    let result = liveResult || this.props.testResults;
     return result.map((entry, i) => {
       let [ type, data ] = entry;
       switch (type) {
@@ -76,7 +112,7 @@ export default class Tests extends React.Component {
           <li className="pass">Passing: { passes }
             <span className="duration">({ this.renderDuration(duration) })</span>
           </li>
-          <li className="pending">Pending: { pending }</li>
+          <li className="pending">Skipped: { pending }</li>
           <li className="fail">Failing: { failures }</li>
         </ul>
       </li>
@@ -107,5 +143,5 @@ export default class Tests extends React.Component {
   }
 }
 Tests.propTypes = {
-  testResults: React.PropTypes.object.isRequired,
+  testResults: React.PropTypes.array.isRequired,
 };

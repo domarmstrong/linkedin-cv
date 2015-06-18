@@ -23,7 +23,7 @@ export default {
     let child = spawn('node', [
       '--harmony',
       'node_modules/.bin/mocha',
-      '--compilers=js:babel/register',
+      '--require=./babel_register.js',
       '--recursive',
       `--reporter=${reporter}`,
     ], {
@@ -31,22 +31,23 @@ export default {
     });
 
     let stream = through.obj().pipe(child.stdout);
+    let errored = false;
 
     // Collect error from child process and emit
     child.stderr.on('data', (error) => {
-      let err = new Error();
-      err.stack = error.toString();
-      err.message = /Error: (.*)/.exec(err.stack);
-      err.message = err.message ? err.message[1] : null;
-      stream.emit('error', err);
+      let str = error.toString().trim();
+      if (! str) return;
+      errored = true;
+      stream.emit('error', new Error(str));
     });
-    child.on('close', code => stream.end());
+    child.on('close', () => stream.end());
 
     if (reporter === 'json-stream') {
       let results = { streamData: [] };
 
       child.on('close', code => {
-        if (code === 1) return; // Process errored
+        // Not using exit code as it seems to return 1 when no error occured
+        if (errored) return; // Process errored
         this.saveResult(results);
       });
 

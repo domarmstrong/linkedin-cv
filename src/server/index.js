@@ -13,6 +13,7 @@ import MongoStore from 'koa-generic-session-mongo';
 import gzip from 'koa-gzip';
 import fresh from 'koa-fresh';
 import etag from 'koa-etag';
+import socketIo from './socketIo';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 const d = debug('linkedIn-cv:server');
@@ -77,6 +78,10 @@ function init() {
     }
   });
   server.on('listening', () => console.info('Listening on: ' + app.port));
+
+  // Set up socket io
+  socketIo(server);
+
   server.listen(app.port);
 }
 
