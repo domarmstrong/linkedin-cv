@@ -4,9 +4,6 @@
  * Any files imported from this point are parsed with babel
  */
 
-require('babel/register')({
-  only: /(src|test)/,
-  stage: 0,
-});
+require('./babelregister');
 
 module.exports = require('./src/server/index.js');
