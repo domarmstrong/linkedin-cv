@@ -16,11 +16,13 @@ gulp.task('coverage', ['clean'], function () {
   let taskPath = path.resolve(process.cwd(), 'src/server/coverage');
   // Use babel register to parse the file and require the file executing its default function
   let init = `
-    require('babel/register');
-    require('${ taskPath }')().then(function () {
+    require('./babel_register');
+    require('${ taskPath }')().catch(function (err) {
+      console.error('ERROR:', err.stack);
+    }).then(function () {
       // Resolve hanging process
       process.nextTick(function () { process.exit(0) });
-    })
+    });
   `;
   let child = spawn('node', ['--harmony', '--harmony-proxies', '-e', init], { stdio: 'inherit' });
   child.on('close', code => process.exit(code));

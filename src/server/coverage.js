@@ -54,7 +54,7 @@ export default function createCoverage () {
   return setUpRequireHook()
     .then(instrumentSources(sources))
     .then(forceRequireSources(sources))
-    .then(test.runPromise)
+    .then(test.runPromise.bind(test))
     .then(createCoverageReport);
 }
 
@@ -102,6 +102,7 @@ function instrumentSources (sources) {
             sourceFileName: relative,
             sourceMapName: path.basename(relative) + '.map',
             sourceRoot: './',
+            stage: 0,
           });
           // Instrument the transformed code with istanbul
           instrumentedCode[f.path] = instrumenter.instrumentSync(transformed.code, f.path);

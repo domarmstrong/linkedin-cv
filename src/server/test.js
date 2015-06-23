@@ -4,7 +4,6 @@
 import gulp from 'gulp';
 import config from '../gulp/config';
 import path from 'path';
-import promisePipe from 'promisepipe';
 import tap from 'gulp-tap';
 import { spawn } from 'child_process';
 import stream from 'stream';
@@ -19,7 +18,7 @@ export default {
    * Run all tests with mocha
    * @returns {Stream}
    */
-  run (reporter, files) {
+  run (reporter) {
     reporter = reporter || config.test.mochaOpts.reporter;
 
     d(`Run tests with reporter: "${reporter}"`);
@@ -35,23 +34,26 @@ export default {
     });
 
     let stream = through.obj().pipe(child.stdout);
-    let errored = false;
+    let error = false;
 
     // Collect error from child process and emit
-    child.stderr.on('data', (error) => {
-      let str = error.toString().trim();
+    child.stderr.on('data', (err) => {
+      let str = err.toString().trim();
       if (! str) return;
-      errored = true;
-      stream.emit('error', new Error(str));
+      d(`ERROR: ${str}`);
+      error += str;
     });
-    child.on('close', () => stream.end());
+    child.on('close', () => {
+      if (error) stream.emit('error', new Error(error));
+      stream.end();
+    });
 
     if (reporter === 'json-stream') {
       let results = { streamData: [] };
 
       child.on('close', code => {
         // Not using exit code as it seems to return 1 when no error occured
-        if (errored) return; // Process errored
+        if (error) return;
         this.saveResult(results);
       });
 
@@ -87,7 +89,13 @@ export default {
    * @returns {Promise}
    */
   runPromise () {
-    return promisePipe( this.run );
+    d('Run promise');
+    return new Promise((resolve, reject) => {
+      let stream = this.run();
+      stream.on('data', data => process.stdout.write(data.toString()));
+      stream.on('error', err => { d('Test error', err); reject(err) });
+      stream.on('end', resolve);
+    });
   },
 
   /**
@@ -95,10 +103,12 @@ export default {
    * @returns {Promise,JSON}
    */
   jsonReport () {
-    let buffer = [];
-    let testStream = this.run('json-stream');
-    testStream.on('data', d => buffer.push(JSON.parse(d.toString())));
-
-    return promisePipe( testStream ).then(() => buffer);
+    return new Promise((resolve, reject) => {
+      let buffer = [];
+      let stream = this.run('json-stream');
+      stream.on('data', data => buffer.push(JSON.parse(data.toString())));
+      stream.on('error', err => { d('Test error', err); reject(err) });
+      stream.on('end', resolve(buffer));
+    });
   }
 }
