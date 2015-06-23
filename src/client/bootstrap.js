@@ -8,4 +8,6 @@
 import 'core-js/fn/object/assign';
 import Client from './client';
 
-window.client = new Client();
+if (typeof window !== 'undefined') {
+  window.client = new Client();
+}
