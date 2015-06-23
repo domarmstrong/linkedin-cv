@@ -10,7 +10,9 @@ import { spawn } from 'child_process';
 import stream from 'stream';
 import through from 'through2';
 import { db } from './db';
+import debug from 'debug';
 
+const d = debug('linkedIn-cv:test');
 
 export default {
   /**
@@ -19,6 +21,8 @@ export default {
    */
   run (reporter, files) {
     reporter = reporter || config.test.mochaOpts.reporter;
+
+    d(`Run tests with reporter: "${reporter}"`);
 
     let child = spawn('node', [
       '--harmony',
@@ -57,7 +61,7 @@ export default {
           this.push(chunk, enc);
           results.streamData.push(JSON.parse(chunk.toString()));
         } else {
-          console.info('IGNORED: ', chunk);
+          d('IGNORED: ', chunk);
         }
         done();
       }));
@@ -67,7 +71,7 @@ export default {
 
   saveResult (result) {
     db.collection('tests').insert(result).then(info => {
-      console.info('Saved test result', info._id);
+      d('Saved test result', info._id);
     }).catch(err => {
       // TODO: error log
       console.error('Error: ', err);

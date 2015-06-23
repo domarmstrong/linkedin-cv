@@ -13,11 +13,14 @@
  */
 
 var requireDir = require('require-dir');
+var debug = require('debug');
 
 // Parse further import with babel
 require('babel/register')({
   only: /(src|test)/
 });
+
+debug.enable('linkedIn-cv:*');
 
 // Require all tasks in gulp/tasks, including subfolders
 requireDir('./src/gulp/tasks', { recurse: true });

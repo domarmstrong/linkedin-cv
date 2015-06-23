@@ -27,7 +27,9 @@ import istanbulSourceMap from 'istanbul-coverage-source-map';
 import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
 import test from './test';
+import debug from 'debug';
 
+const d = debug('linkedIn-cv:coverage');
 
 // Holds transformed and instrumented code against absolute file paths
 // eg. { '/home/foo/bar/file.js': 'file code..' }
@@ -88,6 +90,7 @@ function instrumentSources (sources) {
     return promisePipe(
       gulp.src(sources)
         .pipe(tap(f => {
+          d('INSTRUMENT:', f.path);
           // Get the files relative path
           let relative = path.relative(process.cwd(), f.path);
           // Add original file path > map file path from cwd
@@ -123,6 +126,7 @@ function forceRequireSources (sources) {
         // Clear requires cache to make sure transformed files are returned
         .pipe(tap(f => delete require.cache[path.resolve(f.path)]))
         // Make sure all source files are required or they may not get code coverage
+        .pipe(tap(f => d('REQUIRE:', f.path)))
         .pipe(tap(f => require(f.path)))
     );
   }
@@ -133,6 +137,7 @@ function forceRequireSources (sources) {
  * @returns {Promise}
  */
 function createCoverageReport () {
+  d('REPORT', config.coverage);
   let collector = new istanbul.Collector();
   let reporter = new istanbul.Reporter(null, config.coverage.reportDir);
 
