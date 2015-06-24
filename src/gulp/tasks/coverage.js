@@ -10,7 +10,7 @@ import { spawn } from 'child_process'
  * Since this task requires --harmony and gulp does not run with harmony by default
  * we can get around this by spawning a child process that runs with harmony
  */
-gulp.task('coverage', ['clean'], function () {
+gulp.task('coverage', ['cleancoverage'], function () {
   // Spawn a new child process running with harmony and run the coverage file
   // Get the absolute path so the file we want to run
   let taskPath = path.resolve(process.cwd(), 'src/server/coverage');

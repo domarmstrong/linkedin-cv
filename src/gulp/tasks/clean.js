@@ -13,6 +13,10 @@ gulp.task('clean', function () {
   return gulp.src(['./build', './node_modules/install.stamp'], { read: false }).pipe(clean());
 });
 
+gulp.task('cleancoverage', function () {
+  return gulp.src(['./build/coverage', './build/maps'], { read: false }).pipe(clean());
+});
+
 /**
  * Hard reset the working directory including compiled files and node_modules
  **/
