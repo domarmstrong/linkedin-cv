@@ -28,7 +28,7 @@ let agent = superagentPromise(superagent, Promise);
  * @param url {String}
  * @returns {String}
  */
-function toAbsoluteUrl (url) {
+export function toAbsoluteUrl (url) {
   // TODO make more robust pattern match?
   if (!process.browser && url[0] === '/') {
     return 'http://localhost:' + config.app_port + url;
@@ -58,8 +58,8 @@ Object.assign(Agent, {
     return agent;
   },
 
-  get (url, ...args) {
-    let req = this.agent('GET', toAbsoluteUrl(url), ...args);
+  get (url) {
+    let req = this.agent('GET', toAbsoluteUrl(url));
 
     return req.then(res => {
       cache[url] = res;

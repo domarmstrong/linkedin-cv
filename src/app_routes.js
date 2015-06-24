@@ -27,9 +27,11 @@ global.React = require('react');
 export default (
   <Route path="/" component={ App } indexRoute={{ component: CV }}>
     <Route path="the-code" indexRoute={{ component: LookInside }}>
+      <Route path="files/:file" component={ Code } />
       <Route path="tests" component={ Tests } />
-      <Route path="test-coverage" component={ TestCoverage } />
-      <Route path=":file" component={ Code } />
+      <Route path="test-coverage" indexRoute={{ component: TestCoverage }}>
+        <Route path="*" component={ TestCoverage } />
+      </Route>
     </Route>
     <Route path="contact*" component={ Contact } />
     <Route path="login*" component={ Login } />

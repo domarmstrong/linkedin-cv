@@ -3,7 +3,7 @@
 import { assert } from 'chai';
 import { fetchProps } from '../src/app_routes.js'
 
-describe.only('app routes', () => {
+describe('app_routes', () => {
   describe('fetchProps', () => {
     it('returns a map', () => {
       return fetchProps({ branch: [] }).then(data => {
