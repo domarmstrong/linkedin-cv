@@ -9,7 +9,7 @@
 
 import { Router } from 'react-router';
 import Location from 'react-router/lib/Location';
-import routes, { fetchProps } from '../../app-routes';
+import routes, { fetchProps } from '../../app_routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import queryString from 'querystring';
