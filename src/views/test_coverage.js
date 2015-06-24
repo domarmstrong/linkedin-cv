@@ -11,10 +11,8 @@ export default class TestCoverage extends React.Component {
   render () {
 
     return (
-      <div id="test-coverage" className="single-col">
-        <h1>Tests coverage</h1>
-
-        <iframe src="/test-coverage/index.html" />
+      <div id="test-coverage">
+        <iframe className="test-coverage" src="/test-coverage/index.html" />
       </div>
     )
   }
