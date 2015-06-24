@@ -10,6 +10,7 @@ import stream from 'stream';
 import through from 'through2';
 import { db } from './db';
 import debug from 'debug';
+import Mocha from 'mocha';
 
 const d = debug('linkedIn-cv:test');
 
@@ -69,6 +70,32 @@ export default {
       }));
     }
     return stream;
+  },
+
+  /**
+   * Run the full test suit in this node process
+   * ignore failures etc
+   * @returns {Promise}
+   */
+  runForCoverage () {
+    return new Promise((resolve, reject) => {
+      let mocha = new Mocha();
+
+      let src = gulp.src('./test/**/*.js').pipe(tap(f => {
+        mocha.addFile(f.path);
+      }));
+
+      src.on('end', () => {
+        try {
+          mocha.run(failures => {
+            // dont care about failures
+            resolve(failures);
+          });
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
   },
 
   saveResult (result) {

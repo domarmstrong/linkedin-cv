@@ -55,8 +55,8 @@ export default function createCoverage () {
   return setUpRequireHook()
     .then(instrumentSources(sources))
     .then(forceRequireSources(sources))
-    .then(test.runPromise.bind(test))
-    .then(createCoverageReport);
+    .then(test.runForCoverage.bind(test))
+    .then(createCoverageReport)
     .then(addCustomCSS);
 }
 
@@ -74,7 +74,7 @@ function setUpRequireHook () {
     // Options
     {}
   );
-  // Return promise to allow chain, because it reads better ;)
+  // Return promise to allow chain, because it reads better
   return Promise.resolve();
 }
 
@@ -92,7 +92,7 @@ function instrumentSources (sources) {
     return promisePipe(
       gulp.src(sources)
         .pipe(tap(f => {
-          d('INSTRUMENT:', f.path);
+          //d('INSTRUMENT:', f.path);
           // Get the files relative path
           let relative = path.relative(process.cwd(), f.path);
           // Add original file path > map file path from cwd
@@ -129,7 +129,7 @@ function forceRequireSources (sources) {
         // Clear requires cache to make sure transformed files are returned
         .pipe(tap(f => delete require.cache[path.resolve(f.path)]))
         // Make sure all source files are required or they may not get code coverage
-        .pipe(tap(f => d('REQUIRE:', f.path)))
+        //.pipe(tap(f => d('REQUIRE:', f.path)))
         .pipe(tap(f => require(f.path)))
     );
   }
