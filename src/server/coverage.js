@@ -28,6 +28,7 @@ import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
 import test from './test';
 import debug from 'debug';
+import fs from 'fs';
 
 const d = debug('linkedIn-cv:coverage');
 
@@ -56,6 +57,7 @@ export default function createCoverage () {
     .then(forceRequireSources(sources))
     .then(test.runPromise.bind(test))
     .then(createCoverageReport);
+    .then(addCustomCSS);
 }
 
 /**
@@ -154,5 +156,19 @@ function createCoverageReport () {
 
     reporter.addAll(config.coverage.reports);
     reporter.write(collector, true, done => resolve());
+  });
+}
+
+/**
+ * Add some custom css fixes to the istanbul html report
+ * @returns {Promise}
+ */
+function addCustomCSS () {
+  return new Promise((resolve, reject) => {
+    let cssPath = path.join(config.coverage.reportDir, 'base.css');
+    let css = `
+      .header { padding-left: 35px !important; }
+    `;
+    fs.appendFile(cssPath, css, err => err ? reject(err) : resolve());
   });
 }
