@@ -4,6 +4,7 @@ var libs = [
   'react-router',
   'react-router/lib/Location',
   'react-router/lib/BrowserHistory',
+  'socket.io-client',
   'superagent',
   'superagent-promise',
 ];
