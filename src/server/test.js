@@ -5,7 +5,7 @@ import gulp from 'gulp';
 import config from '../gulp/config';
 import path from 'path';
 import tap from 'gulp-tap';
-import { spawn } from 'child_process';
+import childProcess from 'child_process';
 import stream from 'stream';
 import through from 'through2';
 import { db } from './db';
@@ -24,7 +24,7 @@ export default {
 
     d(`Run tests with reporter: "${reporter}"`);
 
-    let child = spawn('node', [
+    let child = childProcess.spawn('node', [
       '--harmony',
       'node_modules/.bin/mocha',
       '--require=./babel_register.js',
@@ -60,12 +60,15 @@ export default {
 
       // Filter out lines that doe not look like json-stream data
       stream = stream.pipe(through.obj(function (chunk, enc, done) {
-        if (/^\["(start|pass|fail|end)"/.test(chunk)) {
-          this.push(chunk, enc);
-          results.streamData.push(JSON.parse(chunk.toString()));
-        } else {
-          d('IGNORED: ', chunk);
-        }
+        let lines = chunk.toString().split('\n');
+        lines.filter(line => line.trim()).forEach(line => {
+          if (/^\["(start|pass|fail|end)"/.test(line)) {
+            this.push(line, enc);
+            results.streamData.push(JSON.parse(line));
+          } else {
+            d('IGNORED: ', line);
+          }
+        });
         done();
       }));
     }
