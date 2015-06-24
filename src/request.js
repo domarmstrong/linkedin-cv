@@ -40,7 +40,7 @@ export function toAbsoluteUrl (url) {
  * Export an agent with all methods extended to use absolute urls
  */
 export default function Agent(method, url, ...args) {
-  return this.agent(method, toAbsoluteUrl(url), ...args);
+  return Agent.agent(method, toAbsoluteUrl(url), ...args);
 }
 Object.keys(agent).forEach(key => {
   Agent[key] = function (url, ...args) {

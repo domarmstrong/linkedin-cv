@@ -30,6 +30,7 @@ export default class TestCoverage extends React.Component {
   hijackLinks () {
     let frame = React.findDOMNode(this.refs.frame);
     let window = frame.contentWindow;
+    if (window.document.documentElement === null) return; // document is not loaded properly
     let nodes = window.document.querySelectorAll('a');
     for (var i = 0; i < nodes.length; i++) {
       nodes[i].addEventListener('click', this.linkListener, false);
