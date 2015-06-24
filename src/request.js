@@ -40,11 +40,11 @@ function toAbsoluteUrl (url) {
  * Export an agent with all methods extended to use absolute urls
  */
 export default function Agent(method, url, ...args) {
-  return agent(method, toAbsoluteUrl(url), ...args);
+  return this.agent(method, toAbsoluteUrl(url), ...args);
 }
 Object.keys(agent).forEach(key => {
   Agent[key] = function (url, ...args) {
-    return agent[key](toAbsoluteUrl(url), ...args);
+    return this.agent[key](toAbsoluteUrl(url), ...args);
   };
 });
 
@@ -52,37 +52,31 @@ let cache = {};
 
 Object.assign(Agent, {
   /**
-   * Make a get request and cache the results
-   * further request with the same url and query params will return from cache
-   * and not make a new request.
+   * Return the original unwrapped agent. Allows for mocking with tests.
+   */
+  get agent () {
+    return agent;
+  },
+
+  get (url, ...args) {
+    let req = this.agent('GET', toAbsoluteUrl(url), ...args);
+
+    return req.then(res => {
+      cache[url] = res;
+      return Promise.resolve(res);
+    });
+  },
+
+  /**
+   * If a request with the same url has been made already return its result
+   * else make a new request
    * @param url
    */
   getCached (url) {
-    //if (cache[url]) return Promise.resolve(cache[url]);
-    let req = Agent('GET', toAbsoluteUrl(url));
-
-    function getCacheKey(req) {
-      return req.url + (JSON.stringify(req.qs || req._query) || '');
+    if (cache[url]) {
+      return Promise.resolve(cache[url]);
+    } else {
+      return this.get(url);
     }
-
-    req.end = function (...args) {
-      throw new Error('Not implemented');
-    };
-
-    let then = req.then;
-    req.then = function (resolve, reject) {
-      let key = getCacheKey(this);
-      if (key in cache) {
-        return resolve(cache[key]);
-      } else {
-        return then.call(this, res => {
-          // Cache the res
-          cache[key] = res;
-          return res;
-        }, reject).then(resolve);
-      }
-    };
-
-    return req;
   }
 });
