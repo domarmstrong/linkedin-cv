@@ -28,7 +28,7 @@ export default {
       browserifyOpts: {
         // absolute path required to analyze with disc
         entries: [cwd + '/src/client/bootstrap.js'],
-        fullPaths: false,
+        fullPaths: true,
       },
       external: libs,
       require: [],
