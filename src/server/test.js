@@ -112,33 +112,6 @@ export default {
 
   getLastResult () {
     return db.collection('tests').findOne({}, { sort: { _id: -1 } });
-  },
-
-  /**
-   * Run all tests with mocha
-   * @returns {Promise}
-   */
-  runPromise () {
-    d('Run promise');
-    return new Promise((resolve, reject) => {
-      let stream = this.run();
-      stream.on('data', data => process.stdout.write(data.toString()));
-      stream.on('error', err => { d('Test error', err); reject(err) });
-      stream.on('end', resolve);
     });
   },
-
-  /**
-   * Run all tests with mocha return collected json-stream report
-   * @returns {Promise,JSON}
-   */
-  jsonReport () {
-    return new Promise((resolve, reject) => {
-      let buffer = [];
-      let stream = this.run('json-stream');
-      stream.on('data', data => buffer.push(JSON.parse(data.toString())));
-      stream.on('error', err => { d('Test error', err); reject(err) });
-      stream.on('end', resolve(buffer));
-    });
-  }
 }
