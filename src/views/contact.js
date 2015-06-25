@@ -10,11 +10,6 @@ import request from '../request';
 let cache = {};
 
 export default class Contact extends React.Component {
-
-  static _fetchProps () {
-    return request.getCached('/api/contact-details').then(res => res.body);
-  }
-
   render () {
     let { contact } = this.props;
 
