@@ -52,6 +52,9 @@ export default function createCoverage () {
   instrumentedCode = {};
   sourceMaps = {};
 
+  // Inject babel helper globals
+  require('babel-core/external-helpers');
+
   return setUpRequireHook()
     .then(instrumentSources(sources))
     .then(forceRequireSources(sources))
@@ -105,6 +108,8 @@ function instrumentSources (sources) {
             sourceMapName: path.basename(relative) + '.map',
             sourceRoot: './',
             stage: 0,
+            ast: false,
+            externalHelpers: true,
           });
           // Instrument the transformed code with istanbul
           instrumentedCode[f.path] = instrumenter.instrumentSync(transformed.code, f.path);
