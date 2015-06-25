@@ -117,7 +117,10 @@ export default {
   },
 
   getLastResult () {
-    return db.collection('tests').findOne({}, { sort: { _id: -1 } });
+    return db.collection('tests').find().sort( { _id : -1 } ).limit(1).then(result => {
+      let testResult = result[0];
+      if (! testResult) return { streamData: [] };
+      return testResult;
     });
   },
 }
