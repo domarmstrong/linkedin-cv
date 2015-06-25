@@ -19,7 +19,7 @@ gulp.task('run', ['less'], function () {
   // Start server
   supervisor(config.run.entry, {
     harmony: true, // Enable harmony with generator support for Koa
-    watch: config.run.watch, // Watch src for any changes
+    watch: global.watching ? config.run.watch : ['./null'], // Watch files for any changes
     extensions: config.run.extensions, // Add file extensions to watch
   });
 });
