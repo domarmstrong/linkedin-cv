@@ -11,4 +11,9 @@ import path from 'path';
 
 const config = require(path.join(process.cwd(), 'config.js'));
 
-export var db = mongodb(config.mongodb.connectionString);
+let connectionString = config.mongodb.connectionString;
+
+if (process.env.NODE_ENV === 'test') {
+  connectionString += '_test';
+}
+export var db = mongodb(connectionString);

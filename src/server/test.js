@@ -31,7 +31,10 @@ export default {
       '--recursive',
       `--reporter=${reporter}`,
     ], {
-      env: { 'MOCHA_COLORS': true }
+      env: {
+        NODE_ENV: 'test',
+        MOCHA_COLORS: true,
+      }
     });
 
     let stream = through.obj().pipe(child.stdout);
@@ -81,6 +84,9 @@ export default {
    * @returns {Promise}
    */
   runForCoverage () {
+    if (process.env.NODE_ENV !== 'test') {
+      throw new Error('Only run in test env');
+    }
     return new Promise((resolve, reject) => {
       let mocha = new Mocha();
 
