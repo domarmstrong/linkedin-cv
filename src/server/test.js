@@ -38,44 +38,55 @@ export default {
     });
 
     let stream = through.obj().pipe(child.stdout);
-    let error = false;
+    let error = null;
 
     // Collect error from child process and emit
     child.stderr.on('data', (err) => {
       let str = err.toString().trim();
       if (! str) return;
       d(`ERROR: ${str}`);
-      error += str;
+      error = error ? error + '\n' + str : str;
     });
     child.on('close', () => {
       if (error) stream.emit('error', new Error(error));
+      stream.emit('end');
       stream.end();
     });
 
     if (reporter === 'json-stream') {
-      let results = { streamData: [] };
-
-      child.on('close', code => {
-        // Not using exit code as it seems to return 1 when no error occured
-        if (error) return;
-        this.saveResult(results);
-      });
-
-      // Filter out lines that doe not look like json-stream data
-      stream = stream.pipe(through.obj(function (chunk, enc, done) {
-        let lines = chunk.toString().split('\n');
-        lines.filter(line => line.trim()).forEach(line => {
-          if (/^\["(start|pass|fail|end)"/.test(line)) {
-            this.push(line, enc);
-            results.streamData.push(JSON.parse(line));
-          } else {
-            d('IGNORED: ', line);
-          }
-        });
-        done();
-      }));
+      stream = this.collectJSONStream(stream, error);
     }
     return stream;
+  },
+
+  /**
+   * Filter and parse json-stream report data
+   * if the test run was successful (no fatal errors) save the result to database
+   */
+  collectJSONStream (stream, error) {
+    let results = { streamData: [] };
+
+    stream.on('end', () => {
+      if (error) return;
+      // If there were no errors save these test results to the database
+      // save is left to run and not waited for
+      // (test failures are not errors)
+      this.saveResult(results);
+    });
+
+    // Filter out lines that doe not look like json-stream data
+    return stream.pipe(through.obj(function (chunk, enc, done) {
+      let lines = chunk.toString().split('\n');
+      lines.filter(line => line.trim()).forEach(line => {
+        if (/^\["(start|pass|fail|end)"/.test(line)) {
+          this.push(line, enc);
+          results.streamData.push(JSON.parse(line));
+        } else {
+          d('IGNORED: ', line);
+        }
+      });
+      done();
+    }));
   },
 
   /**
@@ -90,26 +101,23 @@ export default {
     return new Promise((resolve, reject) => {
       let mocha = new Mocha();
 
-      let src = gulp.src('./test/**/*.js').pipe(tap(f => {
+      let src = gulp.src(config.test.src).pipe(tap(f => {
         mocha.addFile(f.path);
       }));
 
       src.on('end', () => {
-        try {
-          mocha.run(failures => {
-            // dont care about failures
-            resolve(failures);
-          });
-        } catch (err) {
-          reject(err);
-        }
+        mocha.run(failures => {
+          // dont care about failures
+          resolve(failures);
+        });
       });
     });
   },
 
   saveResult (result) {
-    db.collection('tests').insert(result).then(info => {
-      d('Saved test result', info._id);
+    return db.collection('tests').insert(result).then(saved => {
+      d('Saved test result', saved._id);
+      return saved;
     }).catch(err => {
       // TODO: error log
       console.error('Error: ', err);
