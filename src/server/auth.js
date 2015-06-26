@@ -76,8 +76,7 @@ export function passportDeserialize (id, done) {
   db.collection('users')
     .findOne({ _id: id })
     .then(user => done(null, user))
-    .catch(err => done(err))
-    .done();
+    .catch(err => done(err));
 }
 
 /**
@@ -95,6 +94,5 @@ export function passportStrategy (username, password, done) {
       done(null, false, {message: 'Username or password incorrect'});
     }
   })
-  .catch(done)
-  .done();
+  .catch(done);
 }

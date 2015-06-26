@@ -26,6 +26,6 @@ auth.createUser(argv.u, argv.p).then(function (info) {
   process.stdout.write(wrap('User created id: ' + info._id + ' > ' + info.username));
 }).catch(function (err) {
   process.stderr.write(wrap('Error: ' + err.message));
-}).finally(function () {
+}).then(function () {
   process.exit();
-}).done();
+});
