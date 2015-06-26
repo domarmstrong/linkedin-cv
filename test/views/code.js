@@ -32,4 +32,19 @@ describe('Code view page', () => {
       });
     });
   });
+
+  describe('fetchProps', () => {
+    it('runs without error', () => {
+      let state = {
+        params: {
+          file: 'README.md',
+        }
+      };
+      return Code.fetchProps(state).then(data => {
+        assert.typeOf(data, 'object');
+        assert.typeOf(data.tree, 'object');
+        assert.typeOf(data.code, 'string');
+      });
+    });
+  });
 });
