@@ -28,6 +28,7 @@ export default {
       '--harmony',
       'node_modules/.bin/mocha',
       '--require=./babel_register.js',
+      '--require=./test/test_setup.js',
       '--recursive',
       `--reporter=${reporter}`,
     ], {

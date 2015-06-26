@@ -17,9 +17,10 @@
  * }
  */
 
+// test_setup must be imported before react is ever imported
+import '../../test/test_setup';
 import gulp from 'gulp';
 import config from '../gulp/config';
-import mocha from 'gulp-mocha';
 import path from 'path';
 import { transform as babel } from 'babel';
 import istanbul from 'istanbul';

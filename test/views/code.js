@@ -14,7 +14,6 @@ describe('Code view page', () => {
       tree: {},
       code: '<pre>var code = true</pre>',
     };
-    test_utils.createDOM();
   });
 
   it('renders with no errors', () => {
@@ -36,9 +35,7 @@ describe('Code view page', () => {
   describe('fetchProps', () => {
     it('runs without error', () => {
       let state = {
-        params: {
-          file: 'README.md',
-        }
+        params: { file: 'README.md' },
       };
       return Code.fetchProps(state).then(data => {
         assert.typeOf(data, 'object');
