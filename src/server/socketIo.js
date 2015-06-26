@@ -13,15 +13,17 @@ export default function socketIoInit (server) {
   io.on('connection', socket => {
     console.log('Socket connected');
 
-    socket.on('run-tests', () => {
-      let stream = test.run('json-stream');
-      stream.on('data', d => {
-        socket.emit('test-result', JSON.parse(d.toString()));
-      });
-      stream.on('error', err => {
-        console.error(err);
-        socket.emit('test-error', err.message);
-      })
-    });
+    socket.on('run-tests', runTests);
   });
+}
+
+export function runTests (socket) {
+  test.run('json-stream')
+    .on('data', d => {
+      this.emit('test-result', JSON.parse(d.toString()));
+    })
+    .on('error', err => {
+      console.error(err);
+      this.emit('test-error', err.message);
+    });
 }
