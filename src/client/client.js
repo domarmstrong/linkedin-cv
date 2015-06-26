@@ -7,13 +7,16 @@
 import router from './router';
 import io from 'socket.io-client';
 
-// Client is a singleton in the browser to this isn't a problem
-let socket = null;
-
 export default class Client {
   constructor () {
     console.info('Bootstrap client');
-    router.init();
+    this._socket = null;
+  }
+
+  init () {
+    if (process.browser) {
+      router.init();
+    }
   }
 
   /**
@@ -21,7 +24,7 @@ export default class Client {
    * @returns {socket}
    */
   get socket () {
-    if (! socket) socket = io();
-    return socket;
+    if (! this._socket) this._socket = io();
+    return this._socket;
   }
 }
