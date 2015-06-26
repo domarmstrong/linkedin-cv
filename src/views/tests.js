@@ -51,11 +51,13 @@ export default class Tests extends React.Component {
 
   @autobind
   handleRunTests () {
-    client.socket.emit('run-tests');
+    // need to set state sync for testing
     this.setState({
       liveResult: [],
       error: null,
     });
+
+    client.socket.emit('run-tests');
   }
 
   renderResults () {
@@ -63,8 +65,8 @@ export default class Tests extends React.Component {
 
     if (error) {
       return [
-        <li key="message"><h2>{ error.message }</h2></li>,
-        <li key="error"><pre><code>{ error.error }</code></pre></li>,
+        <li key="message" className="error"><h2>{ error.message }</h2></li>,
+        <li key="error" className="error"><pre><code>{ error.error }</code></pre></li>,
       ]
     }
     else if (liveResult && ! liveResult.length) {
