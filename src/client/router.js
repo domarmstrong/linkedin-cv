@@ -18,6 +18,9 @@ function onTransition(nextState, transition, cb) {
   fetchProps(nextState).then(_routeData => {
     routeData = _routeData;
     cb();
+  }).catch(err => {
+    console.log(err); // TODO error logging
+    cb(err);
   });
 }
 
