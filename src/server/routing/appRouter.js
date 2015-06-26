@@ -13,7 +13,6 @@ import routes, { fetchProps } from '../../app_routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import queryString from 'querystring';
-import auth from '../../interfaces/auth';
 
 /**
  * Use react router to serve app pages statically
@@ -27,9 +26,6 @@ export default {
 }
 
 function createAuth(req) {
-  /**
-   * @implements auth
-   */
   return {
     isAuthenticated () {
       return req.isAuthenticated();
