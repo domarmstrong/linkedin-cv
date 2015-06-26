@@ -13,7 +13,7 @@ import request from '../request';
  * @param str
  * @return {Array} <p> elements
  */
-function formatParas(str) {
+export function formatParas(str) {
   if (typeof str !== 'string') return str;
   return str.split('\n')
     .filter(para => !!para)
@@ -169,9 +169,8 @@ class Skill extends React.Component {
   }
 }
 
-class Position extends React.Component {
-  getTimeSpent () {
-    let { startDate, endDate } = this.props;
+export class Position extends React.Component {
+  static getTimeSpent (startDate, endDate) {
     if (! endDate) {
       let now = new Date();
       endDate = {
@@ -179,23 +178,23 @@ class Position extends React.Component {
         year: now.getFullYear(),
       }
     }
-    let years = endDate.years - startDate.years;
-    let months = endDate.months - startDate.months;
+    let years = endDate.year - startDate.year;
+    let months = endDate.month - startDate.month;
 
     function plural(str, n) {
-      return str + (years > 1 ? 's' : '');
+      return str + (n > 1 ? 's' : '');
     }
     let time = [];
     if (years) {
-      time.push(`${ years } ${ plural('years', years) }`);
+      time.push(`${ years } ${ plural('year', years) }`);
     }
     if (months) {
-      time.push(`${ months } ${ plural('months', months)}`);
+      time.push(`${ months } ${ plural('month', months)}`);
     }
     if (! (years || months)) {
       time.push('1 month');
     }
-    return '(' + time.join(' ') + ')';
+    return time.join(' ');
   }
 
   render () {
@@ -213,7 +212,7 @@ class Position extends React.Component {
             ) : (
               <span>Present</span>
             )}
-            <span> { this.getTimeSpent() }</span>
+            <span> ({ Position.getTimeSpent(startDate, endDate) })</span>
           </div>
         </header>
 
