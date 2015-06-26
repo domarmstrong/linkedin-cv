@@ -5,10 +5,55 @@
  */
 
 import React from 'react';
+import autobind from 'autobind-decorator';
+import request from '../request';
 
 export default class Login extends React.Component {
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      username: props.username || '',
+      password: '',
+      validation: props.validation || {},
+    };
+  }
+
+  submit (username, password) {
+    return request.post('/login')
+      .type('json')
+      .accept('json')
+      .send({ username, password })
+      .then(res => {
+        console.log(this.props.routerState);
+        this.context.router.transitionTo();
+      }).catch(err => {
+        if (err.message === 'Unauthorized') {
+          this.setState({ validation: { login: err.response.text }});
+        } else {
+          console.log(err); // TODO error logging
+        }
+      });
+  }
+
+  @autobind
+  handleUsername (event) {
+    this.setState({ username: event.target.value });
+  }
+
+  @autobind
+  handlePassword (event) {
+    this.setState({ password: event.target.value });
+  }
+
+  @autobind
+  handleSubmit (event) {
+    this.submit(this.state.username, this.state.password);
+    event.preventDefault();
+  }
+
   render () {
-    let { username, validation } = this.props;
+    let { username, password, validation } = this.state;
 
     return (
       <div className="login">
@@ -21,12 +66,12 @@ export default class Login extends React.Component {
               { validation.login && <div className="form-validation">{ validation.login }</div> }
 
               <label htmlFor="username">Username</label>
-              <input name="username" type="text" placeholder="Username" value={ username } />
+              <input ref="username" name="username" type="text" placeholder="Username" value={ username } onChange={ this.handleUsername }/>
 
               <label htmlFor="password">Password</label>
-              <input name="password" type="password" placeholder="Password" />
+              <input ref="password" name="password" type="password" placeholder="Password" value={ password } onChange={ this.handlePassword } />
 
-              <button type="submit">Sign in</button>
+              <button ref="submit" type="submit" onClick={ this.handleSubmit }>Sign in</button>
             </fieldset>
           </form>
         </div>
@@ -34,6 +79,9 @@ export default class Login extends React.Component {
     )
   }
 }
+Login.contextTypes = {
+  router: React.PropTypes.any,
+};
 Login.propTypes = {
   username: React.PropTypes.string,
   validation: React.PropTypes.object,

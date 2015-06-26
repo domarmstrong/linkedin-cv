@@ -14,6 +14,8 @@ import code from '../code';
 import test from '../test';
 import config from '../../../config';
 
+import Login from '../../views/login';
+
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
 
@@ -23,17 +25,27 @@ publicRoutes.post('/login', function *(next) {
   let { username } = this.request.body;
   let query = queryString.parse(this.req.url.split('?')[1]);
 
+  let jsonRes = this.accepts('json') === 'json';
+
   yield* passport.authenticate('local', function*(err, user, info) {
     if (err) throw err;
 
     if (user) {
       d('Login success: ', username);
       yield ctx.login(user);
-      ctx.redirect(query.next || defaultLoginPath);
+      if (jsonRes) {
+        ctx.body = 'success';
+      } else {
+        ctx.redirect(query.next || defaultLoginPath);
+      }
     } else {
       d('Login failed: ', username, info.message);
       ctx.status = 401;
-      ctx.body = render(<Login username={ username } validation={{ login: info.message }} />);
+      if (jsonRes) {
+        ctx.body = info.message;
+      } else {
+        ctx.body = render(<Login username={ username } validation={{ login: info.message }} />);
+      }
     }
   }).call(this, next);
 });

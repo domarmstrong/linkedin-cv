@@ -32,7 +32,7 @@ let auth = {
    *
    * @param username
    * @param password
-   * @return {Object} the new user record
+   * @return {Promise, [Object]} the new user record
    */
   createUser (username, password) {
     if (! (username || password)) {
@@ -54,6 +54,21 @@ let auth = {
       });
     });
   },
+
+  /**
+   * Delete a user by username
+   *
+   * @param username
+   * @return {Promise}
+   */
+  deleteUser (username) {
+    let users = db.collection('users');
+    return users.findOne({ username }).then(existing => {
+      if (! existing) throw new Error('User ' + username + ' does not exist');
+    }).then(() => {
+      return users.remove({ username });
+    });
+  }
 };
 
 export default auth;
@@ -91,7 +106,7 @@ export function passportStrategy (username, password, done) {
     if (user) {
       done(null, user);
     } else {
-      done(null, false, {message: 'Username or password incorrect'});
+      done(null, false, { message: 'Username or password incorrect' });
     }
   })
   .catch(done);
