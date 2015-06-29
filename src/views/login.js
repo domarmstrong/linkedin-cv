@@ -25,8 +25,10 @@ export default class Login extends React.Component {
       .accept('json')
       .send({ username, password })
       .then(res => {
-        console.log(this.props.routerState);
-        this.context.router.transitionTo();
+        let query = this.props.routerState.location.query;
+        let page = '/admin';
+        if (query && query.then) page = query.then;
+        this.context.router.transitionTo(page);
       }).catch(err => {
         if (err.message === 'Unauthorized') {
           this.setState({ validation: { login: err.response.text }});

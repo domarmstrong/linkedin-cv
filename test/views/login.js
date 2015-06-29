@@ -8,7 +8,7 @@ import test_utils from '../test_utils';
 import TestUtils from 'react/addons/TestUtils';
 import auth from '../../src/server/auth';
 
-describe.only('Login page', () => {
+describe('Login page', () => {
   it('renders with no errors', () => {
     React.renderToString( <Login /> );
   });
@@ -53,7 +53,16 @@ describe.only('Login page', () => {
 
       it('redirects based on the querystring on success', () => {
         let router = { transitionTo: sinon.stub() };
-        return test_utils.renderWithRouter(Login, {}, { router }).then(comp => {
+        return test_utils.renderWithRouter(Login, {}, { router }, '/login?then=%2Ffoo').then(comp => {
+          return comp.submit('testUser', 'testPass').then(() => {
+            assert.equal(router.transitionTo.args[0][0], '/foo');
+          });
+        });
+      });
+
+      it('redirects to /admin if no querystring', () => {
+        let router = { transitionTo: sinon.stub() };
+        return test_utils.renderWithRouter(Login, {}, { router }, '/login').then(comp => {
           return comp.submit('testUser', 'testPass').then(() => {
             assert.equal(router.transitionTo.args[0][0], '/admin');
           });
