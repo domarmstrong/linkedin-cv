@@ -25,8 +25,8 @@ export default {
     d(`Run tests with reporter: "${reporter}"`);
 
     let child = childProcess.spawn('node', [
-      '--harmony',
       'node_modules/.bin/mocha',
+      '--harmony',
       '--require=./babel_register.js',
       '--require=./test/test_setup.js',
       '--recursive',
