@@ -3,8 +3,10 @@
 import { assert } from 'chai';
 import request from '../src/request';
 import sinon from 'sinon';
+import config from '../config';
 
 let AGENT = request.agent;
+let PORT = config.app_port;
 
 describe('request', () => {
   afterEach(() => {
@@ -18,7 +20,7 @@ describe('request', () => {
     request.agent = function (method, url) {
       called = true;
       assert.equal(method, 'GET');
-      assert.equal(url, 'http://localhost:8080/foo');
+      assert.equal(url, `http://localhost:${PORT}/foo`);
     };
     request('GET', '/foo');
     assert(called);
@@ -37,16 +39,32 @@ describe('request', () => {
     assert(called);
   });
 
-  it('wraps all helper methods on the agent', () => {
-    ['get', 'head', 'del', 'patch', 'post', 'put'].forEach(key => {
-      try {
-        sinon.stub(request.agent, key);
+  describe('wrapped methods', () => {
+    let methods = ['get', 'head', 'del', 'patch', 'post', 'put'];
+    beforeEach(() => {
+      methods.forEach(key => {
+        sinon.stub(request.agent, key).returns('res');
+      });
+    });
+    afterEach(() => {
+      methods.forEach(key => {
+        request.agent[key].restore();
+      });
+    });
+
+    it('make url absolute for the server', () => {
+      methods.forEach(key => {
         request[key]('/foo', {});
-        request.agent[key].calledWith('http://localhost:8080/foo');
-      } catch (err) {
-        sinon.restore(request.agent, key);
-        throw err;
-      }
+        request.agent[key].calledWith(`http://localhost:${PORT}/foo`);
+      });
+    });
+
+    it('leave url unchanged for the browser', () => {
+      process.browser = true;
+      methods.forEach(key => {
+        request[key]('/foo', {});
+        request.agent[key].calledWith(`/foo`);
+      });
     });
   });
 
