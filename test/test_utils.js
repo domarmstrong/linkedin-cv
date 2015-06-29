@@ -20,7 +20,7 @@ export default {
    * @property props {Object}
    * @property done {Function} receives ref to rendered component
    */
-  renderWithRouter (Component, props={}, context={}) {
+  renderWithRouter (Component, props={}, context={}, url='/') {
     return new Promise((resolve, reject) => {
       // The router renders async so use a wrapper in order to run the done callback
       // and pass in a ref to the rendered component
@@ -38,7 +38,7 @@ export default {
       Wrap.childContextTypes = { router: React.PropTypes.any };
 
       TestUtils.renderIntoDocument(
-        <Router history={ new MemoryHistory([ '/' ]) } onError={ reject }>
+        <Router history={ new MemoryHistory([ url ]) } onError={ reject }>
           <Route path="*" component={ Wrap } />
         </Router>
       );

@@ -30,7 +30,7 @@ function createElement(Component, state) {
   return <Component {...props} routerState={ state }>{ state.children }</Component>;
 }
 
-export default {
+let router = {
   init () {
     console.info('Initialize router');
 
@@ -38,15 +38,19 @@ export default {
     let location = new Location(window.location.pathname, query);
     let history = new BrowserHistory();
 
-    Router.run(routes, location, [onTransition], (err, initialState, transition) => {
-      if (err) throw err; // TODO error logging
+    return new Promise((resolve, reject) => {
+      Router.run(routes, location, [onTransition], (err, initialState, transition) => {
+        if (err) return reject(err);
 
-      let router = React.render(
-        <Router { ...initialState } routes={ routes } history={ history } createElement={ createElement } />,
-        document.querySelector('#_mount')
-      );
-      router.addTransitionHook(onTransition);
+        let router = React.render(
+          <Router { ...initialState } routes={ routes } history={ history } createElement={ createElement } />,
+          document.querySelector('#_mount')
+        );
+        router.addTransitionHook(onTransition);
+        resolve(router);
+      });
     });
   }
-}
+};
 
+export default router;
