@@ -2,151 +2,85 @@
 
 import { assert } from 'chai';
 import sinon from 'sinon';
-import socketIo from '../../src/server/socketIo.js';
+import socketIo from '../../src/server/socketIo';
+import io from 'socket.io-client';
 import test from '../../src/server/test';
+import through from 'through2';
 
-/*
-describe('test', () => {
-  let child;
+describe('socketIo', () => {
+  let port = 8082;
+  let url = 'http://127.0.0.1:' + port;
+  let opts = {
+    transports: ['websocket'],
+    'force new connection': true,
+  };
 
-  beforeEach(() => {
-    // stub childProcess.spawn
-    childProcess.spawn = function (cmd, args, opts) {
-      child = new EventEmitter();
-      Object.assign(child, {
-        stdout: through(),
-        stderr: through(),
-      });
-      return child;
-    }
-  });
-  afterEach(() => {
-    childProcess.spawn = SPAWN;
+  before(() => {
+    socketIo(port);
   });
 
-  describe('run', () => {
-    it('handles output from stderr', done => {
-      let onError = sinon.stub();
-      let stream = test.run();
-      stream.on('error', onError);
-      stream.on('end', () => {
-        assert(onError.calledOnce);
-        done();
-      });
+  describe('runTests', () => {
+    let stream;
 
-      child.stderr.emit('data', new Buffer(new Error('foo').stack));
-      child.emit('close', 0);
-    });
-
-    it('ignores blank lines from stderr', done => {
-      let onError = sinon.stub();
-      let stream = test.run();
-      stream.on('error', onError);
-      stream.on('end', () => {
-        assert.equal(onError.args[0][0].message, 'test error\nline 2');
-        done();
-      });
-
-      child.stderr.emit('data', new Buffer('\n'));
-      child.stderr.emit('data', new Buffer('test error'));
-      child.stderr.emit('data', new Buffer('\n  \n'));
-      child.stderr.emit('data', new Buffer('\nline 2'));
-      child.emit('close', 0);
-    });
-
-    context('with json-steam reporter', () => {
-      beforeEach(() => sinon.stub(test, 'collectJSONStream'));
-      afterEach(() => sinon.restore(test, 'collectJSONStream'));
-
-      it('runs collectJSONStream', () => {
-        test.run('json-stream');
-        assert(test.collectJSONStream.called, 'collectJSONStream was not called')
-      });
-    });
-  });
-
-  describe('collectJSONStream', () => {
-    it('handles multiple lines in one chunk', () => {
-      let stream = through();
-      let jsonStream = test.collectJSONStream(stream, null);
-      let data = [];
-      jsonStream.on('data', d => data.push(d));
-
-      stream.emit('data', new Buffer('["pass"]\n["pass"]'));
-      assert.deepEqual(data, ['["pass"]', '["pass"]']);
-    });
-
-    it('ignores lines that are not json-stream output', () => {
-      let stream = through();
-      let jsonStream = test.collectJSONStream(stream, null);
-      let data = [];
-      jsonStream.on('data', d => data.push(d));
-
-      stream.emit('data', new Buffer('["start"]'));
-      stream.emit('data', new Buffer('["pass"]'));
-      stream.emit('data', new Buffer('some console.log'));
-      stream.emit('data', new Buffer('{ logged: "object" }'));
-      stream.emit('data', new Buffer('["fail"]'));
-      stream.emit('data', new Buffer('["end"]'));
-
-      assert.deepEqual(data, ['["start"]', '["pass"]', '["fail"]', '["end"]']);
-    });
-
-    context('on end', () => {
-      beforeEach(() => sinon.stub(test, 'saveResult'));
-      afterEach(() => sinon.restore(test, 'saveResult'));
-
-      it('runs save', () => {
-        let stream = through();
-        let jsonStream = test.collectJSONStream(stream);
-
-        stream.emit('end');
-
-        assert(test.saveResult.called, 'test.saveResult should be called');
-      });
-
-      it('does not save if an error occured', () => {
-        let stream = through();
-        let jsonStream = test.collectJSONStream(stream, new Error('foo'));
-
-        stream.emit('end');
-
-        assert(test.saveResult.notCalled, 'test.saveResult should not be called');
-      });
-    });
-  });
-
-  describe('runForCoverage', () => {
-    it('returns a promise', () => {
-      return test.runForCoverage();
-    });
-  });
-
-  describe('saveResult', () => {
-    it('writes result to mongo', () => {
-      return test.saveResult({ streamData: [
-        ['start'], ['pass'], ['end'],
-      ]}).then(saved => {
-        assert.isDefined(saved._id);
-      });
-    });
-  });
-
-  describe('getLastResult', () => {
     beforeEach(() => {
-      return test.saveResult({ streamData: [
-        ['start'], ['pass'], ['end'],
-      ]});
+      stream = through();
+      sinon.stub(test, 'run').returns(stream);
+    });
+    afterEach(() => {
+      test.run.restore();
     });
 
-    it('returns the last saved result', () => {
-      return test.getLastResult().then(result => {
-        assert.deepEqual(result.streamData, [
-          ['start'], ['pass'], ['end'],
-        ]);
-        assert.isDefined(result._id);
+    it('streams test results to the client', done => {
+      let socket = io.connect(url, opts);
+      let i = 0;
+      socket.on('test-start', () => {
+        stream.push('{ "a": 1 }');
+        stream.push('{ "b": 2 }');
+        stream.push('{ "c": 3 }');
+        stream.end();
       });
-    })
+      socket.on('test-result', data => {
+        if (i === 0) assert.deepEqual(data, { a: 1 });
+        if (i === 1) assert.deepEqual(data, { b: 2 });
+        if (i === 2) assert.deepEqual(data, { c: 3 });
+        i++;
+      });
+      socket.on('test-end', done);
+
+      socket.emit('run-tests');
+    });
+
+    it('emits test-error on error', done => {
+      let socket = io.connect(url, opts);
+      let i = 0;
+      socket.on('test-start', () => {
+        stream.emit('error', new Error('foo'));
+        stream.end();
+      });
+      socket.on('test-error', err => {
+        assert.equal(err, 'foo');
+        done();
+      });
+      socket.emit('run-tests');
+    });
+  });
+
+  describe('error', () => {
+    beforeEach(() => {
+      sinon.stub(test, 'run').throws(new Error('foo'));
+    });
+    afterEach(() => {
+      test.run.restore();
+    });
+
+    it('emits an error to the client if something went wrong', done => {
+      let socket = io.connect(url, opts);
+      socket.on('server-error', error => {
+        assert.equal(error, 'Oops something went wrong');
+        done();
+      });
+
+      socket.emit('run-tests');
+    });
   });
 });
-*/
