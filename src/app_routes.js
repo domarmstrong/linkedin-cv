@@ -67,11 +67,6 @@ export function fetchProps (state) {
         .filter(branch => branch.component && branch.component.fetchProps) // find which components have a fetchProps method
         .map(branch => Promise.resolve(branch.component.fetchProps(state)) // fetch the data, may be promise
             .then(data => routeData.set(branch.component, data)) // set the data against the Component
-            .catch(err => {
-              // TODO error logging
-              // console.log(`Error->fetchProps for: "${branch.component.name}", ${err.stack}`);
-              throw err;
-            })
       )
     ).then(() => routeData);
   } catch (err) {
