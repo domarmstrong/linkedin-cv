@@ -14,6 +14,6 @@ if (typeof window !== 'undefined') {
   window.client = client;
 }
 
-client.init();
-
 export default client;
+
+client.init();
