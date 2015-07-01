@@ -7,6 +7,7 @@
 import React from 'react';
 import autobind from 'autobind-decorator';
 import request from '../request';
+import client from '../client/bootstrap';
 
 export default class Login extends React.Component {
   constructor (props) {
@@ -19,25 +20,6 @@ export default class Login extends React.Component {
     };
   }
 
-  submit (username, password) {
-    return request.post('/login')
-      .type('json')
-      .accept('json')
-      .send({ username, password })
-      .then(res => {
-        let query = this.props.routerState.location.query;
-        let page = '/admin';
-        if (query && query.then) page = query.then;
-        this.context.router.transitionTo(page);
-      }).catch(err => {
-        if (err.message === 'Unauthorized') {
-          this.setState({ validation: { login: err.response.text }});
-        } else {
-          console.log(err); // TODO error logging
-        }
-      });
-  }
-
   @autobind
   handleUsername (event) {
     this.setState({ username: event.target.value });
@@ -46,6 +28,17 @@ export default class Login extends React.Component {
   @autobind
   handlePassword (event) {
     this.setState({ password: event.target.value });
+  }
+
+  submit (username, password) {
+    return client.login(username, password).then(() => {
+      let query = this.props.routerState.location.query;
+      let page = '/admin'; // default page after login TODO: where should this be defined
+      if (query && query.then) page = query.then;
+      this.context.router.transitionTo(page);
+    }).catch(err => {
+      this.setState({ validation: { login: err.message }});
+    });
   }
 
   @autobind
@@ -61,7 +54,7 @@ export default class Login extends React.Component {
       <div className="login">
         <div className="spacer" />
         <div className="login-container">
-          <form className="pure-form pure-form-stacked" action="/login" method="POST">
+          <form className="pure-form pure-form-stacked" action="/auth/login" method="POST">
             <fieldset>
               <legend>Sign in</legend>
 

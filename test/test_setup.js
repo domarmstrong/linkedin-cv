@@ -9,7 +9,7 @@ import jsdom from 'jsdom';
 // Creates a DOM environment assigning global `window` and `document` if not present
 (function () {
   if (typeof window !== 'undefined') return;
-  let doc = jsdom.jsdom(undefined, {});
+  let doc = jsdom.jsdom('<body><div id="_mount"></div></body>', {});
   global.window = doc.parentWindow;
   global.document = window.document;
   global.navigator = window.navigator;

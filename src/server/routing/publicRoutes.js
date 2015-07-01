@@ -19,8 +19,34 @@ import Login from '../../views/login';
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
 
+publicRoutes.get('/api/header', function *() {
+  this.body = true;
+});
+
+publicRoutes.get('/api/app-name', function *() {
+  this.body = config.app_name;
+});
+
+publicRoutes.get('/api/profile', function *() {
+  this.body = yield linkedIn.getProfile();
+});
+
+publicRoutes.get('/api/code/:fileId', function *(next) {
+  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
+  this.body = yield code.renderFile(this.params.fileId);
+});
+
+publicRoutes.get('/api/code-tree', function *() {
+  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
+  this.body = yield code.getPublicTree();
+});
+
+publicRoutes.get('/api/test-results', function *() {
+  this.body = yield test.getLastResult().then(data => data.streamData);
+});
+
 let defaultLoginPath = '/admin';
-publicRoutes.post('/login', function *(next) {
+publicRoutes.post('/auth/login', function *(next) {
   var ctx = this;
   let { username } = this.request.body;
   let query = queryString.parse(this.req.url.split('?')[1]);
@@ -55,26 +81,16 @@ publicRoutes.get('/logout', function *(next) {
   this.redirect('/');
 });
 
-publicRoutes.get('/api/app-name', function *() {
-  this.body = config.app_name;
+publicRoutes.post('/auth/logout', function *(next) {
+  this.logout();
+  this.body = true;
 });
 
-publicRoutes.get('/api/profile', function *() {
-  this.body = yield linkedIn.getProfile();
-});
-
-publicRoutes.get('/api/code/:fileId', function *(next) {
-  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
-  this.body = yield code.renderFile(this.params.fileId);
-});
-
-publicRoutes.get('/api/code-tree', function *() {
-  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
-  this.body = yield code.getPublicTree();
-});
-
-publicRoutes.get('/api/test-results', function *() {
-  this.body = yield test.getLastResult().then(data => data.streamData);
+/**
+ * Return boolean is the client authenticated
+ */
+publicRoutes.get('/auth/is-authenticated', function *(next) {
+  this.body = this.isAuthenticated();
 });
 
 /**

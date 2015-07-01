@@ -40,17 +40,23 @@ export function toAbsoluteUrl (url) {
  * Export an agent with all methods extended to use absolute urls
  */
 export default function Agent(method, url, ...args) {
-  return Agent.agent(method, toAbsoluteUrl(url), ...args);
+  let req = Agent.agent(method, toAbsoluteUrl(url), ...args);
+  if (Agent.cookies) {
+    req = req.set('cookie', Agent.cookies);
+  }
+  return req;
 }
 Object.keys(agent).forEach(key => {
   Agent[key] = function (url, ...args) {
-    return this.agent[key](toAbsoluteUrl(url), ...args);
+    return this(key.toUpperCase(), toAbsoluteUrl(url), ...args);
   };
 });
 
 let cache = {};
 
 Object.assign(Agent, {
+  cookies: null,
+
   /**
    * Return the original unwrapped agent. Allows for mocking with tests.
    */
@@ -58,13 +64,33 @@ Object.assign(Agent, {
     return agent;
   },
 
-  get (url) {
-    let req = this.agent('GET', toAbsoluteUrl(url));
+  /**
+   * Make a request to the server for http headers and save the returned cookie
+   * the cookie will then be used for all following requests
+   *
+   * This function is used for testing purposes as superagent does not aautomatically
+   * persist cookies in node.
+   */
+  getCookies () {
+    return this.get('/api/header').then(res => {
+      this.cookies = res.headers['set-cookie'].map(cookie => {
+        let cooky = /^.*?=.*?;/.exec(cookie);
+        return cooky && cooky[0];
+      }).join(' ');
+    })
+  },
 
-    return req.then(res => {
-      cache[url] = res;
-      return Promise.resolve(res);
-    });
+  get (url) {
+    let req = this('GET', toAbsoluteUrl(url));
+    let then = req.then;
+    req.then = function (resolve, reject) {
+      return then.call(req, function (res) {
+        cache[url] = res;
+        return resolve(res);
+      }).catch(reject);
+    };
+
+    return req;
   },
 
   /**

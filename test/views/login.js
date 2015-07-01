@@ -6,7 +6,7 @@ import Login from '../../src/views/login';
 import React from 'react';
 import test_utils from '../test_utils';
 import TestUtils from 'react/addons/TestUtils';
-import auth from '../../src/server/auth';
+import client from '../../src/client/bootstrap';
 
 describe('Login page', () => {
   it('renders with no errors', () => {
@@ -19,17 +19,23 @@ describe('Login page', () => {
   });
 
   context('when mounted', () => {
-    before(() => {
-      return auth.createUser('testUser', 'testPass');
+    beforeEach(() => {
+      sinon.stub(client, 'login').returns(Promise.resolve());
     });
-    after(() => {
-      return auth.deleteUser('testUser');
+    afterEach(() => {
+      client.login.restore();
     });
 
     describe('the submit button', () => {
+      beforeEach(() => {
+        sinon.stub(Login.prototype, 'submit').returns(Promise.resolve());
+      });
+      afterEach(() => {
+        Login.prototype.submit.restore();
+      });
+
       it('triggers the submit action with username and password', () => {
         return test_utils.renderWithRouter(Login).then(comp => {
-          comp.submit = sinon.stub();
           let username = React.findDOMNode(comp.refs.username);
           let password = React.findDOMNode(comp.refs.password);
           let submit = React.findDOMNode(comp.refs.submit);
@@ -44,6 +50,8 @@ describe('Login page', () => {
 
     describe('submit', () => {
       it('sets the validation on failed login', () => {
+        client.login.returns(Promise.reject(new Error('Username or password incorrect')));
+
         return test_utils.renderWithRouter(Login).then(comp => {
           return comp.submit('foo', 'bar').then(() => {
             assert.deepEqual(comp.state.validation, { login: 'Username or password incorrect' });
@@ -55,6 +63,7 @@ describe('Login page', () => {
         let router = { transitionTo: sinon.stub() };
         return test_utils.renderWithRouter(Login, {}, { router }, '/login?then=%2Ffoo').then(comp => {
           return comp.submit('testUser', 'testPass').then(() => {
+            assert.deepEqual(comp.state.validation, {}); // should be no validation
             assert.equal(router.transitionTo.args[0][0], '/foo');
           });
         });
@@ -64,6 +73,7 @@ describe('Login page', () => {
         let router = { transitionTo: sinon.stub() };
         return test_utils.renderWithRouter(Login, {}, { router }, '/login').then(comp => {
           return comp.submit('testUser', 'testPass').then(() => {
+            assert.deepEqual(comp.state.validation, {}); // should be no validation
             assert.equal(router.transitionTo.args[0][0], '/admin');
           });
         });

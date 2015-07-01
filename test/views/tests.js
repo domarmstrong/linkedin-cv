@@ -3,7 +3,7 @@
 import { assert } from 'chai';
 import Tests from '../../src/views/tests';
 import test_utils from '../test_utils'
-import Client from '../../src/client/client';
+import client from '../../src/client/bootstrap';
 import { EventEmitter } from 'events';
 import TestUtils from 'react/addons/TestUtils';
 
@@ -18,7 +18,6 @@ describe('Tests page', () => {
       [ "pass" , { "title" : "c" , "fullTitle" : "c" , "duration" : 46}],
       [ "end" , { "suites" : 3 , "tests" : 3 , "passes" : 3 , "pending" : 0 , "failures" : 0 , "start" : "2015-06-25T13:23:15.615Z" , "end" : "2015-06-25T13:23:15.804Z" , "duration" : 189}]
     ];
-    global.client = new Client();
     client._socket = new EventEmitter();
     // annoying add 'off' thats compatible with socketIO
     client._socket.off = function (name) {
@@ -29,7 +28,7 @@ describe('Tests page', () => {
   });
 
   afterEach(() => {
-    global.client = null;
+    client._socket = null;
   });
 
   it('renders with no errors', () => {

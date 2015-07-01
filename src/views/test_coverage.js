@@ -52,7 +52,6 @@ export default class TestCoverage extends React.Component {
     }
   }
 
-
   /**
    * On click of a link stop the default action and route using react-router
    * @param event
@@ -116,7 +115,7 @@ export default class TestCoverage extends React.Component {
     let src = testContent ? 'blank' : toAbsoluteUrl('/public/coverage/' + this.getPath());
     return (
       <div id="test-coverage">
-        <iframe ref="frame" className="test-coverage" src={ src } onLoad={ this.hijackLinks } />
+        <iframe key={ src } ref="frame" className="test-coverage" src={ src } onLoad={ this.hijackLinks } />
       </div>
     )
   }

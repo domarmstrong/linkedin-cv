@@ -74,3 +74,20 @@ export function fetchProps (state) {
     return Promise.reject(err);
   }
 }
+
+/**
+ * Check routes permissions to see is "loginRequired=true"
+ * If no checks or loginRequired and client.isAuthenticated returns true
+ *
+ * @param context {Object} client or request, must have isAuthenticated method
+ * @param state
+ * @returns {Promise, [Boolean]}
+ */
+export function isAllowed (context, state) {
+  // Check to see if any of the branches require login
+  if (state.branch.some(branch => branch.loginRequired)) {
+    return Promise.resolve(context.isAuthenticated());
+  } else {
+    return Promise.resolve(true);
+  }
+}

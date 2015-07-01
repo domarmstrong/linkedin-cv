@@ -8,6 +8,7 @@ import React from 'react';
 import classNames from 'classnames';
 import request from '../request';
 import autobind from 'autobind-decorator';
+import client from '../client/bootstrap';
 
 
 export default class Tests extends React.Component {
