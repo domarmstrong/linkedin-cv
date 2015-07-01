@@ -7,9 +7,9 @@
  */
 
 import React from 'react';
-import { PageMenu } from './page_menu';
+import { PageMenu } from './../components/page_menu';
 import request from '../request';
-import CV from '../views/cv';
+import CV from './cv';
 
 export default class App extends React.Component {
 

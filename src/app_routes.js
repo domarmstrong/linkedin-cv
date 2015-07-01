@@ -7,7 +7,7 @@
 import { Route } from 'react-router';
 
 // Views
-import App from './components/app';
+import App from './views/app';
 import CV from './views/cv';
 import Login from './views/login';
 import Code from './views/code';
