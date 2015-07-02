@@ -24,8 +24,8 @@ import Admin from './views/admin';
 // BLAH react router expects global react
 global.React = require('react');
 
-export default (
-  <Route path="/" component={ App } indexRoute={{ component: CV }}>
+export default [
+  <Route key="root" path="/" component={ App } indexRoute={{ component: CV }}>
     <Route path="the-code" indexRoute={{ component: LookInside }}>
       <Route path="files/:file" component={ Code } />
       <Route path="tests" component={ Tests } />
@@ -36,9 +36,10 @@ export default (
     <Route path="contact*" component={ Contact } />
     <Route path="login*" component={ Login } />
     <Route path="admin*" component={ Admin } loginRequired={ true } />
-    <Route path="*" component={ Page404 } />
-  </Route>
-);
+  </Route>,
+
+  process.browser && <Route key="404" path="*" component={ Page404 } />,
+];
 
 /**
  * Before a route is rendered all component components will be checked for a `fetchProps` static method

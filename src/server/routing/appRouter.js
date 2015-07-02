@@ -37,6 +37,10 @@ function handleRoute (ctx, location) {
       resolve([initialState, transition]);
     })
   }).then(([initialState, transition]) => {
+    if (initialState === null) {
+      return ctx.throw(404);
+    }
+
     // Is this route allowed
     return isAllowed(ctx, initialState).then(allowed => {
       if (! allowed) {
