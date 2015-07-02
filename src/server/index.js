@@ -66,7 +66,7 @@ function init() {
     }
     switch (err.code) {
       case 'EACCES':
-        console.err(app.port + ' requires elevated privileges');
+        console.error(app.port + ' requires elevated privileges');
         process.exit(1);
         break;
       case 'EADDRINUSE':
@@ -77,12 +77,14 @@ function init() {
         throw err;
     }
   });
-  server.on('listening', () => console.info('Listening on: ' + app.port));
+  server.on('listening', () => d('Listening on: ' + app.port));
 
   // Set up socket io
   socketIo(server);
 
   server.listen(app.port);
+
+  return server;
 }
 
 export { init };
