@@ -9,6 +9,11 @@ import test_utils from './test_utils';
 let AGENT = request.agent;
 let PORT = config.app_port;
 
+// fake req object
+function requestStub() {
+  return { then: Promise.resolve().then };
+}
+
 describe('request', () => {
   before(() => {
     test_utils.startServer();
@@ -29,6 +34,7 @@ describe('request', () => {
       called = true;
       assert.equal(method, 'GET');
       assert.equal(url, `http://localhost:${PORT}/foo`);
+      return requestStub();
     };
     request('GET', '/foo');
     assert(called);
@@ -42,6 +48,7 @@ describe('request', () => {
       called = true;
       assert.equal(method, 'GET');
       assert.equal(url, '/foo');
+      return requestStub();
     };
     request('GET', '/foo', {});
     assert(called);
@@ -101,4 +108,28 @@ describe('request', () => {
       });
     });
   });
+
+  describe('request object', () => {
+    it('should have a "then" method', () => {
+      let req = request.get('/foo');
+      assert.typeOf(req.then, 'function');
+    });
+
+    it('should have a "catch" method', () => {
+      let req = request.get('/foo');
+      assert.typeOf(req.catch, 'function');
+    });
+
+    it('should allow promise chaining', () => {
+      return request.get('/api/app-name').then(res => {
+        assert.equal(res.status, 200);
+      });
+    });
+
+    it('should allow promise chaining from catch', () => {
+      return request.get('/foo').then(() => assert.fail()).catch(err => {
+        assert.equal(err.status, 404);
+      });
+    });
+  })
 });

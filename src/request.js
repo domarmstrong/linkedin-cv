@@ -44,6 +44,13 @@ export default function Agent(method, url, ...args) {
   if (Agent.cookies) {
     req = req.set('cookie', Agent.cookies);
   }
+  let then = req.then;
+  req.then = function () {
+    return then.apply(req, Array.prototype.slice.call(arguments, 0));
+  };
+  req.catch = function (reject) {
+    return then.call(req, res => res).catch(reject);
+  };
   return req;
 }
 Object.keys(agent).forEach(key => {
