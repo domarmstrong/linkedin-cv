@@ -8,6 +8,12 @@ import test_utils from '../test_utils';
 
 describe('Code view page', () => {
   let props;
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
 
   beforeEach(() => {
     props = {

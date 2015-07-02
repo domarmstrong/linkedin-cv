@@ -4,11 +4,19 @@ import { assert } from 'chai';
 import request from '../src/request';
 import sinon from 'sinon';
 import config from '../config';
+import test_utils from './test_utils';
 
 let AGENT = request.agent;
 let PORT = config.app_port;
 
 describe('request', () => {
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
+
   afterEach(() => {
     request.agent = AGENT;
     process.browser = false;

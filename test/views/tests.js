@@ -9,6 +9,12 @@ import TestUtils from 'react/addons/TestUtils';
 
 describe('Tests page', () => {
   let testResults;
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
 
   beforeEach(() => {
     testResults = [

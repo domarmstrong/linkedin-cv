@@ -10,6 +10,7 @@ import { Router, Route } from 'react-router';
 import MemoryHistory from 'react-router/lib/MemoryHistory';
 import React from 'react';
 import TestUtils from 'react/addons/TestUtils';
+import path from 'path';
 
 export default {
   /**
@@ -43,5 +44,16 @@ export default {
         </Router>
       );
     });
+  },
+
+  server: null,
+
+  startServer () {
+    delete require.cache[path.join(process.cwd(), 'src/server/index.js')];
+    this.server = require('../src/server').init();
+  },
+
+  stopServer () {
+    this.server.close();
   }
 }

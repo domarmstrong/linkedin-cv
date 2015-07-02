@@ -8,6 +8,7 @@ import React from 'react';
 import Router from 'react-router';
 import MemoryHistory from 'react-router/lib/MemoryHistory';
 import Location from 'react-router/lib/Location';
+import test_utils from '../test_utils';
 
 describe('router', () => {
   let Comp;
@@ -15,6 +16,13 @@ describe('router', () => {
   let onChange;
   history.addChangeListener(function () {
     if (onChange) onChange();
+  });
+
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
   });
 
   beforeEach(() => {

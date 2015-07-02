@@ -6,9 +6,17 @@ import Client from '../../src/client/client';
 import router from '../../src/client/router';
 import auth from '../../src/server/auth';
 import request from '../../src/request';
+import test_utils from '../test_utils';
 
 describe('client', () => {
   let client;
+
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
 
   beforeEach(() => {
     sinon.stub(router, 'init').returns(Promise.resolve(router));

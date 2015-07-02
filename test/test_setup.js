@@ -15,7 +15,3 @@ import jsdom from 'jsdom';
   global.navigator = window.navigator;
   global.location = window.location;
 }());
-
-// Spin up a test server to allow actually testing communication with server
-require(process.cwd()).init();
-

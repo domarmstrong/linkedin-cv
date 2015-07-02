@@ -3,9 +3,16 @@
 import { assert } from 'chai';
 import CV, { Position, formatParas } from '../../src/views/cv';
 import React from 'react';
+import test_utils from '../test_utils';
 
 describe('CV page', () => {
   let props;
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
 
   beforeEach(() => {
     props = {

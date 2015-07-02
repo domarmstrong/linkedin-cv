@@ -6,6 +6,13 @@ import React from 'react';
 import test_utils from '../test_utils';
 
 describe('app view', () => {
+  before(() => {
+    test_utils.startServer();
+  });
+  after(() => {
+    test_utils.stopServer();
+  });
+
   it('renders with no errors', () => {
     test_utils.renderWithRouter(App, { app_name: 'test' });
   });
