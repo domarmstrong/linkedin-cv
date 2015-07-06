@@ -13,7 +13,7 @@ import { spawn } from 'child_process'
 gulp.task('coverage', ['cleancoverage'], function () {
   // Spawn a new child process with --harmony and run the coverage file
   // Get the absolute path
-  let taskPath = path.resolve(process.cwd(), 'src/server/coverage');
+  let taskPath = path.resolve(process.cwd(), 'src/gulp/coverage');
   // Use babel register, require the file executing its default export
   let init = `
     require('./babel_register');
