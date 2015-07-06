@@ -58,7 +58,6 @@ describe('publicRoutes', () => {
           .accept('html')
           .send({ username: 'testUser', password: 'testPass' })
           .then(res => {
-            console.log('redirects', res.redirects);
             assert.equal(res.redirects.length, 1);
             assert.equal(res.redirects[0], baseUrl + '/admin');
           });

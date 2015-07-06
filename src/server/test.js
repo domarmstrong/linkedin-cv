@@ -9,10 +9,8 @@ import childProcess from 'child_process';
 import stream from 'stream';
 import through from 'through2';
 import { db } from './db';
-import debug from 'debug';
+import log from './log';
 import Mocha from 'mocha';
-
-const d = debug('linkedIn-cv:test');
 
 export default {
   /**
@@ -22,7 +20,7 @@ export default {
   run (reporter) {
     reporter = reporter || config.test.mochaOpts.reporter;
 
-    d(`Run tests with reporter: "${reporter}"`);
+    log.debug(`Run tests with reporter: "${reporter}"`);
 
     let child = childProcess.spawn('node', [
       'node_modules/.bin/mocha',
@@ -45,7 +43,7 @@ export default {
     child.stderr.on('data', (err) => {
       let str = err.toString().trim();
       if (! str) return;
-      d(`ERROR: ${str}`);
+      log.error(`ERROR: ${str}`);
       error = error ? error + '\n' + str : str;
     });
     child.on('close', () => {
@@ -83,7 +81,7 @@ export default {
           this.push(line, enc);
           results.streamData.push(JSON.parse(line));
         } else {
-          d('IGNORED: ', line);
+          log.debug('IGNORED: ', line);
         }
       });
       done();
@@ -117,11 +115,10 @@ export default {
 
   saveResult (result) {
     return db.collection('tests').insert(result).then(saved => {
-      d('Saved test result', saved._id);
+      log.debug('Saved test result', saved._id);
       return saved;
     }).catch(err => {
-      // TODO: error log
-      console.error('Error: ', err);
+      log.error('Error: ', err);
     });
   },
 

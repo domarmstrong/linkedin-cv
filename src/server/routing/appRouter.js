@@ -13,6 +13,7 @@ import routes, { fetchProps, isAllowed } from '../../app_routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import queryString from 'querystring';
+import log from './log';
 
 /**
  * Use react router to serve app pages statically
@@ -66,13 +67,13 @@ function handleRoute (ctx, location) {
   }).catch(err => {
     // If the error is a redirect, do a server redirect and restart the process
     if (err.redirect) {
-      console.log('err redirect');
       let query = queryString.stringify({ then: err.location.pathname });
       let path = [ err.redirect ];
       if (query) path.push(query);
       path = path.join('?');
       ctx.redirect(path);
       ctx.req.url = path;
+      log.debug('redirect', path);
       return handleRoute(ctx);
     }
     throw err;

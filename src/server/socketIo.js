@@ -5,16 +5,17 @@
  */
 
 import socketIo from 'socket.io';
+import log from './log';
 
 export default function socketIoInit (server) {
   let io = socketIo(server);
 
   io.on('connection', socket => {
-    console.log('Socket connected');
+    log.debug('Socket connected');
 
     socket.on('run-tests', runTests);
     socket.on('error', err => {
-      console.log(err); // TODO error handling
+      log.error(err);
       socket.emit('server-error', 'Oops something went wrong');
     });
   });
@@ -29,7 +30,7 @@ export function runTests (socket) {
       this.emit('test-result', JSON.parse(d.toString()));
     })
     .on('error', err => {
-      console.error('test-error', err);
+      log.error('test-error', err);
       this.emit('test-error', err.message);
     })
     .on('end', () => {

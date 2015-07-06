@@ -3,12 +3,11 @@
 import request from '../request';
 import queryString from 'query-string';
 import uuid from 'node-uuid';
-import debug from 'debug';
 import Qfs from 'q-io/fs';
 import path from 'path';
 import { db } from './db';
+import log from './log';
 
-const d = debug('linkedIn-cv:auth');
 const config = require(path.join(process.cwd(), 'config.js'));
 
 /**
@@ -32,7 +31,7 @@ export default {
       state: this.URN,
     });
     let authUrl = `${ this.authRequestUrl }?${ query }`;
-    d('Requesting auth');
+    log.debug('Requesting auth');
     req.redirect(authUrl);
   },
 
@@ -42,17 +41,16 @@ export default {
    * @param params {Object} { state {URN}, code {String} } || { error {String}, error_description {String} }
    */
   handleAuthResponse (req, params) {
-    d('Auth response', params);
+    log.debug('Auth response', params);
 
     // If the state does not match the URN throw 401 error or access was denied by user/linkedIn
     if (params.state !== this.URN) {
-      d('Error: state does not match URN');
+      log.error('Error: state does not match URN');
       req.throw(401);
     }
     // If an error occurred, log the error and deal with the error type
     else if (params.error) {
-      // TODO: error logging
-      d('Error: auth denied by user/linkedIn', params);
+      log.error('Error: auth denied by user/linkedIn', params);
       if (params.error === 'access_denied') {
         req.throw(401);
       } else {
@@ -61,7 +59,7 @@ export default {
     }
     // If request was successful deal with the response
     else if (params.code) {
-      d('Received code', params.code);
+      log.debug('Received code', params.code);
       let postData = {
         grant_type: 'authorization_code',
         code: params.code,
@@ -73,14 +71,13 @@ export default {
         .type('form')
         .send(postData)
         .then(req => {
-          d('Access token granted', req.body);
+          log.debug('Access token granted', req.body);
           return this.setAuth(req.body);
         }).then(auth => {
-          d('Auth token saved');
+          log.debug('Auth token saved');
           req.redirect('/admin/update');
         }).catch(err => {
-          // TODO: error logging
-          console.error(err);
+          log.error(err);
           req.throw(501);
         });
     }
@@ -139,7 +136,7 @@ export default {
         .set('x-li-format', 'json')
         .set('Authorization', 'Bearer ' + auth.access_token);
       }).catch(err => {
-        console.error('Auth error: ', err.status);
+        log.error('Auth error: ', err.status);
         throw err;
       });
   },
