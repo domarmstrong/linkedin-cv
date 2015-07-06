@@ -3,9 +3,8 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
 import router from '../../src/client/router';
-import { Route } from 'react-router';
+import Router, { Route } from 'react-router';
 import React from 'react';
-import Router from 'react-router';
 import MemoryHistory from 'react-router/lib/MemoryHistory';
 import Location from 'react-router/lib/Location';
 import test_utils from '../test_utils';
