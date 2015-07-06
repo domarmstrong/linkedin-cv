@@ -35,7 +35,7 @@ let auth = {
    * @return {Promise, [Object]} the new user record
    */
   createUser (username, password) {
-    if (! (username || password)) {
+    if (! (username && password)) {
       throw new Error('Username and password are both required');
     }
     if (typeof username !== 'string' || typeof password !== 'string') {
