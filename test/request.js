@@ -10,8 +10,12 @@ let AGENT = request.agent;
 let PORT = config.app_port;
 
 // fake req object
-function requestStub() {
-  return { then: Promise.resolve().then };
+function requestStub(url) {
+  return {
+    then: Promise.resolve().then,
+    on: function () {},
+    url: url,
+  };
 }
 
 describe('request', () => {
@@ -34,7 +38,7 @@ describe('request', () => {
       called = true;
       assert.equal(method, 'GET');
       assert.equal(url, `http://localhost:${PORT}/foo`);
-      return requestStub();
+      return requestStub(url);
     };
     request('GET', '/foo');
     assert(called);
@@ -48,7 +52,7 @@ describe('request', () => {
       called = true;
       assert.equal(method, 'GET');
       assert.equal(url, '/foo');
-      return requestStub();
+      return requestStub(url);
     };
     request('GET', '/foo', {});
     assert(called);
@@ -91,12 +95,11 @@ describe('request', () => {
       request.agent = function (method, url) {
         requests++;
         // fake request
-        return {
-          then (resolve, reject) {
-            // fake response
-            return resolve({ body: 'test' });
-          }
+        let req = requestStub(url);
+        req.then = function (resolve, reject) {
+          return resolve({ body: 'test' });
         };
+        return req;
       };
     });
 

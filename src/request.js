@@ -7,14 +7,20 @@
  */
 
 // TODO write tests....
-import superagent from 'superagent';
+import Superagent from 'superagent';
 import superagentPromise from 'superagent-promise';
 
 // Note: MAKE SURE config is not included in client bundle
 // should only be required for server code
 import config from '../config';
 
-let agent = superagentPromise(superagent, Promise);
+let agent = superagentPromise(Superagent, Promise);
+
+// not required/functional in browser
+let jar;
+if (Superagent.agent) {
+  jar = new Superagent.agent();
+}
 
 /**
  * If the path starts with '/' convert it to an absolute localhost url.
@@ -40,10 +46,18 @@ export function toAbsoluteUrl (url) {
  * Export an agent with all methods extended to use absolute urls
  */
 export default function Agent(method, url, ...args) {
-  let req = Agent.agent(method, toAbsoluteUrl(url), ...args);
-  if (Agent.cookies) {
-    req = req.set('cookie', Agent.cookies);
+  let agent = Agent.agent;
+
+  let req = agent(method, toAbsoluteUrl(url), ...args);
+
+  if (jar) {
+    // manage cookies
+    req.on('response', jar.saveCookies.bind(jar));
+    req.on('redirect', jar.saveCookies.bind(jar));
+    req.on('redirect', jar.attachCookies.bind(jar, req));
+    jar.attachCookies(req);
   }
+
   let then = req.then;
   req.then = function () {
     return then.apply(req, Array.prototype.slice.call(arguments, 0));
@@ -62,29 +76,11 @@ Object.keys(agent).forEach(key => {
 let cache = {};
 
 Object.assign(Agent, {
-  cookies: null,
-
   /**
    * Return the original unwrapped agent. Allows for mocking with tests.
    */
   get agent () {
     return agent;
-  },
-
-  /**
-   * Make a request to the server for http headers and save the returned cookie
-   * the cookie will then be used for all following requests
-   *
-   * This function is used for testing purposes as superagent does not aautomatically
-   * persist cookies in node.
-   */
-  getCookies () {
-    return this.get('/api/header').then(res => {
-      this.cookies = res.headers['set-cookie'].map(cookie => {
-        let cooky = /^.*?=.*?;/.exec(cookie);
-        return cooky && cooky[0];
-      }).join(' ');
-    })
   },
 
   get (url) {

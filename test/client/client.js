@@ -96,11 +96,9 @@ describe('client', () => {
       });
 
       it('returns true if logged in', () => {
-        return request.getCookies().then(() => {
-          return client.login('testUser', 'testPass').then(ok => {
-            return client.isAuthenticated().then(isAuth => {
-              assert.equal(isAuth, true);
-            });
+        return client.login('testUser', 'testPass').then(ok => {
+          return client.isAuthenticated().then(isAuth => {
+            assert.equal(isAuth, true);
           });
         });
       });
@@ -111,18 +109,16 @@ describe('client', () => {
         });
 
         it('subsequent calls will not be made if already checked until logged out', () => {
-          return request.getCookies().then(() => {
-            return client.login('testUser', 'testPass').then(ok => {
-              return client.isAuthenticated().then(isAuth => {
-                assert.equal(isAuth, true);
-              });
-            }).then(() => {
-              sinon.stub(request, 'get');
-              return client.isAuthenticated().then(isAuth => {
-                assert.equal(isAuth, true);
-                assert.equal(request.get.called, false);
-              })
+          return client.login('testUser', 'testPass').then(ok => {
+            return client.isAuthenticated().then(isAuth => {
+              assert.equal(isAuth, true);
             });
+          }).then(() => {
+            sinon.stub(request, 'get');
+            return client.isAuthenticated().then(isAuth => {
+              assert.equal(isAuth, true);
+              assert.equal(request.get.called, false);
+            })
           });
         })
       })
