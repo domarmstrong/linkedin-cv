@@ -13,7 +13,7 @@ import routes, { fetchProps, isAllowed } from '../../app_routes';
 import { render } from '../renderer';
 import config from '../../../config';
 import queryString from 'querystring';
-import log from './log';
+import log from '../log';
 
 /**
  * Use react router to serve app pages statically
