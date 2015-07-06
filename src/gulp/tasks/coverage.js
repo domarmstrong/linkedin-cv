@@ -11,10 +11,10 @@ import { spawn } from 'child_process'
  * we can get around this by spawning a child process that runs with harmony
  */
 gulp.task('coverage', ['cleancoverage'], function () {
-  // Spawn a new child process running with harmony and run the coverage file
-  // Get the absolute path so the file we want to run
+  // Spawn a new child process with --harmony and run the coverage file
+  // Get the absolute path
   let taskPath = path.resolve(process.cwd(), 'src/server/coverage');
-  // Use babel register to parse the file and require the file executing its default function
+  // Use babel register, require the file executing its default export
   let init = `
     require('./babel_register');
     require('${ taskPath }')().catch(function (err) {
