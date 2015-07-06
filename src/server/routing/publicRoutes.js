@@ -53,7 +53,7 @@ publicRoutes.post('/auth/login', function *(next) {
 
   let jsonRes = this.accepts('json') === 'json';
 
-  yield* passport.authenticate('local', function*(err, user, info) {
+  yield* passport.authenticate('local', function *(err, user, info) {
     if (err) throw err;
 
     if (user) {
@@ -62,7 +62,7 @@ publicRoutes.post('/auth/login', function *(next) {
       if (jsonRes) {
         ctx.body = 'success';
       } else {
-        ctx.redirect(query.next || defaultLoginPath);
+        ctx.redirect(defaultLoginPath);
       }
     } else {
       d('Login failed: ', username, info.message);
