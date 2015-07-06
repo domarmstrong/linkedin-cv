@@ -10,6 +10,7 @@ import BrowserHistory from 'react-router/lib/BrowserHistory';
 import routes, { fetchProps, isAllowed } from '../app_routes';
 import queryString from 'querystring';
 import client from './bootstrap';
+import ReactDOM from 'react-dom';
 
 /** @Map */
 let routeData;
@@ -70,7 +71,7 @@ let router = {
       Router.run(appRoutes, location, [onTransition], (err, initialState, transition) => {
         if (err) return reject(err);
 
-        let router = React.render(
+        let router = ReactDOM.render(
           <Router { ...initialState } routes={ appRoutes } history={ history } createElement={ createElement } />,
           document.querySelector('#_mount')
         );

@@ -3,7 +3,7 @@
 import { assert } from 'chai';
 import Code from '../../src/views/code';
 import React from 'react';
-import TestUtils from 'react/addons/TestUtils';
+import TestUtils from 'react/lib/ReactTestUtils';
 import test_utils from '../test_utils';
 
 describe('Code view page', () => {

@@ -28,7 +28,7 @@ describe('Test Coverage page', () => {
     it('makes local links redirect with react-router transitionTo', () => {
       let testContent = `<body><a href="/foo">bar</a></body>`;
       return test_utils.renderWithRouter(TestCoverage, { testContent }, { router }).then(comp => {
-        let doc = React.findDOMNode(comp.refs.frame).contentDocument;
+        let doc = comp.refs.frame.contentDocument;
         let a = doc.querySelector('a');
         clickLink(a);
         assert.equal(router.transitionTo.args[0][0], '/foo');
@@ -38,7 +38,7 @@ describe('Test Coverage page', () => {
     it('does not hijacks links absolute urls', () => {
       let testContent = `<body><a href="http://google.com">bar</a></body>`;
       return test_utils.renderWithRouter(TestCoverage, { testContent }, { router }).then(comp => {
-        let doc = React.findDOMNode(comp.refs.frame).contentDocument;
+        let doc = comp.refs.frame.contentDocument;
         let a = doc.querySelector('a');
         clickLink(a);
         assert(router.transitionTo.notCalled, 'transitionTo should not be called');
@@ -52,7 +52,7 @@ describe('Test Coverage page', () => {
       };
       let testContent = `<body><a href="/index.html">bar</a></body>`;
       return test_utils.renderWithRouter(TestCoverage, { testContent, routerState }, { router }).then(comp => {
-        let doc = React.findDOMNode(comp.refs.frame).contentDocument;
+        let doc = comp.refs.frame.contentDocument;
         let a = doc.querySelector('a');
         clickLink(a);
         assert.equal(router.transitionTo.args[0][0], 'base/path');

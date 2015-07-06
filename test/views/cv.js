@@ -3,6 +3,7 @@
 import { assert } from 'chai';
 import CV, { Position, formatParas } from '../../src/views/cv';
 import React from 'react';
+import ReactDOM from 'react-dom/server';
 import test_utils from '../test_utils';
 
 describe('CV page', () => {
@@ -48,7 +49,7 @@ describe('CV page', () => {
   });
 
   it('renders with no errors', () => {
-    React.renderToString( <CV { ...props } /> );
+    ReactDOM.renderToString( <CV { ...props } /> );
   });
 
   describe('fetchProps', () => {

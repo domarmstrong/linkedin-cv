@@ -1,6 +1,6 @@
 "use strict";
 
-import React from 'react';
+import ReactDOM from 'react-dom/server';
 import path from 'path';
 
 const config = require(path.join(process.cwd(), 'config.js'));
@@ -44,7 +44,7 @@ export function render(component) {
     <title>${ config.app_name }</title>
   </head>
   <body>
-    <div id="_mount">${ React.renderToString(component) }</div>
+    <div id="_mount">${ ReactDOM.renderToString(component) }</div>
     <script src="/public/vendor.js"></script>
     <script src="/public/app.js"></script>
   </body>

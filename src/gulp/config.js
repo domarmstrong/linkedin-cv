@@ -1,6 +1,7 @@
 var libs = [
   'classnames',
   'react',
+  'react-dom',
   'react-router',
   'react-router/lib/Location',
   'react-router/lib/BrowserHistory',

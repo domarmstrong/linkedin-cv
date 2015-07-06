@@ -5,7 +5,8 @@ import Tests from '../../src/views/tests';
 import test_utils from '../test_utils'
 import client from '../../src/client/bootstrap';
 import { EventEmitter } from 'events';
-import TestUtils from 'react/addons/TestUtils';
+import TestUtils from 'react/lib/ReactTestUtils';
+import $ from 'jquery';
 
 describe('Tests page', () => {
   let testResults;
@@ -71,9 +72,9 @@ describe('Tests page', () => {
     it('renders with the live results as they stream', () => {
       return test_utils.renderWithRouter(Tests, { testResults }).then(comp => {
         client.socket.on('run-tests', () => {
-          assert.equal(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2').props.children, 'Running...');
+          assert.equal(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2').innerHTML, 'Running...');
           client.socket.emit('test-result', ['start', { total: 2 }]);
-          assert.equal(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2').props.children.join(''), 'Running 2 tests...');
+          assert.equal($(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2')).text(), 'Running 2 tests...');
           assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'test').length, 0);
           client.socket.emit('test-result', [ "pass" , { "title" : "a" , "fullTitle" : "a" , "duration" : 46}]);
           assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'test').length, 1);

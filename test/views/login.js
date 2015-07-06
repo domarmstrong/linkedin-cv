@@ -4,17 +4,18 @@ import { assert } from 'chai';
 import sinon from 'sinon';
 import Login from '../../src/views/login';
 import React from 'react';
+import ReactDOM from 'react-dom/server';
 import test_utils from '../test_utils';
-import TestUtils from 'react/addons/TestUtils';
+import TestUtils from 'react/lib/ReactTestUtils';
 import client from '../../src/client/bootstrap';
 
 describe('Login page', () => {
   it('renders with no errors', () => {
-    React.renderToString( <Login /> );
+    ReactDOM.renderToString( <Login /> );
   });
 
   it('renders login validation errors', () => {
-    let rendered = React.renderToStaticMarkup( <Login validation={{ login: 'login failed' }} /> );
+    let rendered = ReactDOM.renderToStaticMarkup( <Login validation={{ login: 'login failed' }} /> );
     assert.match(rendered, /<div class="form-validation">login failed<\/div>/);
   });
 
@@ -36,9 +37,9 @@ describe('Login page', () => {
 
       it('triggers the submit action with username and password', () => {
         return test_utils.renderWithRouter(Login).then(comp => {
-          let username = React.findDOMNode(comp.refs.username);
-          let password = React.findDOMNode(comp.refs.password);
-          let submit = React.findDOMNode(comp.refs.submit);
+          let username = comp.refs.username;
+          let password = comp.refs.password;
+          let submit = comp.refs.submit;
 
           TestUtils.Simulate.change(username, { target: { value: 'dominataa' }});
           TestUtils.Simulate.change(password, { target: { value: 'abcdef' }});

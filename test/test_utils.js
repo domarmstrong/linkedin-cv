@@ -9,7 +9,7 @@
 import { Router, Route } from 'react-router';
 import MemoryHistory from 'react-router/lib/MemoryHistory';
 import React from 'react';
-import TestUtils from 'react/addons/TestUtils';
+import TestUtils from 'react/lib/ReactTestUtils';
 import path from 'path';
 
 export default {

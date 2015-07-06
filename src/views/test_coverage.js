@@ -30,7 +30,7 @@ export default class TestCoverage extends React.Component {
    * Inject content into the iframe to allow testing
    */
   injectContent () {
-    let frame = React.findDOMNode(this.refs.frame);
+    let frame = this.refs.frame;
     let document = frame.contentDocument;
     document.open();
     document.write(this.props.testContent);
@@ -43,7 +43,7 @@ export default class TestCoverage extends React.Component {
    */
   @autobind
   hijackLinks () {
-    let frame = React.findDOMNode(this.refs.frame);
+    let frame = this.refs.frame;
     let window = frame.contentWindow;
     if (window.document.documentElement === null) return; // document is not loaded properly (jsdom)
     let nodes = window.document.querySelectorAll('a');
