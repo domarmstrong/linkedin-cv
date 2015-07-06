@@ -2,7 +2,6 @@
 
 import { assert } from 'chai';
 import sinon from 'sinon';
-import { render } from '../../src/server/renderer';
 import log, { loggers } from '../../src/server/log';
 import config from '../../config';
 

@@ -1,10 +1,7 @@
 "use strict";
 
 import { assert } from 'chai';
-import sinon from 'sinon';
-import { render } from '../../src/server/renderer';
 import auth from '../../src/server/auth';
-import config from '../../config';
 
 describe('auth', () => {
   describe('createUser', () => {
