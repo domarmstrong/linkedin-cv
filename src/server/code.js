@@ -143,6 +143,8 @@ export default {
         return 'markdown';
       case '.js':
         return 'javascript';
+      case '.txt':
+        return 'text';
       default:
         throw new Error('Not implemented');
     }
