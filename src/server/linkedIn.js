@@ -202,7 +202,27 @@ export default {
   },
 
   getProfile () {
-    return db.collection('people').findOne();
+    return db.collection('people').findOne().then(profile => {
+      if (profile) {
+        return profile;
+      } else {
+        // Test data in case no record in DB
+        return {
+          firstName: 'firstname',
+          lastName: 'lastname',
+          headline: 'headline',
+          location: 'location',
+          industry: 'industry',
+          email: 'email',
+          publicProfile: 'Public profile',
+          summary: 'summary',
+          specialties: 'specialties',
+          positions: [],
+          skills: [],
+          educations: [],
+        }
+      }
+    });
   },
 };
 
