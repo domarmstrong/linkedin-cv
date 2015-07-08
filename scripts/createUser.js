@@ -16,7 +16,7 @@ require('babel/register')({
   only: /src/
 });
 var argv = require('minimist')(process.argv.slice(2));
-var auth = require('../src/server/auth');
+var auth = require('../src/server/auth').default;
 
 function wrap(str) {
    return '\n' + str + '\n';
