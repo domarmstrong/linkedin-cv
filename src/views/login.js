@@ -22,12 +22,14 @@ export default class Login extends React.Component {
 
   @autobind
   handleUsername (event) {
-    this.setState({ username: event.target.value });
+    let target = event.target || event.currentTarget;
+    this.setState({ username: target.value });
   }
 
   @autobind
   handlePassword (event) {
-    this.setState({ password: event.target.value });
+    let target = event.target || event.currentTarget;
+    this.setState({ password: target.value });
   }
 
   submit (username, password) {
@@ -44,6 +46,7 @@ export default class Login extends React.Component {
   @autobind
   handleSubmit (event) {
     this.submit(this.state.username, this.state.password);
+    event.stopPropagation();
     event.preventDefault();
   }
 
