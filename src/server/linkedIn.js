@@ -142,6 +142,14 @@ export default {
   },
 
   /**
+   * Delete the users profile by id
+   * @return {Promise}
+   */
+  deleteProfile (id) {
+    return db.collection('people').remove({ id });
+  },
+
+  /**
    * Get users profile
    * @return (Promise)
    */

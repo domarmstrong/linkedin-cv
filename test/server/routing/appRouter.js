@@ -7,6 +7,7 @@ import request from '../../../src/request';
 import Client from '../../../src/client/client';
 
 describe('appRouter', () => {
+  let client;
 
   before(async () => {
     test_utils.startServer();

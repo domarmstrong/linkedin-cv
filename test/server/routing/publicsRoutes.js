@@ -10,7 +10,7 @@ import config from '../../../config';
 
 let baseUrl = 'http://localhost:' + config.app_port;
 
-describe.only('publicRoutes', () => {
+describe('publicRoutes', () => {
   let client;
 
   before(async () => {
