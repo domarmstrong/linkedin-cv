@@ -14,7 +14,6 @@
 import React from 'react';
 import autobind from 'autobind-decorator';
 import path from 'path';
-import { toAbsoluteUrl } from '../../src/request';
 
 
 export default class TestCoverage extends React.Component {
@@ -112,7 +111,7 @@ export default class TestCoverage extends React.Component {
 
   render () {
     let testContent = this.props.testContent;
-    let src = testContent ? 'blank' : toAbsoluteUrl('/public/coverage/' + this.getPath());
+    let src = testContent ? 'blank' : '/public/coverage/' + this.getPath();
     return (
       <div id="test-coverage">
         <iframe key={ src } ref="frame" className="test-coverage" src={ src } onLoad={ this.hijackLinks } />
