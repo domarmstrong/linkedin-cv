@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { PageMenu } from './../components/page_menu';
+import { Breadcrumb } from './../components/breadcrumb';
 import request from '../request';
 import CV from './cv';
 
@@ -19,11 +20,14 @@ export default class App extends React.Component {
 
   render () {
     let { app_name, routerState, children } = this.props;
+    let { router } = this.context;
     let active_route = routerState.location.pathname;
+    let url = router.state.location.pathname;
 
     return (
       <div id="app">
         <PageMenu app_name={ app_name } active_route={ active_route } />
+        <Breadcrumb url={ url } />
 
         <div className="container">
           { children }
@@ -34,4 +38,7 @@ export default class App extends React.Component {
 }
 App.propTypes = {
   app_name: React.PropTypes.string.isRequired,
+};
+App.contextTypes = {
+  router: React.PropTypes.any.isRequired,
 };

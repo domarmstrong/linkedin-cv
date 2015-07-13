@@ -1,0 +1,117 @@
+.breadcrumbs {
+  background: @prim;
+  height: 45px;
+
+  .wrapper {
+    margin: 0;
+    list-style: none;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    float: left;
+
+    .text {
+      display: block;
+      max-width: 200px;
+      overflow: hidden;
+      white-space: nowrap;
+      .transition(max-width 0.5s);
+    }
+
+    > a, > .current {
+      color: white;
+
+      .text {
+        position: relative;
+        z-index: 1;
+      }
+
+      &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -12px;
+        right: 18px;
+        .transform(skew(-25deg));
+        .transition(background 0.3s, padding 0.3s);
+      }
+    }
+
+    > a, > .current {
+      display: block;
+      margin: 0px 0 0 -5px;
+      padding: 15px 35px 15px 0;
+      position: relative;
+
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 15px;
+        bottom: 15px;
+        left: -13px;
+        right: 18px;
+        border-left: 1px solid white;
+        .transform(skew(-25deg));
+      }
+    }
+
+    > a {
+      text-decoration: underline;
+    }
+
+    &:first-child {
+      border-left: 1px solid white;
+      font-size: 22px;
+      padding-left: 5px;
+
+      > a {
+        color: @text;
+      }
+      > a, > .current {
+        text-decoration: none;
+        padding-left: 18px;
+        padding-top: 9px;
+        padding-bottom: 11px;
+        overflow: hidden;
+        &:before {
+          left: -20px;
+        }
+      }
+    }
+
+    > .current {
+      &:hover {
+        &:before {
+          background: @prim-dark;
+        }
+      }
+      &:before {
+        background: @prim-dark;
+      }
+      &:after {
+        content: none;
+      }
+    }
+
+    > a:hover {
+      &:before {
+        background: @accent;
+      }
+      color: white;
+    }
+
+    /*&:hover {
+      .text {
+        max-width: 0;
+      }
+      > a, > .current {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }*/
+  }
+}
