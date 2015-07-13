@@ -4,7 +4,7 @@
  * Author: Dom Armstrong, Date: 02/06/15
  */
 
-import { Route } from 'react-router';
+import { Route, Redirect } from 'react-router';
 
 // Views
 import App from './views/app';
@@ -25,7 +25,10 @@ import Admin from './views/admin';
 global.React = require('react');
 
 export default [
-  <Route key="root" path="/" component={ App } indexRoute={{ component: CV }}>
+  <Redirect from="/" to="/cv" />,
+
+  <Route key="root" component={ App }>
+    <Route path="cv" indexRoute={{ component: CV }} />
     <Route path="the-code" indexRoute={{ component: LookInside }}>
       <Route path="files/:file" component={ Code } />
       <Route path="tests" component={ Tests } />
@@ -62,6 +65,7 @@ export default [
 export function fetchProps (state) {
   let routeData = new Map();
 
+  console.log('fetch', state);
   try {
     return Promise.all(
       state.branch

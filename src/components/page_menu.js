@@ -19,7 +19,7 @@ export class PageMenu extends React.Component {
             <a className="menu-heading" href="/">{ props.app_name }</a>
 
             <ul className="menu-list">
-              <MenuItem href="/" icon="icon-profile" { ...props }>Curriculum Vitae</MenuItem>
+              <MenuItem href="/cv" icon="icon-profile" { ...props }>Curriculum Vitae</MenuItem>
               <MenuItem href="/the-code" icon="icon-code" { ...props }>Look inside</MenuItem>
               <MenuItem href="/contact" icon="icon-phone" { ...props }>Contact</MenuItem>
             </ul>

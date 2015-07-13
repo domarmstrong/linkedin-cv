@@ -19,6 +19,10 @@ import Login from '../../views/login';
 const publicRoutes = koaRouter();
 const d = debug('linkedIn-cv:server');
 
+publicRoutes.get('/', function *() {
+  this.redirect('/cv');
+});
+
 publicRoutes.get('/api/app-name', function *() {
   this.body = config.app_name;
 });
