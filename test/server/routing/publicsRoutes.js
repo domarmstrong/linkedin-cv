@@ -39,10 +39,11 @@ describe('publicRoutes', () => {
       assert.equal(res.body, false);
     });
 
-    it('redirects to /', async () => {
+    it('redirects to /cv', async () => {
       let res = await request.get('/logout');
-      assert.equal(res.redirects.length, 1);
+      assert.equal(res.redirects.length, 2);
       assert.equal(res.redirects[0], baseUrl + '/');
+      assert.equal(res.redirects[1], baseUrl + '/cv');
     });
   });
 

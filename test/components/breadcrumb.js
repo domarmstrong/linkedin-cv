@@ -4,7 +4,7 @@ import { assert } from 'chai';
 import { Breadcrumb } from '../../src/components/breadcrumb';
 import test_utils from '../test_utils';
 
-describe.only('Breadcrumb', () => {
+describe('Breadcrumb', () => {
   describe('renders with no errors', () => {
     test_utils.renderWithRouter(Breadcrumb, { url: '/foo/bar/baz' });
   });
