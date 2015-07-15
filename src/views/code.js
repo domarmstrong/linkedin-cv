@@ -7,11 +7,11 @@
 import React from 'react';
 import request from '../request';
 import { Link } from 'react-router';
+import { ScrollIndicator } from '../components/scrollIndicator';
 
 let cache = {};
 
 export default class Code extends React.Component {
-
   static fetchProps (routerState) {
     let splat = routerState.params.splat;
     return request.getCached('/api/code' + splat).then(res => res.body);
@@ -31,7 +31,9 @@ export default class Code extends React.Component {
     return (
       <div id="code">
         { back && <div className="back"><Link to={ back }><i className="icon-arrow-back" /></Link></div> }
-        { file ? <FileView code={ file } /> : <DirectoryView dir={ dir } routerState={ routerState } /> }
+        <ScrollIndicator className="container">
+          { file ? <FileView code={ file } /> : <DirectoryView dir={ dir } routerState={ routerState } /> }
+        </ScrollIndicator>
       </div>
     )
   }
