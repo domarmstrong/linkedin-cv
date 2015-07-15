@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'iconfont';
-	src:url('fonts/iconfont.eot?e7543l');
-	src:url('fonts/iconfont.eot?#iefixe7543l') format('embedded-opentype'),
-		url('fonts/iconfont.woff?e7543l') format('woff'),
-		url('fonts/iconfont.ttf?e7543l') format('truetype'),
-		url('fonts/iconfont.svg?e7543l#iconfont') format('svg');
+	src:url('fonts/iconfont.eot?-6r1ugs');
+	src:url('fonts/iconfont.eot?#iefix-6r1ugs') format('embedded-opentype'),
+		url('fonts/iconfont.ttf?-6r1ugs') format('truetype'),
+		url('fonts/iconfont.woff?-6r1ugs') format('woff'),
+		url('fonts/iconfont.svg?-6r1ugs#iconfont') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -52,6 +52,9 @@
 }
 .icon-folder:before {
 	content: "\e609";
+}
+.icon-arrow-back:before {
+	content: "\e60a";
 }
 .icon-code:before {
 	content: "\ea80";

@@ -244,6 +244,30 @@
 		{
 			"icon": {
 				"paths": [
+					"M853.333 469.333h-519.253l238.293-238.293-60.373-60.373-341.333 341.333 341.333 341.333 60.373-60.373-238.293-238.293h519.253v-85.333z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"tags": [
+					"arrow-back"
+				],
+				"grid": 24
+			},
+			"attrs": [],
+			"properties": {
+				"id": 672,
+				"order": 14,
+				"prevSize": 24,
+				"code": 58890,
+				"name": "arrow-back"
+			},
+			"setIdx": 0,
+			"setId": 2,
+			"iconIdx": 672
+		},
+		{
+			"icon": {
+				"paths": [
 					"M832 736l96 96 320-320-320-320-96 96 224 224z",
 					"M448 288l-96-96-320 320 320 320 96-96-224-224z",
 					"M701.298 150.519l69.468 18.944-191.987 704.026-69.468-18.944 191.987-704.026z"
@@ -332,7 +356,8 @@
 			"png": true,
 			"useClassSelector": true,
 			"color": 4473924,
-			"bgColor": 16777215
+			"bgColor": 16777215,
+			"classSelector": ".icon"
 		},
 		"historySize": 100,
 		"showCodes": false
