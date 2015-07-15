@@ -52,7 +52,7 @@ export class ScrollIndicator extends React.Component {
 
   render () {
     return (
-      <div ref="container" onScroll={ this.handleScroll }>
+      <div ref="container" className={ classNames('scroll-indicator', this.props.className) } onScroll={ this.handleScroll }>
           { this.props.children }
       </div>
     )
