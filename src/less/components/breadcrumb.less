@@ -1,14 +1,17 @@
 .breadcrumbs {
   background: @prim;
-  height: 45px;
+  height: @breadcrumb-height;
 
   .wrapper {
     margin: 0;
+    padding: 0;
+    height: 100%;
     list-style: none;
   }
 
   .breadcrumb {
     margin: 0;
+    height: 100%;
     float: left;
 
     .text {
@@ -34,7 +37,7 @@
         top: 0;
         bottom: 0;
         left: -12px;
-        right: 18px;
+        right: 15px;
         .transform(skew(-25deg));
         .transition(background 0.3s, padding 0.3s);
       }
@@ -45,6 +48,8 @@
       margin: 0px 0 0 -5px;
       padding: 15px 35px 15px 0;
       position: relative;
+      height: 100%;
+      .box-sizing(border-box);
 
       &:after {
         content: '';
@@ -91,6 +96,7 @@
       }
       &:before {
         background: @prim-dark;
+        border-right: 4px solid @accent;
       }
       &:after {
         content: none;

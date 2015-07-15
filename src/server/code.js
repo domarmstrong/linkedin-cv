@@ -53,76 +53,6 @@ export default {
   },
 
   /**
-   * Keep an internal reference to the files full path hashed against a unique id
-   * Example:
-   * ```
-   * getPrivateTree();
-   * > {
-   *  id { filename: 'a.js', fullpath: '/home/user/project/folder/a.js', relfolderpath: ['folder'] },
-   *  id { filename: 'b.js', fullpath: '/home/user/project/b.js', relfolderpath: [] },
-   * }
-   * ```
-   * @returns {Promise.<Object>}
-   */
-  getPrivateTree () {
-    if (this.cache['__privateTree']) {
-      return Promise.resolve(this.cache['__privateTree']);
-    }
-
-    let privateTree = {};
-
-    return this.getFileTree().then(paths => {
-      paths.forEach(fullpath => {
-        let relpath = fullpath.replace(projectRoot, '').split('/');
-        let id = relpath.join('-');
-        privateTree[ id ] = {
-          filename: relpath.pop(),
-          fullpath: fullpath,
-          relfolderpath: relpath,
-        };
-      });
-      // Cache the tree. To update restart the server
-      this.cache['__privateTree'] = privateTree;
-      return privateTree;
-    });
-  },
-
-  /**
-   * Get a file tree that can be used to display the file structure to the client
-   * Example:
-   * ```
-   * getPublicTree();
-   * > {
-   *   file.js: id,
-   *   folder: {
-   *     file.js: id,
-   *     folder: {}
-   *   }
-   * }
-   * ```
-   * @returns {Promise.<Array>}
-   */
-  getPublicTree () {
-    let tree = {};
-
-    function setNested (path, file, id) {
-      var o = tree;  // a moving reference to internal objects within tree
-      path.forEach(part => {
-        if( !o[part] ) o[part] = {};
-        o = o[part];
-      });
-      o[file] = id;
-    }
-
-    return this.getPrivateTree().then(tree => {
-      Object.keys(tree).forEach(id => {
-        var fileObject = tree[id];
-        setNested(fileObject.relfolderpath, fileObject.filename, id);
-      });
-    }).then(() => tree);
-  },
-
-  /**
    * Get the filetype based on the files extension
    * defaults to 'text' if no extension found
    * @param filepath {String}
@@ -151,6 +81,79 @@ export default {
   },
 
   /**
+   * Return the content of a file or directory
+   *
+   * @returns {Promise.<Object>}
+   *
+   * @Example:
+   * (file)
+   * ```
+   * getFile('/foo/bar/file.js');
+   * { file: "rendered file content" }
+   * ```
+   * (directory)
+   * ```
+   * getFile('/foo/bar');
+   * { dir: {
+   *   'file.js': '/foo/bar/file.js',
+   *   'folder': '/foo/bar/folder',
+   * }}
+   * ```
+   */
+  getFile(fileId) {
+    if (this.cache[fileId]) {
+      return Promise.resolve(this.cache[fileId]);
+    }
+
+    let trimmedFileId = fileId.replace(/^\//, '');
+    let file = null;
+    let dir = {};
+    let isFile = new RegExp('^' + trimmedFileId + '$');
+    let folderPath = new RegExp('^' + trimmedFileId.replace(/^\//, '') + '/?');
+
+    return this.getFileTree().then(tree => {
+      for (var i = 0; i < tree.length; i++) {
+        let filePath = tree[i];
+        let relPath = filePath.replace(projectRoot, '');
+
+        if (isFile.test(relPath)) {
+          file = filePath;
+          break;
+        }
+
+        if (folderPath.test(relPath)) {
+          let trimmed = relPath.replace(folderPath, '');
+          // is a directory
+          if (trimmed.indexOf('/') !== -1) {
+            let folder = trimmed.split('/')[0];
+            if (! (folder in dir)) {
+              dir[folder] = { type: 'folder', path: (trimmedFileId + '/' + folder).replace(/^\//, '') };
+            }
+          } else {
+            dir[trimmed] = { type: 'file', path: relPath };
+          }
+        }
+      }
+
+      if (file) {
+        return this.renderFile(file).then(rendered => {
+          this.cache[fileId] = { file: rendered };
+          return this.cache[fileId];
+        });
+      }
+
+      if (! Object.keys(dir).length) {
+        let err = new Error('Not found');
+        err.status = 404;
+        throw err;
+      }
+
+      this.cache[fileId] = { dir };
+      return this.cache[fileId];
+    });
+  },
+
+  /**
    * Render the file using highlightjs
    * Example:
    * ```
@@ -165,27 +168,14 @@ export default {
    * Requires extra css file to be included to view
    * see https://highlightjs.org
    *
-   * @param fileId {String} see getPublicTree/getPrivateTree
+   * @param filepath {String} see full path to file
    * @return {Promise.<String>} highlightjs parsed code
    */
-  renderFile(fileId) {
-    if (this.cache[fileId]) {
-      return Promise.resolve(this.cache[fileId]);
-    }
-    return this.getPrivateTree().then(tree => {
-      if (! (fileId in tree)) {
-        let err = new Error('Access denied');
-        err.status = 401;
-        throw err;
-      }
-      let filepath = tree[fileId].fullpath;
-      let filetype = this.getFileType(filepath);
-      return Qfs.read(filepath).then(file => {
-        // Parse the file and cache the result
-        let parsed = hljs.highlight(filetype, file, true).value;
-        this.cache[fileId] = parsed;
-        return parsed;
-      });
+  renderFile(filepath) {
+    let filetype = this.getFileType(filepath);
+    return Qfs.read(filepath).then(file => {
+      // Parse the file and cache the result
+      return hljs.highlight(filetype, file, true).value;
     });
   }
 }

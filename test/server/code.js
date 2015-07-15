@@ -12,14 +12,6 @@ describe('code', () => {
     });
   });
 
-  describe('getPrivateTree', () => {
-    it('caches the lookup and returns the same tree on further calls', async () => {
-      let a = await code.getPrivateTree();
-      let b = await code.getPrivateTree();
-      assert.equal(a, b);
-    });
-  });
-
   describe('getFileType', () => {
     it('returns less for .less', () => {
       assert.equal(code.getFileType('/foo/bar/baz.less'), 'less');
@@ -50,25 +42,43 @@ describe('code', () => {
     });
   });
 
-  describe('renderFile', () => {
+  describe('getFile', () => {
     it('renders a file from its public identifier', async () => {
-      let tree = await code.getPublicTree();
-      let publicId = Object.keys(tree)[0];
-      let rendered = await code.renderFile(publicId);
-      assert.typeOf(rendered, 'string');
+      let data = await code.getFile('README.md');
+      assert.typeOf(data.file, 'string');
+      assert.equal(data.dir, undefined);
     });
 
-    it('caches render', async () => {
-      let tree = await code.getPublicTree();
-      let publicId = Object.keys(tree)[0];
-      let a = await code.renderFile(publicId);
-      let b = await code.renderFile(publicId);
+    it('returns the content of a directory', async () => {
+      let data = await code.getFile('/src');
+      assert.typeOf(data.dir, 'object');
+      assert.equal(data.file, undefined);
     });
 
-    it('only allows rendering of public files by publicId', () => {
-      return code.renderFile('build/app.js').then(() => assert.fail()).catch(err => {
-        assert.equal(err.message, 'Access denied');
-        assert.equal(err.status, 401);
+    it('caches result', async () => {
+      let a = await code.getFile('/src');
+      let b = await code.getFile('/src');
+      assert.equal(a, b);
+    });
+
+    it('Does not return content of excluded files', () => {
+      return code.getFile('/build/app.js').then(() => assert.fail()).catch(err => {
+        assert.equal(err.message, 'Not found');
+        assert.equal(err.status, 404);
+      });
+    });
+
+    it('Does not return content of excluded folders', () => {
+      return code.getFile('/build').then(() => assert.fail()).catch(err => {
+        assert.equal(err.message, 'Not found');
+        assert.equal(err.status, 404);
+      });
+    });
+
+    it('Throws a 404 for bad file requests', () => {
+      return code.getFile('/foobar').then(() => assert.fail()).catch(err => {
+        assert.equal(err.message, 'Not found');
+        assert.equal(err.status, 404);
       });
     });
   });

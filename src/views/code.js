@@ -5,24 +5,78 @@
  */
 
 import React from 'react';
-import { FileTree } from '../components/file_tree';
 import request from '../request';
+import { Link } from 'react-router';
 
 let cache = {};
 
 export default class Code extends React.Component {
 
   static fetchProps (routerState) {
-    let fileId = routerState.params.file;
-    return Promise.all([
-      request.getCached('/api/code-tree'),
-      request.getCached('/api/code/' + fileId),
-    ]).then(([ tree, code ]) => {
-      return {
-        tree: tree.body,
-        code: code.text,
-      }
-    })
+    let splat = routerState.params.splat;
+    return request.getCached('/api/code' + splat).then(res => res.body);
+  }
+
+  static getBackPath (routerState) {
+    if (! routerState.params.splat) {
+      return null;
+    }
+    return routerState.location.pathname.split('/').slice(0, -1).join('/');
+  }
+
+  render () {
+    let { file, dir, routerState } = this.props;
+    let back =  Code.getBackPath(routerState);
+
+    return (
+      <div id="code">
+        { back && <div className="back"><Link to={ back }><i className="icon-arrow-back" /></Link></div> }
+        { file ? <FileView code={ file } /> : <DirectoryView dir={ dir } routerState={ routerState } /> }
+      </div>
+    )
+  }
+}
+Code.propTypes = {
+  file: React.PropTypes.string,
+  dir: React.PropTypes.object,
+  routerState: React.PropTypes.object.isRequired,
+};
+
+class FileView extends React.Component {
+  render () {
+    return (
+      <pre className="code-view">
+        <code className="hljs" dangerouslySetInnerHTML={{__html: this.props.code }} />
+      </pre>
+    );
+  }
+}
+FileView.propTypes = {
+  code: React.PropTypes.string.isRequired,
+};
+
+export class DirectoryView extends React.Component {
+  renderContent () {
+    let dir = this.props.dir;
+
+    return Object.keys(dir).sort((a, b) => {
+      // show folders first then files, order alphabetically
+      let aType = dir[a].type;
+      let bType = dir[b].type;
+      if (aType === 'folder' && bType !== 'folder') return -1;
+      if (aType !== 'folder' && bType === 'folder') return 1;
+      return a > b ? 1 : -1;
+    }).map(key => {
+      let item = dir[key];
+      return (
+        <li key={ key } className={ item.type }>
+          <Link to={ this.getUrlPrefix() + '/' + item.path }>
+            <i className={ item.type === 'file' ? 'icon-file' : 'icon-folder' } />
+            { key }
+          </Link>
+        </li>
+      );
+    });
   }
 
   /**
@@ -36,29 +90,20 @@ export default class Code extends React.Component {
    */
   getUrlPrefix () {
     let { routerState } = this.props;
-    return routerState.location.pathname.replace('/' + routerState.params.file, '');
+    return routerState.location.pathname.replace(routerState.params.splat, '');
   }
 
   render () {
-    let { tree, code, routerState } = this.props;
-
     return (
-      <div id="code">
-        <div className="file-browser">
-          <h2>Files</h2>
-
-          <FileTree data={ tree } urlPrefix={ this.getUrlPrefix() } active={ routerState.params.file } />
-        </div>
-
-        <pre className="code-view">
-          <code className="hljs" dangerouslySetInnerHTML={{__html: code }} />
-        </pre>
+      <div className="directory-view">
+        <ul className="dir">
+          { this.renderContent() }
+        </ul>
       </div>
-    )
+    );
   }
 }
-Code.propTypes = {
-  tree: React.PropTypes.object.isRequired,
-  code: React.PropTypes.string.isRequired,
+DirectoryView.propTypes = {
+  dir: React.PropTypes.object.isRequired,
   routerState: React.PropTypes.object.isRequired,
 };

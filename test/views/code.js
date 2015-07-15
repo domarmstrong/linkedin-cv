@@ -1,7 +1,7 @@
 "use strict";
 
 import { assert } from 'chai';
-import Code from '../../src/views/code';
+import Code, { DirectoryView } from '../../src/views/code';
 import React from 'react';
 import TestUtils from 'react/lib/ReactTestUtils';
 import test_utils from '../test_utils';
@@ -17,36 +17,66 @@ describe('Code view page', () => {
 
   beforeEach(() => {
     props = {
-      tree: {},
-      code: '<pre>var code = true</pre>',
+      dir: {
+        'src': { type: 'folder', path: 'src/' },
+        'test.js': { type: 'file', path: 'test.js' },
+      },
     };
   });
 
-  it('renders with no errors', () => {
+  it('renders file with no errors', () => {
+    let props = {
+      file: '<pre>var code = true</pre>',
+    };
     return test_utils.renderWithRouter(Code, props);
   });
 
-  describe('getUrlPrefix', () => {
-    it('returns the correct urlPrefix', () => {
-      props.routerState = {
-        location: { pathname: '/prefix/filename.test' },
-        params: { file: 'filename.test' }
+  it('renders dir with no errors', () => {
+    return test_utils.renderWithRouter(Code, props);
+  });
+
+  describe('getBackPath', () => {
+    it('returns the path to the next link up', () => {
+      let routerState = {
+        location: { pathname: '/files/src/file.js' },
+        params: { splat: 'src/file.js' }
       };
-      return test_utils.renderWithRouter(Code, props).then(view => {
-        assert.equal(view.getUrlPrefix(), '/prefix');
-      });
+      assert.equal(Code.getBackPath(routerState), '/files/src');
     });
   });
 
   describe('fetchProps', () => {
-    it('runs without error', () => {
+    it('runs fetches a file', () => {
       let state = {
-        params: { file: 'README.md' },
+        params: { splat: '/README.md' },
       };
       return Code.fetchProps(state).then(data => {
         assert.typeOf(data, 'object');
-        assert.typeOf(data.tree, 'object');
-        assert.typeOf(data.code, 'string');
+        assert.typeOf(data.file, 'string');
+      });
+    });
+
+    it('runs fetches a directory', () => {
+      let state = {
+        params: { splat: '/src' },
+      };
+      return Code.fetchProps(state).then(data => {
+        assert.typeOf(data, 'object');
+        assert.typeOf(data.dir, 'object');
+      });
+    });
+  });
+
+  describe('DirectoryView', () => {
+    describe('getUrlPrefix', () => {
+      it('returns the correct urlPrefix', () => {
+        props.routerState = {
+          location: { pathname: '/prefix/filename.test' },
+          params: { splat: '/filename.test' }
+        };
+        return test_utils.renderWithRouter(DirectoryView, props).then(view => {
+          assert.equal(view.getUrlPrefix(), '/prefix');
+        });
       });
     });
   });

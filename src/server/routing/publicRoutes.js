@@ -31,14 +31,9 @@ publicRoutes.get('/api/profile', function *() {
   this.body = yield linkedIn.getProfile();
 });
 
-publicRoutes.get('/api/code/:fileId', function *(next) {
+publicRoutes.get('/api/code*', function *(next) {
   this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
-  this.body = yield code.renderFile(this.params.fileId);
-});
-
-publicRoutes.get('/api/code-tree', function *() {
-  this.set('Cache-control', `private, max-age=${24 * 60 * 60}`);
-  this.body = yield code.getPublicTree();
+  this.body = yield code.getFile(this.params[0]);
 });
 
 publicRoutes.get('/api/test-results', function *() {

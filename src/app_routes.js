@@ -30,7 +30,7 @@ export default [
   <Route key="root" component={ App }>
     <Route path="cv" indexRoute={{ component: CV }} />
     <Route path="the-code" indexRoute={{ component: LookInside }}>
-      <Route path="files/:file" component={ Code } />
+      <Route path="files*" component={ Code } />
       <Route path="tests" component={ Tests } />
       <Route path="test-coverage" indexRoute={{ component: TestCoverage }}>
         <Route path="*" component={ TestCoverage } />
@@ -65,7 +65,6 @@ export default [
 export function fetchProps (state) {
   let routeData = new Map();
 
-  console.log('fetch', state);
   try {
     return Promise.all(
       state.branch

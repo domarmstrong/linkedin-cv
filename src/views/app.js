@@ -27,10 +27,13 @@ export default class App extends React.Component {
     return (
       <div id="app">
         <PageMenu app_name={ app_name } active_route={ active_route } />
-        <Breadcrumb url={ url } />
 
         <div className="container">
-          { children }
+          <Breadcrumb url={ url } />
+
+          <div className="content">
+            { children }
+          </div>
         </div>
       </div>
     )

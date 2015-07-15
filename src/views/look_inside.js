@@ -16,7 +16,7 @@ export default class LookInside extends React.Component {
         <h1>Look inside</h1>
 
         <ul>
-          <li><Link className="btn" to="/the-code/files/README.md">The code</Link></li>
+          <li><Link className="btn" to="/the-code/files">Files</Link></li>
           <li><Link className="btn" to="/the-code/tests">Tests</Link></li>
           <li><Link className="btn" to="/the-code/test-coverage">Test coverage</Link></li>
         </ul>
