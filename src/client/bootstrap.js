@@ -6,6 +6,8 @@
 
 // Import polyfills as required to keep bundle size down
 import 'core-js/fn/object/assign';
+import 'core-js/es6/promise';
+import 'core-js/es6/map';
 import Client from './client';
 
 let client = new Client();
