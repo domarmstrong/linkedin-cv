@@ -6,6 +6,10 @@
 
 import socketIo from 'socket.io';
 import log from './log';
+import { AsyncQueue } from '../lib/asyncQueue';
+import time from '../lib/time';
+
+let testQueue = new AsyncQueue();
 
 export default function socketIoInit (server) {
   let io = socketIo(server);
@@ -21,21 +25,53 @@ export default function socketIoInit (server) {
   });
 }
 
-export function runTests (socket) {
+let waitTime = 0;
+let runs = 0;
+
+function getAverageWait() {
+  return time.renderDuration(waitTime / (runs || 1));
+}
+
+export function runTests () {
+  let socket = this;
+  let ip = socket.conn.remoteAddress;
+  let data = {
+    socket,
+    startTime: +new Date(),
+  };
+
+  testQueue.push(ip, data, (ip, data, position, done) => {
+
+    if (done) {
+      // Log how long it took before running
+      waitTime += +new Date() - data.startTime;
+      runs++;
+
+      doTestRun(data.socket, done);
+    } else {
+      socket.emit('test-info', `Queue position: ${ position } (Average wait ${ getAverageWait() })`);
+    }
+  });
+}
+
+function doTestRun (socket, done) {
   // Do import here due to issue with istanbul instrumented code..
   let test = require('./test');
 
   test.run('json-stream')
     .on('data', d => {
-      this.emit('test-result', JSON.parse(d.toString()));
+      socket.emit('test-result', JSON.parse(d.toString()));
     })
     .on('error', err => {
       log.error('test-error', err);
-      this.emit('test-error', err.message);
+      socket.emit('test-error', err.message);
     })
     .on('end', () => {
-      this.emit('test-end');
+      socket.emit('test-end');
+      console.log('call done');
+      done();
     });
 
-  this.emit('test-start');
+  socket.emit('test-info', 'Test run initialized');
+  socket.emit('test-info', 'Awaiting test data...');
 }

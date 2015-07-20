@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import request from '../request';
 import autobind from 'autobind-decorator';
 import client from '../client/bootstrap';
+import time from '../lib/time';
 
 
 export default class Tests extends React.Component {
@@ -17,18 +18,25 @@ export default class Tests extends React.Component {
     super();
 
     this.state = {
+      running: false,
+      info: [],
       liveResult: null,
       isMounted: false,
     };
   }
 
   static fetchProps () {
-    return request.get('/api/test-results', { json: true }).then(res => ({ testResults: res.body }))
+    return request.get('/api/test-results', { json: true }).then(res => ({ savedResult: res.body }))
   }
 
   componentDidMount () {
     this.setState({ isMounted: true });
 
+    client.socket.on('test-info', data => {
+      console.log(data);
+      this.state.info.push(data);
+      this.forceUpdate();
+    });
     client.socket.on('test-result', result => {
       this.state.liveResult.push(result);
       this.forceUpdate();
@@ -36,12 +44,14 @@ export default class Tests extends React.Component {
     client.socket.on('test-error', err => {
       console.log(err);
       this.setState({
-        liveResult: [],
         error: {
           message: 'Woops. An error occured while running the test suit...',
           error: err
         }
       });
+    });
+    client.socket.on('test-end', () => {
+      this.setState({ running: false });
     });
   }
 
@@ -52,68 +62,150 @@ export default class Tests extends React.Component {
 
   @autobind
   handleRunTests () {
+    if (this.state.running) return;
+
     // need to set state sync for testing
     this.setState({
+      running: true,
+      info: ['Request test run'],
       liveResult: [],
       error: null,
     });
+    //this.fakeInitializeDataStream();
 
     client.socket.emit('run-tests');
   }
 
-  renderResults () {
-    let { liveResult, error } = this.state;
-
-    if (error) {
-      return [
-        <li key="message" className="error"><h2>{ error.message }</h2></li>,
-        <li key="error" className="error"><pre><code>{ error.error }</code></pre></li>,
-      ]
+  /**
+   * Spoof some info data so the test run feels more immediate
+   */
+  fakeInitializeDataStream () {
+    let fakeData = [
+      { time: 0, text: 'Request test run' },
+      { time: 100, text: 'Create mocha instance' },
+      { time: 300, text: 'Awaiting test data...' }
+    ];
+    let self = this;
+    function emitNext() {
+      if (! fakeData.length) return;
+      let next = fakeData.shift();
+      let addInfo = () => {
+        self.state.info.push(next.text);
+        self.forceUpdate();
+        emitNext();
+      };
+      if (next.time) {
+        setTimeout(addInfo, next.time)
+      } else {
+        addInfo();
+      }
     }
-    else if (liveResult && ! liveResult.length) {
-      return <li><h2>Running...</h2></li>;
-    }
+    emitNext();
+  }
 
-    let result = liveResult || this.props.testResults;
-    return result.map((entry, i) => {
-      let [ type, data ] = entry;
-      switch (type) {
+  getData () {
+    let { savedResult } = this.props;
+    let { liveResult, info, error } = this.state;
+
+    let results = liveResult || savedResult;
+    let tests = [];
+    let stats;
+
+    let testCount = 0;
+    // Find start data, iterate forward (should be first row)
+    for (var i = 0; i < results.length; i++) {
+      let row = results[i];
+      switch (row[0]) {
         case 'start':
-          return  this.renderStart(data);
+          testCount = results[i][1].total;
+          break;
         case 'end':
-          return  this.renderEnd(data);
+          stats = results[i][1];
+          break;
         case 'pass':
         case 'fail':
-          return  this.renderTest(type, data, i);
+          tests.push(row);
+          break;
         default:
-          throw new Error('Unexpected result type: ' + type);
+          throw new Error('Unexpected data: ' + JSON.parse(row));
       }
-    });
+    }
+
+    return {
+      testCount,
+      info,
+      tests,
+      stats,
+    };
   }
 
-  renderDuration (duration) {
-    return Number(duration / 1000).toFixed(2) + ' s';
-  }
+  render () {
+    let { error, running } = this.state;
 
-  renderStart ({ total }) {
-    let isSavedResult = !this.state.liveResult;
     return (
-      <li key="start" className="initialize">
-        { isSavedResult ? (
-          <h2>Saved test result for { total } tests</h2>
-        ) : (
-          <h2>Running { total } tests...</h2>
+      <div id="tests">
+        { this.state.isMounted && (
+          <button className="run-test-btn" disabled={ running } onClick={ this.handleRunTests }>
+            Run tests live <i className="icon-play-circle-outline" />
+          </button>
         )}
+
+        <TestResults data={ this.getData() } error={ error } />
+      </div>
+    )
+  }
+}
+Tests.propTypes = {
+  savedResult: React.PropTypes.array.isRequired,
+};
+
+class TestResults extends React.Component {
+  componentDidUpdate () {
+    let list = this.refs.tests;
+    list.scrollTop = list.scrollHeight;
+  }
+
+  getProgress () {
+    return this.props.data.tests.map(test => test[0]);
+  }
+
+  renderResults () {
+    let { data, err } = this.props;
+
+    let info = data.info.map((entry, i) => {
+      return <li key={ 'init-' + i } className="test-info">{ entry }</li>;
+    });
+
+    let tests = data.tests.map((entry, i) => {
+      return  this.renderTest(entry[0], entry[1], i + 1);
+    });
+
+    let stats = data.stats ? this.renderStats(data.stats) : [];
+
+    let error = err ? [
+      <li key="message" className="error"><h2>{ err.message }</h2></li>,
+      <li key="error" className="error"><pre><code>{ err.error }</code></pre></li>,
+    ] : [];
+
+    return [].concat(info, tests, stats, error);
+  }
+
+  renderTest (result, { fullTitle, duration }, num) {
+    let icon = 'icon-' + (result === 'pass' ? 'check' : 'dnd-forwardslash');
+    return (
+      <li key={ num } className="test">
+        { num }) <i className={ classNames(icon, result) } /> <span className={ result }>{ fullTitle }</span>
+        <span className="duration">({ time.renderDuration(duration) })</span>
       </li>
     );
   }
 
-  renderEnd ({ passes, failures, pending, duration }) {
+  renderStats ({ passes, failures, pending, duration }) {
     return (
       <li key="end" className="summary">
         <ul>
           <li className="pass">Passing: { passes }
-            <span className="duration">({ this.renderDuration(duration) })</span>
+            <span className="duration">({ time.renderDuration(duration) })</span>
           </li>
           <li className="pending">Skipped: { pending }</li>
           <li className="fail">Failing: { failures }</li>
@@ -122,29 +214,47 @@ export default class Tests extends React.Component {
     );
   }
 
-  renderTest (result, { fullTitle, duration }, key) {
+  render () {
+    let { data } = this.props;
     return (
-      <li key={ key } className={ classNames('test', result) }>
-        { fullTitle }
-        <span className="duration">({ this.renderDuration(duration) })</span>
-      </li>
+      <div className="test-results">
+        <ProgressBar total={ data.testCount } progress={ this.getProgress() } />
+        <ul ref="tests" className="tests">
+          { this.renderResults() }
+        </ul>
+      </div>
     );
+  }
+}
+
+/**
+ * Render a progress bar with blocks of color
+ * @example:
+ * ```
+ * <ProgressBar total={ 10 } progress={[ 'red', 'red', 'green' ]} />
+ * ```
+ */
+class ProgressBar extends React.Component {
+  renderProgress () {
+    let { total, progress } = this.props;
+    let bars = [];
+    let width = 100 / total;
+    for (var i = 0; i < total; i++) {
+      let className = classNames('bar', progress[i]);
+      bars.push(<div key={ i } className={ className } style={{ width: width + '%' }} />);
+    }
+    return bars;
   }
 
   render () {
     return (
-      <div id="tests" className="single-col">
-        <h1>Tests</h1>
-
-        { this.state.isMounted && <button onClick={ this.handleRunTests }>Run tests</button> }
-
-        <ul className="tests">
-          { this.renderResults() }
-        </ul>
+      <div className="progress-bar">
+        { this.renderProgress() }
       </div>
-    )
+    );
   }
 }
-Tests.propTypes = {
-  testResults: React.PropTypes.array.isRequired,
+ProgressBar.propTypes = {
+  total: React.PropTypes.number.isRequired,
+  progress: React.PropTypes.array.isRequired,
 };

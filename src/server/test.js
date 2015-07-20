@@ -40,7 +40,7 @@ export default {
     let error = null;
 
     // Collect error from child process and emit
-    child.stderr.on('data', (err) => {
+    child.stderr.on('data', err => {
       let str = err.toString().trim();
       if (! str) return;
       log.error(`ERROR: ${str}`);
@@ -48,7 +48,6 @@ export default {
     });
     child.on('close', () => {
       if (error) stream.emit('error', new Error(error));
-      stream.emit('end');
       stream.end();
     });
 
