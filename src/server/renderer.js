@@ -15,6 +15,7 @@ export function render(component) {
 <html lang="en">
   <head>
     <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script>
       window.app_name = "${ config.app_name }";
     </script>

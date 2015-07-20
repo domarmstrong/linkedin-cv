@@ -48,9 +48,14 @@ button {
   .transition(background 0.5s);
   .border-radius(2px);
   cursor: pointer;
+  .transition(opacity 0.3s);
 
-  &:hover {
+  &:hover:not(:disabled) {
     .background-image(linear-gradient(to bottom, @accent 0%, darken(@accent, 10) 100%));
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: initial;
   }
 }
 
