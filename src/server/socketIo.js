@@ -8,6 +8,7 @@ import socketIo from 'socket.io';
 import log from './log';
 import { AsyncQueue } from '../lib/asyncQueue';
 import time from '../lib/time';
+import once from 'lodash/function/once';
 
 let testQueue = new AsyncQueue();
 
@@ -34,13 +35,13 @@ function getAverageWait() {
 
 export function runTests () {
   let socket = this;
-  let ip = socket.conn.remoteAddress;
+  let id = socket.id;
   let data = {
     socket,
     startTime: +new Date(),
   };
 
-  testQueue.push(ip, data, (ip, data, position, done) => {
+  testQueue.push(id, data, (id, data, position, done) => {
 
     if (done) {
       // Log how long it took before running
@@ -57,6 +58,8 @@ export function runTests () {
 function doTestRun (socket, done) {
   // Do import here due to issue with istanbul instrumented code..
   let test = require('./test');
+  // test-start is a testing hook
+  socket.emit('test-start');
 
   test.run('json-stream')
     .on('data', d => {
@@ -66,11 +69,11 @@ function doTestRun (socket, done) {
       log.error('test-error', err);
       socket.emit('test-error', err.message);
     })
-    .on('end', () => {
+    .on('end', once(() => {
+      // test-end is a testing hook
       socket.emit('test-end');
-      console.log('call done');
       done();
-    });
+    }));
 
   socket.emit('test-info', 'Test run initialized');
   socket.emit('test-info', 'Awaiting test data...');

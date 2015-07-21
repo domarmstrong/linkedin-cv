@@ -48,6 +48,8 @@ export default {
     });
     child.on('close', () => {
       if (error) stream.emit('error', new Error(error));
+      // Emitting end due to inconsistency of .end() while testing
+      stream.emit('end');
       stream.end();
     });
 

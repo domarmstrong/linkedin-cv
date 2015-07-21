@@ -22,6 +22,7 @@ export default class Tests extends React.Component {
       info: [],
       liveResult: null,
       isMounted: false,
+      error: null,
     };
   }
 
@@ -33,7 +34,6 @@ export default class Tests extends React.Component {
     this.setState({ isMounted: true });
 
     client.socket.on('test-info', data => {
-      console.log(data);
       this.state.info.push(data);
       this.forceUpdate();
     });
@@ -42,7 +42,6 @@ export default class Tests extends React.Component {
       this.forceUpdate();
     });
     client.socket.on('test-error', err => {
-      console.log(err);
       this.setState({
         error: {
           message: 'Woops. An error occured while running the test suit...',
@@ -71,41 +70,12 @@ export default class Tests extends React.Component {
       liveResult: [],
       error: null,
     });
-    //this.fakeInitializeDataStream();
-
     client.socket.emit('run-tests');
-  }
-
-  /**
-   * Spoof some info data so the test run feels more immediate
-   */
-  fakeInitializeDataStream () {
-    let fakeData = [
-      { time: 0, text: 'Request test run' },
-      { time: 100, text: 'Create mocha instance' },
-      { time: 300, text: 'Awaiting test data...' }
-    ];
-    let self = this;
-    function emitNext() {
-      if (! fakeData.length) return;
-      let next = fakeData.shift();
-      let addInfo = () => {
-        self.state.info.push(next.text);
-        self.forceUpdate();
-        emitNext();
-      };
-      if (next.time) {
-        setTimeout(addInfo, next.time)
-      } else {
-        addInfo();
-      }
-    }
-    emitNext();
   }
 
   getData () {
     let { savedResult } = this.props;
-    let { liveResult, info, error } = this.state;
+    let { liveResult, info } = this.state;
 
     let results = liveResult || savedResult;
     let tests = [];
@@ -127,7 +97,7 @@ export default class Tests extends React.Component {
           tests.push(row);
           break;
         default:
-          throw new Error('Unexpected data: ' + JSON.parse(row));
+          throw new Error('Unexpected result type: ' + row);
       }
     }
 
@@ -170,7 +140,7 @@ class TestResults extends React.Component {
   }
 
   renderResults () {
-    let { data, err } = this.props;
+    let { data, error } = this.props;
 
     let info = data.info.map((entry, i) => {
       return <li key={ 'init-' + i } className="test-info">{ entry }</li>;
@@ -182,12 +152,12 @@ class TestResults extends React.Component {
 
     let stats = data.stats ? this.renderStats(data.stats) : [];
 
-    let error = err ? [
-      <li key="message" className="error"><h2>{ err.message }</h2></li>,
-      <li key="error" className="error"><pre><code>{ err.error }</code></pre></li>,
+    let err = error ? [
+      <li key="message" className="error"><h2>{ error.message }</h2></li>,
+      <li key="error" className="error"><pre><code>{ error.error }</code></pre></li>,
     ] : [];
 
-    return [].concat(info, tests, stats, error);
+    return [].concat(info, tests, stats, err);
   }
 
   renderTest (result, { fullTitle, duration }, num) {

@@ -9,7 +9,7 @@ import TestUtils from 'react/lib/ReactTestUtils';
 import $ from 'jquery';
 
 describe('Tests page', () => {
-  let testResults;
+  let savedResult;
   before(() => {
     test_utils.startServer();
   });
@@ -18,7 +18,7 @@ describe('Tests page', () => {
   });
 
   beforeEach(() => {
-    testResults = [
+    savedResult = [
       [ "start" , { "total" : 3}],
       [ "pass" , { "title" : "a" , "fullTitle" : "a" , "duration" : 46}],
       [ "pass" , { "title" : "b" , "fullTitle" : "b" , "duration" : 14}],
@@ -39,18 +39,18 @@ describe('Tests page', () => {
   });
 
   it('renders with no errors', () => {
-    return test_utils.renderWithRouter(Tests, { testResults });
+    return test_utils.renderWithRouter(Tests, { savedResult });
   });
 
   it('adds event listeners on mount', () => {
-    return test_utils.renderWithRouter(Tests, { testResults }).then(comp => {
+    return test_utils.renderWithRouter(Tests, { savedResult }).then(comp => {
       assert.equal(client.socket.listeners('test-result').length, 1);
       assert.equal(client.socket.listeners('test-error').length, 1);
     });
   });
 
   it('cleans up listeners on unmount', () => {
-    return test_utils.renderWithRouter(Tests, { testResults }).then(comp => {
+    return test_utils.renderWithRouter(Tests, { savedResult }).then(comp => {
       comp.componentWillUnmount();
       assert.equal(client.socket.listeners('test-result').length, 0);
       assert.equal(client.socket.listeners('test-error').length, 0);
@@ -59,10 +59,8 @@ describe('Tests page', () => {
 
   describe('render', () => {
     it('throws an error if an unexpected result is found', () => {
-      testResults.push(['badResult']);
-      return test_utils.renderWithRouter(Tests, { testResults }).then(() => {
-        throw new Error('Ensure catch gets run');
-      }).catch(err => {
+      savedResult.push(['badResult']);
+      return test_utils.renderWithRouter(Tests, { savedResult }).then(assert.fail).catch(err => {
         assert.match(err.message, /^Unexpected result type/);
       });
     });
@@ -70,11 +68,10 @@ describe('Tests page', () => {
 
   describe('runs tests', () => {
     it('renders with the live results as they stream', () => {
-      return test_utils.renderWithRouter(Tests, { testResults }).then(comp => {
+      return test_utils.renderWithRouter(Tests, { savedResult }).then(comp => {
         client.socket.on('run-tests', () => {
-          assert.equal(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2').innerHTML, 'Running...');
+          assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'test').length, 0);
           client.socket.emit('test-result', ['start', { total: 2 }]);
-          assert.equal($(TestUtils.findRenderedDOMComponentWithTag(comp, 'h2')).text(), 'Running 2 tests...');
           assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'test').length, 0);
           client.socket.emit('test-result', [ "pass" , { "title" : "a" , "fullTitle" : "a" , "duration" : 46}]);
           assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'test').length, 1);
@@ -86,7 +83,7 @@ describe('Tests page', () => {
     });
 
     it('renders errors returned', () => {
-      return test_utils.renderWithRouter(Tests, { testResults }).then(comp => {
+      return test_utils.renderWithRouter(Tests, { savedResult }).then(comp => {
         client.socket.on('run-tests', () => {
           assert.equal(TestUtils.scryRenderedDOMComponentsWithClass(comp, 'error').length, 0);
           client.socket.emit('test-error', 'ERROR');
@@ -101,7 +98,7 @@ describe('Tests page', () => {
     it('runs without error', () => {
       return Tests.fetchProps().then(data => {
         assert.typeOf(data, 'object');
-        assert.typeOf(data.testResults, 'array');
+        assert.typeOf(data.savedResult, 'array');
       });
     });
   });
