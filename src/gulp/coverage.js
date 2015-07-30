@@ -142,7 +142,13 @@ function forceRequireSources (sources) {
  */
 function createCoverageReport () {
   let collector = new istanbul.Collector();
-  let reporter = new istanbul.Reporter(null, config.coverage.reportDir);
+  let reporter = new istanbul.Reporter(null);
+  let reports = config.coverage.reports;
+  let htmlReport = false;
+  if (reports.indexOf('html') !== -1) {
+    reports = reports.filter(report => report !== 'html');
+    htmlReport = true;
+  }
 
   return new Promise(resolve => {
     // Get the coverage data from the global var that istanbul creates
@@ -154,9 +160,53 @@ function createCoverageReport () {
     let coverage = istanbulSourceMap(coverageData, { sourceMaps: sourceMaps });
     collector.add(JSON.parse(coverage));
 
-    reporter.addAll(config.coverage.reports);
+    if (htmlReport) {
+      createHtmlReport(collector);
+    }
+
+    reporter.addAll(reports);
     reporter.write(collector, true, done => resolve());
   });
+}
+
+function createHtmlReport (collector) {
+  let html = istanbul.Report.create('html', {
+    dir: config.coverage.reportDir,
+  });
+  // Overwrite the paths function
+  html.getPathHtml = getPathHtml;
+  // Update the linkMapper the not include index.html / .html
+  html.opts.linkMapper.fromParent = function (node) {
+    return node.relativeName;
+  };
+  html.writeReport(collector, true);
+}
+
+/**
+ * Generate the link header for coverage pages (contains the links back to parents)
+ * @returns {String}
+ */
+function getPathHtml (node) {
+  if (! node.name) return '';
+
+  let links = [];
+
+  function createLink (name, path) {
+    return `<a target="_parent" href="${ path }" data-node-type="${node.kind}">${ name }</a>`;
+  }
+
+  let nodePath = node.name.split('/').filter(part => part).slice(0, -1);
+  let isDir = node.kind === 'dir';
+
+  // Create relative link to root
+  let depth = nodePath.length + (isDir ? 1 : 0);
+  let rootHref = new Array(depth).fill('../').join('');
+  links.push(createLink('All files', rootHref));
+
+  if (node.parent.name) {
+    links.push(createLink(nodePath.join('/') + '/', isDir ? '../' : './'));
+  }
+  return links.join(' &#187 ') + ' &#187 ' + node.displayShortName();
 }
 
 /**

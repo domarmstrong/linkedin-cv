@@ -51,7 +51,7 @@ function handleRoute (ctx, location) {
         throw err;
       }
     }).then(() => {
-      // Fetch data from any fetchProps methods on the componnents
+      // Fetch data from any fetchProps methods on the components
       return fetchProps(initialState).then(routeData => {
 
         // Pass the props in from the Components fetchProps method

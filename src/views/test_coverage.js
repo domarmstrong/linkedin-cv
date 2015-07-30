@@ -15,12 +15,11 @@ import React from 'react';
 import autobind from 'autobind-decorator';
 import path from 'path';
 
-
 export default class TestCoverage extends React.Component {
 
   componentDidMount () {
-    if (this.props.testContent) {
-      this.injectContent();
+    if (this.props.html) {
+      this.injectContent(this.props.html);
     }
     this.hijackLinks();
   }
@@ -28,11 +27,11 @@ export default class TestCoverage extends React.Component {
   /**
    * Inject content into the iframe to allow testing
    */
-  injectContent () {
+  injectContent (html) {
     let frame = this.refs.frame;
     let document = frame.contentDocument;
     document.open();
-    document.write(this.props.testContent);
+    document.write(html);
     document.close();
   }
 
@@ -59,23 +58,25 @@ export default class TestCoverage extends React.Component {
   linkListener (event) {
     let target = event.target;
     if (target.nodeName === 'A') {
+      let currentHref = this.context.router.state.location.pathname.replace(/\/$/, '');
       let href = target.getAttribute('href');
+      let kind = target.getAttribute('data-node-type');
 
       // Only route internal urls
       if (/(http|https):\/\//.test(href)) return;
 
-      // getPath() > foo/bar/baz.html > foo/bar
-      let currentWithoutFile = this.getPath().split('/').slice(0, -1).join('/');
-      // join link > foo/bar/qux/link.html
-      let goTo = path.join(currentWithoutFile, href);
-
-      // The main index is handled by the indexRoute
-      if (/^\/?index\.html/.test(goTo)) {
-        goTo = '';
+      // path.join seems to deal with relative paths differently than the browser
+      // eg. browser /my/path/file.js > './' > /my/path/
+      //     node    /my/path/file.js > './' > /my/path/file.js/
+      // So to get the same result append an extra ../
+      //             /my/path/file.js > '../' > /my/path/
+      // This only applies to pathHtml links
+      if (kind === 'file') {
+        href += '../';
       }
 
       // join to basePath and remove trailing "/"
-      goTo = path.join(this.getBasePath() + goTo).replace(/\/$/, '');
+      let goTo = path.join(currentHref, href);
 
       this.context.router.transitionTo(goTo);
       event.preventDefault();

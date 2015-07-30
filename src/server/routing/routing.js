@@ -39,6 +39,20 @@ export default function (app) {
   app.use(mount('/public', serve(path.join(process.cwd(), '/public'), { maxage: daysToMS(5) })));
   app.use(mount('/public', serve(path.join(process.cwd(), '/build'), { maxage: daysToMS(5) })));
 
+  app.use(function *(next) {
+    if (/^\/public\/coverage/.test(this.url)) {
+      if (this.url.endsWith('.js')) {
+        this.url = this.url + '.html';
+        this.redirect(this.url);
+      } else if (! this.url.endsWith('.html')) {
+        this.url = this.url + '/index.html';
+        this.redirect(this.url);
+      }
+    } else {
+      yield next;
+    }
+  });
+
   // Handle routing errors
   app.use(function *(next) {
     // Handle errors from actual routes
