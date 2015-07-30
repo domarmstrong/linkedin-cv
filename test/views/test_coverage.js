@@ -22,12 +22,17 @@ describe('Test Coverage page', () => {
     let router;
 
     beforeEach(() => {
-      router = { transitionTo: sinon.stub() };
+      router = {
+        transitionTo: sinon.stub(),
+        state: {
+          location: { pathname: '/' }
+        }
+      };
     });
 
     it('makes local links redirect with react-router transitionTo', () => {
-      let testContent = `<body><a href="/foo">bar</a></body>`;
-      return test_utils.renderWithRouter(TestCoverage, { testContent }, { router }).then(comp => {
+      let html = `<body><a href="/foo">bar</a></body>`;
+      return test_utils.renderWithRouter(TestCoverage, { html }, { router }).then(comp => {
         let doc = comp.refs.frame.contentDocument;
         let a = doc.querySelector('a');
         clickLink(a);
@@ -36,26 +41,12 @@ describe('Test Coverage page', () => {
     });
 
     it('does not hijacks links absolute urls', () => {
-      let testContent = `<body><a href="http://google.com">bar</a></body>`;
-      return test_utils.renderWithRouter(TestCoverage, { testContent }, { router }).then(comp => {
+      let html = `<body><a href="http://google.com">bar</a></body>`;
+      return test_utils.renderWithRouter(TestCoverage, { html }, { router }).then(comp => {
         let doc = comp.refs.frame.contentDocument;
         let a = doc.querySelector('a');
         clickLink(a);
         assert(router.transitionTo.notCalled, 'transitionTo should not be called');
-      });
-    });
-
-    it('redirects base/path/index.html > base/path', () => {
-      let routerState = {
-        location: { pathname: 'base/path/foo.html' },
-        params: { splat: 'foo.html' }
-      };
-      let testContent = `<body><a href="/index.html">bar</a></body>`;
-      return test_utils.renderWithRouter(TestCoverage, { testContent, routerState }, { router }).then(comp => {
-        let doc = comp.refs.frame.contentDocument;
-        let a = doc.querySelector('a');
-        clickLink(a);
-        assert.equal(router.transitionTo.args[0][0], 'base/path');
       });
     });
   });
