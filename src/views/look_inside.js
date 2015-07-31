@@ -12,15 +12,50 @@ export default class LookInside extends React.Component {
   render () {
 
     return (
-      <div id="look-inside" className="single-col">
+      <div id="look-inside">{/* className="single-col">*/}
         <h1>Look inside</h1>
 
-        <ul>
-          <li><Link className="btn" to="/the-code/files">Files</Link></li>
-          <li><Link className="btn" to="/the-code/tests">Tests</Link></li>
-          <li><Link className="btn" to="/the-code/test-coverage">Test coverage</Link></li>
+        <ul className="links">
+          <InfoPanel img="/public/img/files.png" title="Files" href="/the-code/files">
+            Have a look at the files behind this site. For example to see the code behind this page
+            navigate to <Link to="/the-code/files/src/views/look_inside.js"><code>src/views/look_inside.js</code></Link>
+          </InfoPanel>
+
+          <InfoPanel img="/public/img/tests.png" title="Tests" href="/the-code/tests">
+            View the results of the last saved test run, or run the test suit live from the server.
+            The tests are written with&nbsp;
+            <a target="_blank" href="http://mochajs.org/">Mocha</a> and&nbsp;
+            <a target="_blank" href="http://chaijs.com/api/assert/">Chai</a> and utilise&nbsp;
+            <a target="_blank" href="https://github.com/tmpvar/jsdom">JSDom</a> to run all tests within a node process.
+          </InfoPanel>
+
+          <InfoPanel img="/public/img/coverage.png" title="Test Coverage" href="/the-code/test-coverage">
+            See the test coverage report. The report is generated with&nbsp;
+            <a target="_blank" href="http://gotwarlost.github.io/istanbul/">Istanbul</a> and source mapped to the es6 code.
+          </InfoPanel>
         </ul>
       </div>
     )
   }
 }
+
+class InfoPanel extends React.Component {
+  render () {
+    let { title, img, href, children } = this.props;
+    return (
+      <li className="info-panel">
+        <Link className="page-link" to={ href }>
+          <h2>{ title }</h2>
+          <img src={ img } />
+        </Link>
+
+        <p>{ children }</p>
+      </li>
+    );
+  }
+}
+InfoPanel.propTypes = {
+  title: React.PropTypes.string.isRequired,
+  img: React.PropTypes.string.isRequired,
+  href: React.PropTypes.string.isRequired,
+};

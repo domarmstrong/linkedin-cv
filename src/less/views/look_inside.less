@@ -1,0 +1,36 @@
+#look-inside {
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .info-panel {
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    margin: 0 20px;
+
+    .page-link {
+      display: block;
+
+      img {
+        .transition(border-color 0.4s);
+        .border-radius(5px);
+        border: 5px solid white;
+      }
+      &:hover img {
+        border-color: @accent;
+      }
+    }
+
+    img {
+      width: 100%;
+    }
+
+    p {
+      text-align: left;
+    }
+  }
+}
