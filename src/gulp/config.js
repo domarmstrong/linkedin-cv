@@ -63,6 +63,6 @@ export default {
     coverageVariable: 'COVERAGE_ID',
     mapDir: './build/maps',
     reportDir: './build/coverage',
-    reports: ['html', 'text', 'text-summary'],
+    reports: ['html', 'text', 'text-summary', 'json'],
   }
 };

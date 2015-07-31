@@ -20,7 +20,7 @@
 // test_setup must be imported before react is ever imported
 import '../../test/test_setup';
 import gulp from 'gulp';
-import config from './config';
+import configuration from './config';
 import path from 'path';
 import { transform as babel } from 'babel';
 import istanbul from 'istanbul';
@@ -29,6 +29,10 @@ import tap from 'gulp-tap';
 import promisePipe from 'promisepipe';
 import test from '../server/test';
 import fs from 'fs';
+import log from '../server/log';
+
+let config = configuration.coverage;
+const COVERVAR = config.coverageVariable;
 
 // Holds transformed and instrumented code against absolute file paths
 // eg. { '/home/foo/bar/file.js': 'file code..' }
@@ -43,8 +47,8 @@ let sourceMaps = {};
  */
 export default function createCoverage () {
   // Prefix ignore globs to ignore them with gulp.src
-  let ignore = config.coverage.ignore.map(glob => '!' + glob);
-  let sources = config.coverage.cover.concat(ignore);
+  let ignore = config.ignore.map(glob => '!' + glob);
+  let sources = config.cover.concat(ignore);
 
   // Reset these module level vars
   instrumentedCode = {};
@@ -86,8 +90,7 @@ function setUpRequireHook () {
  * @returns {Function,Promise}
  */
 function instrumentSources (sources) {
-  let instrumenter = new istanbul.Instrumenter({ coverageVariable: config.coverage.coverageVariable });
-  let { mapDir } = config.coverage;
+  let instrumenter = new istanbul.Instrumenter({ coverageVariable: COVERVAR });
 
   return function () {
     return promisePipe(
@@ -96,7 +99,7 @@ function instrumentSources (sources) {
           // Get the files relative path
           let relative = path.relative(process.cwd(), f.path);
           // Add original file path > map file path from cwd
-          sourceMaps[f.path] = path.join(mapDir, relative + '.map');
+          sourceMaps[f.path] = path.join(config.mapDir, relative + '.map');
           // Transform files with babel so istanbul can understand them
           // and create source maps to translate coverage back later
           let transformed = babel(f.contents.toString(), {
@@ -114,7 +117,7 @@ function instrumentSources (sources) {
           f.path += '.map';
           f.contents = new Buffer(JSON.stringify(transformed.map, null, 2));
         }))
-        .pipe(gulp.dest(path.join(mapDir, 'src')))
+        .pipe(gulp.dest(path.join(config.mapDir, 'src')))
     );
   }
 }
@@ -142,9 +145,12 @@ function forceRequireSources (sources) {
  */
 function createCoverageReport () {
   let collector = new istanbul.Collector();
-  let reporter = new istanbul.Reporter(null);
-  let reports = config.coverage.reports;
+  let reporter = new istanbul.Reporter(null, config.reportDir);
+  let reports = config.reports;
   let htmlReport = false;
+
+  log('Creating reports', reports);
+
   if (reports.indexOf('html') !== -1) {
     reports = reports.filter(report => report !== 'html');
     htmlReport = true;
@@ -152,12 +158,12 @@ function createCoverageReport () {
 
   return new Promise(resolve => {
     // Get the coverage data from the global var that istanbul creates
-    let coverageData = global[config.coverage.coverageVariable];
+    let coverageData = global[COVERVAR];
     if (! coverageData) {
-        throw new Error('Cannot find coverage data for coverageVariable: ' + config.coverage.coverageVariable);
+        throw new Error('Cannot find coverage data for coverageVariable: ' + COVERVAR);
     }
     // Use sourcemaps to correct the output lines for coverage report
-    let coverage = istanbulSourceMap(coverageData, { sourceMaps: sourceMaps });
+    let coverage = istanbulSourceMap(coverageData, { sourceMaps });
     collector.add(JSON.parse(coverage));
 
     if (htmlReport) {
@@ -171,7 +177,7 @@ function createCoverageReport () {
 
 function createHtmlReport (collector) {
   let html = istanbul.Report.create('html', {
-    dir: config.coverage.reportDir,
+    dir: config.reportDir,
   });
   // Overwrite the paths function
   html.getPathHtml = getPathHtml;
@@ -215,7 +221,7 @@ function getPathHtml (node) {
  */
 function addCustomCSS () {
   return new Promise((resolve, reject) => {
-    let cssPath = path.join(config.coverage.reportDir, 'base.css');
+    let cssPath = path.join(config.reportDir, 'base.css');
     let css = `
       .header { padding-left: 35px !important; }
     `;
