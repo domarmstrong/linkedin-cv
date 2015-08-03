@@ -53,6 +53,7 @@ export default class Client {
       .accept('json')
       .send({ username, password })
       .then(res => {
+        this._authenticated = true;
         return true;
       }).catch(err => {
         this._authenticated = false;
