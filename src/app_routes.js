@@ -15,6 +15,9 @@ import LookInside from './views/look_inside';
 import Tests from './views/tests';
 import TestCoverage from './views/test_coverage';
 import Contact from './views/contact';
+import Portfolio from './views/portfolio';
+import Optimise from './views/portfolio/optimise';
+import OptimiseWebsite from './views/portfolio/optimise_website';
 
 import Page404 from './views/404';
 
@@ -35,6 +38,10 @@ export default [
       <Route path="test-coverage" indexRoute={{ component: TestCoverage }}>
         <Route path="*" component={ TestCoverage } />
       </Route>
+    </Route>
+    <Route path="portfolio" indexRoute={{ component: Portfolio }}>
+      <Route path="optimise" component={ Optimise } />
+      <Route path="optimise-website" component={ OptimiseWebsite } />
     </Route>
     <Route path="contact*" component={ Contact } />
     <Route path="login*" component={ Login } />

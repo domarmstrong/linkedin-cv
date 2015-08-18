@@ -6,13 +6,12 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-
+import { InfoPanel } from '../components/info_panel';
 
 export default class LookInside extends React.Component {
   render () {
-
     return (
-      <div id="look-inside">{/* className="single-col">*/}
+      <div id="look-inside" className="links-page">
         <h1>Look inside</h1>
 
         <ul className="links">
@@ -38,24 +37,3 @@ export default class LookInside extends React.Component {
     )
   }
 }
-
-class InfoPanel extends React.Component {
-  render () {
-    let { title, img, href, children } = this.props;
-    return (
-      <li className="info-panel">
-        <Link className="page-link" to={ href }>
-          <h2>{ title }</h2>
-          <img src={ img } />
-        </Link>
-
-        <p>{ children }</p>
-      </li>
-    );
-  }
-}
-InfoPanel.propTypes = {
-  title: React.PropTypes.string.isRequired,
-  img: React.PropTypes.string.isRequired,
-  href: React.PropTypes.string.isRequired,
-};

@@ -21,6 +21,7 @@ export class PageMenu extends React.Component {
             <ul className="menu-list">
               <MenuItem href="/cv" icon="icon-profile" { ...props }>Curriculum Vitae</MenuItem>
               <MenuItem href="/the-code" icon="icon-code" { ...props }>Look inside</MenuItem>
+              <MenuItem href="/portfolio" icon="icon-portfolio" { ...props }>Portfolio</MenuItem>
               <MenuItem href="/contact" icon="icon-phone" { ...props }>Contact</MenuItem>
             </ul>
             <ul className="menu-footer menu-list">
