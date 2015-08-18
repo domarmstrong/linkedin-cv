@@ -9,8 +9,10 @@ import Location from 'react-router/lib/Location';
 import BrowserHistory from 'react-router/lib/BrowserHistory';
 import routes, { fetchProps, isAllowed } from '../app_routes';
 import queryString from 'querystring';
-import client from './bootstrap';
+import { getClient } from './client';
 import ReactDOM from 'react-dom';
+
+let client = getClient();
 
 /** @Map */
 let routeData;

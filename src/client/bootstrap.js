@@ -8,14 +8,7 @@
 import 'core-js/fn/object/assign';
 import 'core-js/es6/promise';
 import 'core-js/es6/map';
-import Client from './client';
+import { getClient } from './client';
 
-let client = new Client();
-
-if (typeof window !== 'undefined') {
-  window.client = client;
-}
-
-export default client;
-
-client.init();
+// Bootstrap the client
+getClient();

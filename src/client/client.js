@@ -86,3 +86,15 @@ export default class Client {
       });
   }
 }
+
+var client; //singleton
+export function getClient () {
+  if (! client) {
+    client = new Client();
+    if (typeof window !== 'undefined') {
+      window.client = client;
+    }
+    client.init();
+  }
+  return client;
+}

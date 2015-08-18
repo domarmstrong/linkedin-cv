@@ -3,12 +3,16 @@
 import { assert } from 'chai';
 import Tests from '../../src/views/tests';
 import test_utils from '../test_utils'
-import client from '../../src/client/bootstrap';
+import { getClient } from '../../src/client/client';
 import { EventEmitter } from 'events';
 import TestUtils from 'react/lib/ReactTestUtils';
 import $ from 'jquery';
 
 describe('Tests page', () => {
+  let client;
+
+  before(() => client = getClient());
+
   let savedResult;
   before(() => {
     test_utils.startServer();

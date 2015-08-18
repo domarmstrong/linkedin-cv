@@ -7,7 +7,9 @@
 import React from 'react';
 import autobind from 'autobind-decorator';
 import request from '../request';
-import client from '../client/bootstrap';
+import { getClient } from '../client/client';
+
+let client = getClient();
 
 export default class Login extends React.Component {
   constructor (props) {

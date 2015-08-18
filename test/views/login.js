@@ -7,9 +7,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/server';
 import test_utils from '../test_utils';
 import TestUtils from 'react/lib/ReactTestUtils';
-import client from '../../src/client/bootstrap';
+import { getClient } from '../../src/client/client';
 
 describe('Login page', () => {
+  let client;
+
+  before(() => client = getClient());
+
   it('renders with no errors', () => {
     ReactDOM.renderToString( <Login /> );
   });
