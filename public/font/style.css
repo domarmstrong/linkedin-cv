@@ -1,10 +1,10 @@
 @font-face {
 	font-family: 'iconfont';
-	src:url('fonts/iconfont.eot?hbdt4n');
-	src:url('fonts/iconfont.eot?#iefixhbdt4n') format('embedded-opentype'),
-		url('fonts/iconfont.ttf?hbdt4n') format('truetype'),
-		url('fonts/iconfont.woff?hbdt4n') format('woff'),
-		url('fonts/iconfont.svg?hbdt4n#iconfont') format('svg');
+	src:url('fonts/iconfont.eot?-y1spy');
+	src:url('fonts/iconfont.eot?#iefix-y1spy') format('embedded-opentype'),
+		url('fonts/iconfont.ttf?-y1spy') format('truetype'),
+		url('fonts/iconfont.woff?-y1spy') format('woff'),
+		url('fonts/iconfont.svg?-y1spy#iconfont') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -67,6 +67,9 @@
 }
 .icon-dnd-forwardslash:before {
 	content: "\e60e";
+}
+.icon-portfolio:before {
+	content: "\e9ae";
 }
 .icon-code:before {
 	content: "\ea80";
