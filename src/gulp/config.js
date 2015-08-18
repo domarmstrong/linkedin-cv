@@ -22,6 +22,9 @@ export default {
     watch: [ './src', './test' ],
     extensions: [ '.js' ],
   },
+  devServer: {
+    entry: './webpack-dev-server.js'
+  },
   bundle: {
     app: {
       bundleName: 'app.js',

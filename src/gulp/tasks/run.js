@@ -12,9 +12,12 @@ import gulp from 'gulp';
 import supervisor from 'gulp-supervisor';
 import config from '../config';
 
-gulp.task('run', ['less'], function () {
+gulp.task('run', function () {
 
   process.env.DEBUG='linkedIn-cv:*';
+  if (global.watching) {
+    process.env.PORT='3000';
+  }
 
   // Start server
   supervisor(config.run.entry, {

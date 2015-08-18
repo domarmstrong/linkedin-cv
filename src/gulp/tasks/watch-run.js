@@ -7,5 +7,5 @@ import runSequence from 'run-sequence';
 
 gulp.task('watch-run', () => {
   global.watching = true;
-  runSequence(['watch', 'bundle', 'run']);
+  runSequence(['dev-server', 'run']);
 });

@@ -27,4 +27,3 @@ gulp.task('coverage', ['cleancoverage'], function () {
   let child = spawn('node', ['--harmony', '-e', init], { stdio: 'inherit', env: { NODE_ENV: 'test', MOCHA_COLORS: true } });
   child.on('close', code => process.exit(code));
 });
-
