@@ -27,6 +27,7 @@ export default class App extends React.Component {
     return (
       <div id="app">
         <PageMenu app_name={ app_name } active_route={ active_route } />
+        <img style={{ position: 'absolute', top: 0, right: 0, zIndex: 5 }} src="/public/img/underconstruction.png" />
 
         <div className="container">
           <Breadcrumb url={ url } />
