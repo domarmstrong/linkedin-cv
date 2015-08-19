@@ -2,8 +2,11 @@ var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var config = require('./webpack.config');
 
+/** NOTE: occasionally this stops working for no apparent reason
+ * restarting the machine may correct the issue.
+ * see - http://stackoverflow.com/questions/26708205/webpack-watch-isnt-compiling-changed-files
+ */
 new WebpackDevServer(webpack(config), {
-  contentBase: './public',
   publicPath: config.output.publicPath,
   hot: true,
   noInfo: true,
